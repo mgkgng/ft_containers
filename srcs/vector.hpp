@@ -1,35 +1,38 @@
 #include <cstddef>
 #include <iostream>
 #include <exception>
-
+#include <string.h>
 
 namespace ft {
 
-template <typename T, typename Allocator = allocator<T>>
+template < typename T, typename Allocator = std::allocator<T> >
 class vector {
 
 	////////////////////////////
 	// ** type definitions ** //
 	////////////////////////////
 
-	typedef T value_type;
-	typedef Allocator allocator_type;
-	typedef size_t	size_type;
-	typedef ptrdiff_t difference_type;
-	typedef value_type& reference;
-	typedef const value_type& const_reference;
-	typedef Allocator::pointer pointer;
-	typedef Allocator::const_pointer const_pointer;
-	typedef ft::random_access_iterator<value_type> iterator;
-	typedef ft::random_access_iterator<const value_type> const_iterator;
-	typedef ft::reverse_iterator<iterator> reverse_iterator;
-	typedef ft::reverse_iterator<const iterator> const_reverse_iterator; 
+	typedef T 												value_type;
+	typedef Allocator										allocator_type;
+	typedef size_t											size_type;
+	typedef ptrdiff_t										difference_type;
+	typedef value_type&										reference;
+	typedef const value_type&								const_reference;
+	typedef Allocator::pointer 								pointer;
+	typedef Allocator::const_pointer 						const_pointer;
+	typedef ft::random_access_iterator<value_type> 			iterator;
+	typedef ft::random_access_iterator<const value_type>	const_iterator;
+	typedef ft::reverse_iterator<iterator> 					reverse_iterator;
+	typedef ft::reverse_iterator<const iterator> 			const_reverse_iterator; 
 	
 	private:
 		T				*V;
-		allocator_type	alloc; // allocator to use for all memory allocations of this container
-		size_type		count; // the size of the container
-		iterator		first;
+		allocator_type	_alloc; // allocator to use for all memory allocations of this container
+		pointer			_start; // the starting address of the container
+		pointer			_end; // the ending address of the container
+		size_type		_count; // the size of the container
+		size_type		_capacity; // the capacity of the container
+
 
 	public:
 	////////////////////////
@@ -38,24 +41,39 @@ class vector {
 
 	vector() { // cppreference (1)
 		// Default constructor. Constructs an empty container with a default-constructed allocator.
-		this->alloc = allocator_type();
+		this->_alloc = allocator_type();
+		this->_start = NULL;
+		this->_end = NULL;
+		this->_count = 0;
+		this->_capacity = 0;
 	}
+
 
 	explicit vector(const Allocator& alloc) { // cppreference (2)
 		// Constructs an empty container with the given allocator alloc.
-		this->alloc = alloc;
+		this->_alloc = alloc;
+		this->_start = NULL;
+		this->_end = NULL;
+		this->_count = 0;
+		this->_capacity = 0;
 	}
 
 	explicit vector(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) { // cppreference (3)
 		// Constructs the container with count copies of elements with value value.
-		this->count = count;
-		this->value = value;
-		this->alloc = alloc;
+		this->_alloc = alloc;
+		this->_start = this->_alloc.allocate(count); // allocator allocates automatically n * sizeof(T) bytes of uninitialized storage
+		for (int i = 0; i < count; i++)
+			V[i] = value;
+		this->_end = this->_start + count;
+		this->_count = count;
+		this->_capacity = count;
 	}
 
 	template<class InputIt>
 	vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
 		// Constructs the container with the contents of the range [first, last).
+		this->_alloc = alloc;
+		this->
 	}
 
 	vector(const vector& other) { // cppreference(6)
@@ -189,11 +207,14 @@ class vector {
 
 	bool empty() const {
 		// Checks if the container has no elements, i.e. whether begin() == end().
+		if (this->begin() == this->end())
+			return (true);
+		return (false);
 	}
 
 	size_type size() const {
 		// Returns the number of elements in container, i.e. std::distance(begin(), end()).
-
+		std::dista
 	}
 
 	size_type max_size() const {
@@ -267,7 +288,7 @@ class vector {
 
 	void swap(vector & other)
 
-}
+};
 
 	template<class T, class Alloc>
 	bool operator==(const ft::vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
@@ -301,7 +322,7 @@ class vector {
 
 	template<class T, class Alloc>
 	void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
-		
+
 	}
 	
-}
+};
