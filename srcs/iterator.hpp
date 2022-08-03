@@ -12,6 +12,16 @@ class RandomAccessIterator {
 		pointer ptr;
 
 	public:
+		RandomAccessIterator() {
+
+		}
+
+		RandomAccessIterator(const RandomAccessIterator<T> &other) {
+
+		}
+
+		~RandomAccessIterator() {}
+
 		reference operator*() const {
 			return (*ptr);
 		}
@@ -25,9 +35,20 @@ class RandomAccessIterator {
 			return (*this);
 		}
 
-		RandomAccessIterator operator++(value_type) {
+		RandomAccessIterator operator++(int) {
 			Iterator tmp = *this;
 			++(*this);
+			return (tmp);
+		}
+
+		RandomAccessIterator& operator--() {
+			ptr--;
+			return (*this);
+		}
+
+		RandomAccessIterator operator--(int) {
+			RandomAccessIterator tmp = *this;
+			--(*this);
 			return (tmp);
 		}
 
@@ -38,6 +59,22 @@ class RandomAccessIterator {
 		friend bool operator!=(const RandomAccessIterator& lhs, const RandomAccessIterator& rhs) {
 			return (lhs.ptr != rhs.ptr);
 		}
+	
+        RandomAccessIterator operator+(difference_type n) const {
+        }
+
+        RandomAccessIterator operator-(difference_type n) const {
+        }
+
+        RandomAccessIterator& operator+=(difference_type n) {
+            ptr += n;
+            return (*this);
+        }
+		
+        RandomAccessIterator& operator-=(difference_type n) {
+            ptr -= n;
+            return (*this);
+        }
 };
 
 };

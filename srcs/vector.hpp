@@ -85,7 +85,7 @@ class vector {
 	////////////////////////////////////////////////////////
 
 	~vector() {
-		clear();
+		this->clear();
 		this->alloc.deallocate(first, SIZE);
 	}
 
@@ -96,7 +96,7 @@ class vector {
 
 	void assign(size_type count, const T& value) { // cppreference (1)
 		// Replaces the contents with count copies of value value
-		this->alloc.deallocate(first, SIZE)
+		this->alloc.deallocate(this->start, this->)
 	}
 
 	template<class InputIt>
@@ -116,8 +116,9 @@ class vector {
 		// Returns a reference to the element at specified location pos, with bounds checking.
 		// If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
 	
-		//if (!pos < size())
-		//	throw std::out_of_range;
+		if (pos >= this->size)
+			throw std::out_of_range;
+		return (V[pos]);
 	}
 
 	const_reference at(size_type pos) {
@@ -135,24 +136,30 @@ class vector {
 	reference front() {
 		// Returns a reference to the first element in the container.
 		// Calling front on an empty container is undefined.
+		return (*V);
 	}
 
 	const_reference front() const {
-
+		return (*V);
 	}
 
 	reference back() {
 		// Returns a reference to the last element in the container.
-		// Calling bacl on an empty container is undefined.
-
+		// Calling back on an empty container is undefined.
+		if (!_size)
+			return ;
+		return (V[_size - 1]);
 	}
 
 	const_reference back() const {
-
+		if (!_size)
+			return ;
+		return (V[_size - 1]);
 	}
 
 	T* data() {
 		// Returns a pointer to the underlying array serving as element storage. 
+		
 	}
 
 	const T* data() const {
@@ -166,19 +173,21 @@ class vector {
 	iterator begin() {
 		// Returns an iterator to the first element of the vector.
 		// If the vector is empty, the returned iterator will be equal to end().
+		return (_start);
 	}
 
 	const_iterator begin() const {
-
+		return (_start);
 	}
 
 	iterator end() {
 		// Returns an iterator to the element following the last element of the vector.
 		// This element acts as a placeholder; attempting to access it results in undefined behavior.
+		return (_end);
 	}
 
 	const_iterator end() const {
-
+		return (_end);
 	}
 
 	reverse_iterator rbegin() {
@@ -235,7 +244,9 @@ class vector {
 	/////////////////////
 
 	void clear() {
-
+		for (int i = 0; i < _size; i++)
+			_alloc.destroy(&V[i]);
+		_size = 0;
 	}
 
 
@@ -272,6 +283,10 @@ class vector {
 	void push_back(const T& value) {
 		// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 		// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
+		if (_size >= _capacity) {
+			
+		}
+	
 	}
 
 	void pop_back() {
