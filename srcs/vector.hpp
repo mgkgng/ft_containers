@@ -283,22 +283,30 @@ class vector {
 	void push_back(const T& value) {
 		// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 		// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
-		if (_size >= _capacity) {
-			
+		if (_size == _capacity) {
+			this->resize(_capacity * 2);
 		}
-	
+		
+		V[_size++] = value;
+		this->_end = V + _size;
 	}
 
 	void pop_back() {
 
 	}
 
-	void resize(size_type count) {
-
-	}
-
 	void resize(size_type count, T value = T()) {
+		pointer tmp = this->_alloc.allocate(count);
+		memcpy(tmp, this->_start, this->_count * sizeof(T));
+		for (pointer p = tmp + this->_count; p != tmp + count; p++)
+			*p = value;
 
+		for (pointer p = this->_start; p != this->_end; p++)
+			p.destroy();
+		this->_start.deallocate();
+
+		this->_start = tmp;
+		this->_capacity = count;
 	}
 
 	void swap(vector & other)
