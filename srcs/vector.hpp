@@ -429,7 +429,7 @@ class vector {
 
 	template<class T, class Alloc>
 	bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (ft::lexicographical_compare(lhs._start, lhs._end, rhs._start, rhs._end, ft::greater));
+		return (ft::lexicographical_compare(rhs._start, rhs._end, lhs._start, lhs._end));
 	}
 
 	template<class T, class Alloc>

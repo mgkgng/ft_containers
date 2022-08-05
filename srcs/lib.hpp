@@ -73,9 +73,4 @@ struct enable_if {
 	typedef T type;
 };
 
-template<class InputIt1, class InputIt2>
-bool greater(InputIt1 it1, InputIt2 it2) {
-	return (*it1 > *it2);
-}
-
 };
