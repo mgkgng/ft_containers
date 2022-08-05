@@ -1,6 +1,7 @@
 #pragma once
 
-#include "lib.hpp"
+#include "RandomAccessIterator.hpp"
+#include "ReverseIterator.hpp"
 
 namespace ft {
 
@@ -15,6 +16,11 @@ class vector {
 		size_type		_count; // the size of the container
 		size_type		_capacity; // the capacity of the container
 
+	protected:
+		void	getMoreCapacity(size_type n) {
+			while (n > _capacity)
+				this->resize(_capacity * 2);
+		}
 
 	public:
 
@@ -30,10 +36,10 @@ class vector {
 		typedef const value_type&								const_reference;
 		typedef Allocator::pointer 								pointer;
 		typedef Allocator::const_pointer 						const_pointer;
-		typedef ft::random_access_iterator<value_type> 			iterator;
-		typedef ft::random_access_iterator<const value_type>	const_iterator;
-		typedef ft::reverse_iterator<iterator> 					reverse_iterator;
-		typedef ft::reverse_iterator<const iterator> 			const_reverse_iterator; 
+		typedef ft::RandomAccessIterator<value_type> 			iterator;
+		typedef ft::RandomAccessIterator<const value_type>		const_iterator;
+		typedef ft::ReverseIterator<iterator> 					reverse_iterator;
+		typedef ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
 
 		////////////////////////
 		// ** contstructor ** //
@@ -90,22 +96,38 @@ class vector {
 
 		~vector() {
 			this->clear();
-			this->alloc.deallocate(first, SIZE);
+			_alloc.deallocate(first, _capacity);
 		}
 
 		vector& operator=(const vector& other) {
 			// Copy assignment operator. Replaces the contents with a copy of the contents of other.
-			this->...;
+			_alloc = other._alloc;
+			_start = _alloc.allocate(other._capacity);
+			for (int i = 0; i < other._count; i++)
+				_alloc.construct(_start + i, other._start + i);
+			_end = _start + other._count;
+			_count = other._count;
+			_capacity = other._capacity;
 		}
 
 		void assign(size_type count, const T& value) { // cppreference (1)
 			// Replaces the contents with count copies of value value
-			this->alloc.deallocate(this->start, this->)
+			this->clear();
+			if (count > _capacity)
+				this->getMoreCapacity(count);
+			for (int i = 0; i < count; i++)
+				_alloc.construct(_start + i, value);
 		}
 
 		template<class InputIt>
 		void assign(InputIt first, InputIt last) { // cppreference (2)
 			// Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argumnet is an iterator into *this.
+			this->clear();
+			difference_type size = last - first;
+			if (size > _capacity)
+				this->getMoreCapacity(size);
+			for (int i = 0; i < size; i++)
+				_alloc.construct(_start + i, *(first + i));
 		}
 
 		allocator_type get_allocator const {
@@ -119,22 +141,24 @@ class vector {
 		reference at(size_type pos) {
 			// Returns a reference to the element at specified location pos, with bounds checking.
 			// If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
-		
-			if (pos >= this->size)
-				throw std::out_of_range;
+			if (pos >= _size)
+				throw std::out_of_range();
 			return (V[pos]);
 		}
 
 		const_reference at(size_type pos) {
-
+			if (pos >= _size)
+				throw std::out_of_range();
+			return (V[pos]);
 		}
 
 		reference operator[](size_type pos) {
 			// Returns a reference to the element at specified location pos. No bounds checking is performed.
+			return (V[pos]);
 		}
 
 		const_reference operator[](size_type pos) const {
-
+			return (V[pos]);
 		}
 
 		reference front() {
@@ -163,11 +187,11 @@ class vector {
 
 		T* data() {
 			// Returns a pointer to the underlying array serving as element storage. 
-			
+			return (_start);
 		}
 
 		const T* data() const {
-
+			return (_start);
 		}
 
 		/////////////////////
@@ -198,20 +222,22 @@ class vector {
 			// Returns a reverse iterator to the first element of the reversed vector.
 			// It corresponds to the last element of the non-reversed vector.
 			// If the vector is empty, the returned iterator is equal to rend().
+			return (ReverseIterator(_end - 1));
 		}
 
 		const_reverse_iterator rbegin() const {
-
+			return (ReverseIterator(_end - 1));
 		}
 
 		reverse_iterator rend() {
 			// Returns a reverse iterator to the element following the last element of the reversed vector.
 			// It corresponds to the element preceding the first element of the non-reversed vector. 
 			// This element acts as a placeholder, attempting to access it results in undefined behavior.
+			return (ReverseIterator(_start - 1));
 		}
 
 		const_reverse_iterator rend() const {
-
+			return (ReverseIterator(_start - 1));
 		}
 
 		////////////////////
@@ -227,20 +253,32 @@ class vector {
 
 		size_type size() const {
 			// Returns the number of elements in container, i.e. std::distance(begin(), end()).
-			std::dista
+			return (_count);
 		}
 
 		size_type max_size() const {
 			// Returns the maximum number of elements the container is able to hold due to system or library implementation limitations
-
+			return (_alloc.max_size());
 		}
 
 		void reserve(size_type new_cap) {
-
+			if (new_cap <= _capacity)
+				return ;
+			if (new_cap > this->max_size())
+				throw std::length_error();
+	
+			pointer tmp = _alloc.allocate(new_cap);
+			for (int i = 0; i < _count; i++)
+				_alloc.construct(tmp + i, _start + i);
+			this->clean();
+			_alloc.deallocate(_start, _capacity);
+			_start = tmp;
+			_capacity = new_cap;
 		}
 
 		size_type capacity() const {
 			// Returns the number of elements that the container has currently allocated space for.
+			return (_capacity);
 		}
 
 		/////////////////////
@@ -249,7 +287,7 @@ class vector {
 
 		void clear() {
 			for (int i = 0; i < _size; i++)
-				_alloc.destroy(&V[i]);
+				_alloc.destroy(_start + i);
 			_size = 0;
 		}
 
@@ -286,33 +324,51 @@ class vector {
 		void push_back(const T& value) {
 			// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 			// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
-			if (_size == _capacity) {
-				this->resize(_capacity * 2);
-			}
+			if (_count == _capacity)
+				this->getMoreCapacity();
 			
-			V[_size++] = value;
-			this->_end = V + _size;
+			*(_start + _count++) = value;
+			_end++;
 		}
 
 		void pop_back() {
-
+			_alloc.destroy(_end-- - 1]);
+			_count--;
 		}
 
 		void resize(size_type count, T value = T()) {
 			pointer tmp = this->_alloc.allocate(count);
-			memcpy(tmp, this->_start, this->_count * sizeof(T));
-			for (pointer p = tmp + this->_count; p != tmp + count; p++)
-				*p = value;
+			for (int i = 0; i < _count; i++)
+				_alloc.construct(tmp + i, value);
 
-			for (pointer p = this->_start; p != this->_end; p++)
-				p.destroy();
-			this->_start.deallocate();
+			this->clean();
+			_alloc.deallocate(_start, _capacity);
 
 			this->_start = tmp;
 			this->_capacity = count;
 		}
 
-		void swap(vector & other)
+		void swap(vector& other) {
+			allocator_type	tmp = _alloc;
+			_alloc = other._alloc;
+			other._alloc = tmp;
+			
+			pointer	tmp = _start;
+			_start = other._start;
+			other._start = _start;
+
+			pointer tmp = _end;
+			_end = other._end;
+			other._end = _end;
+
+			size_type tmp = _count;
+			_count = other._count;
+			other._count = _count;
+
+			size_type tmp = _capacity;
+			_capacity = other._capacity;
+			other._capacity = _capacity;
+		}
 
 	};
 

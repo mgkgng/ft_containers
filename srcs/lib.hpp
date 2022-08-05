@@ -3,7 +3,7 @@
 #include <functional>
 #include <cstddef>
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 #include <string.h>
 
 namespace ft {
