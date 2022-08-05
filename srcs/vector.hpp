@@ -294,19 +294,44 @@ class vector {
 		// <insert>
 		// Causes reallocation if the new size() is greater than the old capacity(). 
 		// If the new size() is greater than capacity(), all iterators and references are invalidated.
-		// Otherwise, only the iterators and referecens before the insertion point remain valid.
+		// Otherwise, only the iterators and references before the insertion point remain valid.
 		// The past-the-end iterator is also invalidated.
 		iterator insert(iterator pos, const T& value) { // cppreference(1)
 			// inserts value before pos
+			if (_count == _capacity)
+				this->getMoreCapacity(_count + 1);
+			
+			for (pointer p = _end; p != pos; p--)
+				*p = *(p - 1);
+			*p = value;				 
+			_end++;
+			return (p);
 		}
 
 		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
 			// inserts count copies of the value before pos
+			if (_count + count > _capacity)
+				this->getMoreCapacity(_count + count);
+			
+			for (pointer p = _end + count; p != pos + count; p--)
+				*p = *(p - count);
+			while (p != pos - 1)
+				*(p--) = value;
+			_end += count;
 		}
 
 		template<class InputIt>
 		void insert(iterator pos, InputIt first, InputIt last) { // cppreference(4)
 			// inserts elements from range [first, last) before pos
+			difference_type size = last - first;
+			if (_count + size > _capacity)
+				this->getMoreCapacity(_count + size);
+
+			for (pointer p = _end + size; p != pos + size; p--)
+				*p = *(p - size);		
+			while (p != pos - 1)
+				*(p--) = *(last - 1);
+			_end += size;
 		}
 
 		// <erase>
@@ -315,10 +340,21 @@ class vector {
 		// The iterator first does not need to be dereferenceable if first==last: erasing an empty range is a no-op.
 		iterator erase(iterator pos) {
 			// Removes the element at pos
+			for (pointer p = pos; p != _end - 1; p++)
+				*p = *(p + 1);
+			_alloc.destroy(p);
+			_end--;
 		}
 
 		iterator erase(iterator first, iterator last) {
 			// Removes the elements in the range [first, last).
+			difference_type size = last - first;
+
+			for (point p = first; p != _end - size; p++)
+				*p = *(p + size);
+			while (p != _end)
+				_alloc.destroy(p++);
+			_end -= size;
 		}
 		
 		void push_back(const T& value) {
