@@ -1,3 +1,5 @@
+#pragma once
+
 #define NIL   NULL
 #define LEFT  0
 #define RIGHT 1
@@ -250,6 +252,6 @@ class RBtree {
 		RBtree() {
 			
 		}
-}
+};
 
-}
+};

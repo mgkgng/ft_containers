@@ -1,5 +1,10 @@
+#pragma once
+
+#include "lib.hpp"
+
 namespace ft {
 
+template<typename T>
 class BiDirectionalIterator {
 
 // 1. Usability
@@ -9,36 +14,36 @@ class BiDirectionalIterator {
 // 5. Decrementable
 // 6. Swappable
 
-	typedef T value_type;
-	typedef ptrdiff_t difference_type;
-	typedef T& reference;
-	typedef T* pointer;
+	typedef T 			value_type;
+	typedef ptrdiff_t	difference_type;
+	typedef T&			reference;
+	typedef T*			pointer;
 
 	private:
-		pointer ptr;
+		pointer _ptr;
 
 	public:
 		reference operator*() const {
-			return (*ptr);
+			return (*_ptr);
 		}
 
 		pointer operator->() {
-			return (ptr);
+			return (_ptr);
 		}
 
 		BiDirectionalIterator& operator++() {
-			ptr++;
+			_ptr++;
 			return (*this);
 		}
 
 		BiDirectionalIterator operator++(int) {
-			Iterator tmp = *this;
+			BiDirectionalIterator tmp = *this;
 			++(*this);
 			return (tmp);
 		}
 
 		BiDirectionalIterator& operator--() {
-			ptr--;
+			_ptr--;
 			return (*this);
 		}
 
@@ -49,18 +54,13 @@ class BiDirectionalIterator {
 		}
 
 		friend bool operator==(const BiDirectionalIterator& lhs, const BiDirectionalIterator& rhs) {
-			return (lhs.ptr == rhs.ptr);
+			return (lhs._ptr == rhs._ptr);
 		}
 
 		friend bool operator!=(const BiDirectionalIterator& lhs, const BiDirectionalIterator& rhs) {
-			return (lhs.ptr != rhs.ptr);
+			return (lhs._ptr != rhs._ptr);
 		}
 	
-   		BiDirectionalIterator operator+(difference_type n) const {
-        }
-
-        BiDirectionalIterator operator-(difference_type n) const {
-        }
 
 };
 };

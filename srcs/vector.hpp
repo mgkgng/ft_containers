@@ -1,7 +1,6 @@
-#include <cstddef>
-#include <iostream>
-#include <exception>
-#include <string.h>
+#pragma once
+
+#include "lib.hpp"
 
 namespace ft {
 

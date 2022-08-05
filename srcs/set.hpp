@@ -1,3 +1,6 @@
+#pragma once
+
+#include "lib.hpp"
 #include "BiDirectionalIterator.hpp"
 
 namespace ft {
