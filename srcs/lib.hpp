@@ -27,7 +27,7 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
 		first1++;
 		first2++;
 	}
-	return (first2 - first1 > 0) ? true : false;
+	return (*first2 - *first1 > 0) ? true : false;
 }
 
 template<class InputIt1, class InputIt2, class Compare>
@@ -72,4 +72,10 @@ template< bool B, class T = void >
 struct enable_if {
 	typedef T type;
 };
+
+template<class InputIt1, class InputIt2>
+bool greater(InputIt1 it1, InputIt2 it2) {
+	return (*it1 > *it2);
+}
+
 };

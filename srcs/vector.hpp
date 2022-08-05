@@ -405,42 +405,46 @@ class vector {
 			_capacity = other._capacity;
 			other._capacity = _capacity;
 		}
-
 	};
 
-		template<class T, class Alloc>
-		bool operator==(const ft::vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-
-		}
+	template<class T, class Alloc>
+	bool operator==(const ft::vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		if (lhs._count != rhs._count)
+			return (false);
+		for (int i = 0; i < _count; i++)
+			if (lhs._start + i != rhs._start + i)
+				return (false);
+		return (true);
+	}
 		
-		template<class T, class Alloc>
-		bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+	template<class T, class Alloc>
+	bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (!(lhs == rhs));
+	}
 
-		}
+	template<class T, class Alloc>
+	bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (ft::lexicographical_compare(lhs._start, lhs._end, rhs._start, rhs._end));
+	}
 
-		template<class T, class Alloc>
-		bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+	template<class T, class Alloc>
+	bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (ft::lexicographical_compare(lhs._start, lhs._end, rhs._start, rhs._end, ft::greater));
+	}
 
-		}
+	template<class T, class Alloc>
+	bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (!(lhs > rhs));
+	}
 
-		template<class T, class Alloc>
-		bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+	template<class T, class Alloc>
+	bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (!(lhs < rhs));
+	}
 
-		}
-
-		template<class T, class Alloc>
-		bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-
-		}
-
-		template<class T, class Alloc>
-		bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-
-		}
-
-		template<class T, class Alloc>
-		void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
-
-		}
+	template<class T, class Alloc>
+	void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
+		lhs.swap(rhs);
+	}
 		
 };
