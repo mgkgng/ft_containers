@@ -24,25 +24,19 @@ class RBnode {
 		//////////////////
 
 		RBnode	*getGP() {
-			if (_parent)
-				return (_parent->_parent);
-			return (NULL);
+			return (_parent) ? _parent->_parent : NULL;
 		}
 
 		RBnode	*getU() {
 			RBnode	*gp = getGP();
 			if (!gp)
 				return (NULL);
-			if (_parent == gp->_left)
-				return (gp->_right);
-			return (gp->_left);
+			return (_parent == gp->_left) ? gp->_right : gp->_left;
 		}
 
 		RBnode *getS()
 		{
-			if (this == _parent->_left)
-				return (_parent->_right);
-			return (_parent->_left);
+			return (this == _parent->_left) ? _parent->_right : _parent->_left;
 		}
 
 		//////////////////
@@ -161,10 +155,7 @@ class RBnode {
 			if (s->_color == RED) {
 				_parent->_color = RED;
 				s->_color = BLACK;
-				if (this == _parent->left)
-					_parent->rotateL();
-				else
-					_parent->rotateR();
+				(this == _parent->left) ? _parent->rotateL() : _parent->rotateR();
 			}
 			delete3();
 		}
