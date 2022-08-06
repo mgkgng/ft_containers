@@ -8,11 +8,19 @@
 
 namespace ft {
 
-struct RBnode {
-	RBnode	*parent;
-	RBnode	*child[2];
-	bool	red;
-	int		key;
+class RBnode {
+	public: 
+		RBnode	*parent;
+		RBnode	*child[2];
+		bool	red;
+		int		key;
+
+		RBnode(int key) {
+			this->red = true;
+			this->left = NIL;
+			this->right = NIL;
+			this->key = key;
+		}
 };
 
 class RBtree {
@@ -22,6 +30,20 @@ class RBtree {
 
 	public:
 		RBtree() : root(NIL) {}
+
+		///////////////////////////////
+		// ** principal functions ** //
+		///////////////////////////////
+
+		void add(RBnode* n) {
+			// allocate...
+			RBnode *pos = recursiveTreeSearch(_root, n->key);
+			pos->insert1(n);
+		}
+
+		void remove(RBnode *n) {
+			// deallocate...
+		}
 
 		//////////////////
 		// ** getter ** //
@@ -46,13 +68,11 @@ class RBtree {
 		//////////////////
 		// ** search ** //
 		//////////////////
+
 		RBnode *recursiveTreeSearch(RBnode *n, int key) {
-			if (!root || root->key ==  key)
-				return (root);
-			if (root->key < key)
-				return (recursiveTreeSearch(n->left, key));
-			else
-				return (recursiveTreeSearch(n->right,  key));
+			if (!n || n->key == key)
+				return (n);
+			return (n->key < key) ? (recursiveTreeSearch(n->left, key)) : (recursiveTreeSearch(n->right, key));
 		}
 
 		//////////////////
@@ -61,75 +81,73 @@ class RBtree {
 
 		void insert(RBnode *n) {
 			RBnode *pos = recursiveTreeSearch(this->root, n->key);
-			n->red = true;
-			n->left = NIL;
-			n->right = NIL;
-			n->parent = pos->p;
+
+			n->parent = pos->parent;
 			insert1(n);
 		}
 		void insert1(RBnode *n)
 		{
 			if (!n->parent) this->root = n;
-			else insert2();
+			else insert2(n);
 		}
 
 		void insert2(RBnode *n)
 		{
-    		if (!parent->red) return;
-			else insert3();
+    		if (!n->parent->red) return;
+			else insert3(n);
 		}
 
 		void insert3(RBnode *n)
 		{
-			RBnode *u = getU();
+			RBnode *u = getU(n);
 
 			if (u && u->red) {
-				parent->red = false;
+				n->parent->red = false;
 				u->red = false;
-				RBnode *gp = getGP();
+				RBnode *gp = getGP(n);
 				gp->red = true;
-				gp->insert1();
-			} else insert4();
+				insert1(gp);
+			} else insert4(n);
 		}
 
 		void insert4(RBnode *n)
 		{
-			RBnode	*gp = getGP();
+			RBnode	*gp = getGP(n);
 
-			if (this == parent->right && parent == gp->left) {
-				parent->rotateL();
-				this = left;
-			} else if (this == parent->left && parent == gp->right) {
-				parent->rotateR();
-				this = right;
+			if (n == n->parent->right && n->parent == gp->left) {
+				rotateL(n->parent);
+				n = n->left;
+			} else if (n == n->parent->left && n->parent == gp->right) {
+				rotateR(n->parent);
+				n = n->right;
 			}
-			insert5();
+			insert5(n);
 		}
 
 		void insert5(RBnode *n)
 		{
-			RBnode *gp = getGP();
+			RBnode *gp = getGP(n);
 
-			parent->red = false;
+			n->parent->red = false;
 			gp->red = true;
-			(this == parent->left) ? gp->rotateR() : gp->rotateL();
+			(n == n->parent->left) ? rotateR(gp) : rotateL(gp);
 		}
 
 		//////////////////
 		// ** rotate ** //
 		//////////////////
 
-		void rotateL()
+		void rotateL(RBnode *n)
 		{
-			RBnode	*c = right;
-			RBnode	*p = parent;
+			RBnode	*c = n->right;
+			RBnode	*p = n_>parent;
 
 			if (c->left)
-				c->left->parent = this;
+				c->left->parent = n;
 
-			right = c->left;
-			parent = c;
-			c->left = this;
+			n->right = c->left;
+			n->parent = c;
+			c->left = n;
 			c->parent = p;
 
 			if (p)
@@ -138,19 +156,19 @@ class RBtree {
 
 		void rotateR()
 		{
-			RBnode	*c = left;
-			RBnode	*p = parent;
+			RBnode	*c = n->left;
+			RBnode	*p = n->parent;
 
 			if (c->right)
-				c->right->parent = this;
+				c->right->parent = n;
 
-			left = c->right;
-			parent = c;
-			c->right = this;
+			n->left = c->right;
+			n->parent = c;
+			c->right = n;
 			c->parent = p;
 
 			if (p)
-				(p->right == this) ? p->right = c : p->left = c;
+				(p->right == n) ? p->right = c : p->left = c;
 		}
 
 		//////////////////
