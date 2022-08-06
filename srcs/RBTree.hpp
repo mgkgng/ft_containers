@@ -23,13 +23,15 @@ class RBnode {
 		}
 };
 
+template <>
 class RBtree {
 
 	private:
-		RBnode	*root;
+		RBnode	*_root;
+		Allocator	_alloc;
 
 	public:
-		RBtree() : root(NIL) {}
+		RBtree() : _root(NIL) {}
 
 		///////////////////////////////
 		// ** principal functions ** //
@@ -80,14 +82,14 @@ class RBtree {
 		//////////////////
 
 		void insert(RBnode *n) {
-			RBnode *pos = recursiveTreeSearch(this->root, n->key);
-
+			RBnode *pos = recursiveTreeSearch(this->_root, n->key);
 			n->parent = pos->parent;
 			insert1(n);
 		}
+
 		void insert1(RBnode *n)
 		{
-			if (!n->parent) this->root = n;
+			if (!n->parent) this->_root = n;
 			else insert2(n);
 		}
 
@@ -140,7 +142,7 @@ class RBtree {
 		void rotateL(RBnode *n)
 		{
 			RBnode	*c = n->right;
-			RBnode	*p = n_>parent;
+			RBnode	*p = n->parent;
 
 			if (c->left)
 				c->left->parent = n;
@@ -151,10 +153,10 @@ class RBtree {
 			c->parent = p;
 
 			if (p)
-				(p->left == this) ? p->left = c : p->right = c;
+				(p->left == n) ? p->left = c : p->right = c;
 		}
 
-		void rotateR()
+		void rotateR(RBnode *n)
 		{
 			RBnode	*c = n->left;
 			RBnode	*p = n->parent;
@@ -175,93 +177,94 @@ class RBtree {
 		// ** delete ** //
 		//////////////////
 
-		void delete_one_child()
+		void delete_one_child(RBnode *n)
 		{
-			RBnode *child = (right->isNil()) ? left: right;
+			RBnode *child = (this->isLeaf(n->right)) ? n->left : n->right;
 
-			replace(this, child);
-			if (!red) {
+			replace(n, child);
+			if (!n->red) {
 				if (child->red) child->red = false;
-				else child->delete1();
+				else delete1(child);
 			}
+			_alloc.deallocate(n);
 			//free(this);
 		}
 
-		void delete1()
+		void delete1(RBnode *n)
 		{
-			if (parent)
-				delete2();
+			if (n->parent)
+				delete2(n);
 		}
 
-		void delete2()
+		void delete2(RBnode *n)
 		{
-			RBnode *s = getS();
+			RBnode *s = getS(n);
 
 			if (s->red) {
-				parent->red = true;
+				n->parent->red = true;
 				s->red = false;
-				(this == parent->left) ? parent->rotateL() : parent->rotateR();
+				(n == n->parent->left) ? rotateL(n->parent) : rotateR(n->parent);
 			}
-			delete3();
+			delete3(n);
 		}
 
-		void delete3()
+		void delete3(RBnode *n)
 		{
-			RBnode *s = getS();
+			RBnode *s = getS(n);
 
-			if (!parent->red && !s->red
+			if (!n->parent->red && !s->red
 				&& !s->left->red && !s->right->red) {
 				s->red = true;
-				parent->delete1();
+				delete1(n->parent);
 			} else
-				delete4();
+				delete4(n);
 		}
 
-		void delete4()
+		void delete4(RBnode *n)
 		{
-			RBnode *s = getS();
+			RBnode *s = getS(n);
 
-			if (parent->red && !s->red
+			if (n->parent->red && !s->red
 				&& !s->left->red && !s->right->red) {
 				s->red = true;
-				parent->red = false;
+				n->parent->red = false;
 			} else
-				delete5();
+				delete5(n);
 		}
 
 		void delete5()
 		{
-			RBnode *s = getS();
+			RBnode *s = getS(n);
 
 			if  (!s->red) {
-				if (this == parent->left && !s->right->red
+				if (n == n->parent->left && !s->right->red
 					&& s->left->red) { /* this last test is trivial too due to cases 2-4. */
 					s->red = true;
 					s->left->red = false;
-					s->rotateR();
-				} else if (this == parent->right && !s->left->red
+					rotateR(s);
+				} else if (n == n->parent->right && !s->left->red
 					&& s->right->red) {/* this last test is trivial too due to cases 2-4. */
 					s->red = true;
 					s->right->red = false;
-					s->rotateL();
+					rotateL(s);
 				}
 			}
-			delete6();
+			delete6(n);
 		}
 
 		void delete6()
 		{
-			RBnode *s = getS();
+			RBnode *s = getS(n);
 
-			s->red = parent->red;
-			parent->red = false;
+			s->red = n->parent->red;
+			n->parent->red = false;
 
-			if (this == parent->left) {
+			if (n == n->parent->left) {
 				s->right->red = false;
-				parent->rotateL();
+				rotateL(n->parent);
 			} else {
 				s->left->red = false;
-				parent->rotateR();
+				rotateR(n->parent);
 			}
 		}
 
