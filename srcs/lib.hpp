@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <iostream>
 #include <stdexcept>
-#include <string.h>
 
 namespace ft {
 
@@ -64,10 +63,10 @@ struct iterator_traits {
 
 template<class T>
 struct iterator_traits<T*> {
-	typedef ptrdiff_t	difference_type;
-	typedef T			value_type
-	typedef pointer		const T*;
-	typedef reference	const T&;
+	typedef ptrdiff_t						difference_type;
+	typedef T								value_type
+	typedef pointer							const T*;
+	typedef reference						const T&;
 	typedef ft::random_access_iterator_tag	iterator_category;
 };
 

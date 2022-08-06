@@ -1,93 +1,118 @@
 #pragma once
 
-#define NIL   NULL
+#define NIL 0
 #define LEFT  0
 #define RIGHT 1
-#define _left  _child[LEFT]
-#define _right _child[RIGHT]
-
-enum Color {BLACK, RED};
+#define left  child[LEFT]
+#define right child[RIGHT]
 
 namespace ft {
 
-class RBnode {
+struct RBnode {
+	RBnode	*parent;
+	RBnode	*child[2];
+	bool	red;
+	int		key;
+};
+
+class RBtree {
+
 	private:
-		RBnode	*_parent;
-		RBnode	*_child[2]
-		Color	_color;
+		RBnode	*root;
 
 	public:
-		RBnode();
+		RBtree() : root(NIL) {}
 
 		//////////////////
 		// ** getter ** //
 		//////////////////
 
-		RBnode	*getGP() {
-			return (_parent) ? _parent->_parent : NULL;
+		RBnode	*getGP(RBnode *n) {
+			return (n && n->parent) ? n->parent->parent : 0;
 		}
 
-		RBnode	*getU() {
-			RBnode	*gp = getGP();
+		RBnode	*getU(RBnode *n) {
+			RBnode	*gp = getGP(n);
 			if (!gp)
-				return (NULL);
-			return (_parent == gp->_left) ? gp->_right : gp->_left;
+				return (0);
+			return (n->parent == gp->left) ? gp->right : gp->left;
 		}
 
-		RBnode *getS()
+		RBnode *getS(RBnode *n)
 		{
-			return (this == _parent->_left) ? _parent->_right : _parent->_left;
+			return (n == n->parent->left) ? n->parent->right : n->parent->left;
+		}
+
+		//////////////////
+		// ** search ** //
+		//////////////////
+		RBnode *recursiveTreeSearch(RBnode *n, int key) {
+			if (!root || root->key ==  key)
+				return (root);
+			if (root->key < key)
+				return (recursiveTreeSearch(n->left, key));
+			else
+				return (recursiveTreeSearch(n->right,  key));
 		}
 
 		//////////////////
 		// ** insert ** //
 		//////////////////
 
-		void insert1()
+		void insert(RBnode *n) {
+			RBnode *pos = recursiveTreeSearch(this->root, n->key);
+			n->red = true;
+			n->left = NIL;
+			n->right = NIL;
+			n->parent = pos->p;
+			insert1(n);
+		}
+		void insert1(RBnode *n)
 		{
-			(!_parent) ? _color = BLACK : insert2();
+			if (!n->parent) this->root = n;
+			else insert2();
 		}
 
-		void insert2()
+		void insert2(RBnode *n)
 		{
-    		(_parent->_color == BLACK) ? return ; : insert3();
+    		if (!parent->red) return;
+			else insert3();
 		}
 
-		void insert3()
+		void insert3(RBnode *n)
 		{
-			RBnode *u = getU(n);
+			RBnode *u = getU();
 
-			if (u && (u->_color == RED)) {
-				_parent->_color = BLACK;
-				u->_color = BLACK;
+			if (u && u->red) {
+				parent->red = false;
+				u->red = false;
 				RBnode *gp = getGP();
-				gp->_color = RED;
-				gp.insert1();
-			} else
-				insert4();
+				gp->red = true;
+				gp->insert1();
+			} else insert4();
 		}
 
-		void insert4()
+		void insert4(RBnode *n)
 		{
 			RBnode	*gp = getGP();
 
-			if ((this == _parent->_right) && (_parent == gp->_left)) {
-				_parent->rotateL();
-				this = _left;
-			} else if ((this == _parent->_left) && (_parent == gp->_right)) {
-				_parent->rotateR();
-				this = _right;
+			if (this == parent->right && parent == gp->left) {
+				parent->rotateL();
+				this = left;
+			} else if (this == parent->left && parent == gp->right) {
+				parent->rotateR();
+				this = right;
 			}
 			insert5();
 		}
 
-		void insert5()
+		void insert5(RBnode *n)
 		{
-			RBnode *gp = getGP;
+			RBnode *gp = getGP();
 
-			_parent->color = BLACK;
-			gp->color = RED;
-			(this == _parent->left) ? gp.rotateR() : gp.rotateL();
+			parent->red = false;
+			gp->red = true;
+			(this == parent->left) ? gp->rotateR() : gp->rotateL();
 		}
 
 		//////////////////
@@ -96,16 +121,16 @@ class RBnode {
 
 		void rotateL()
 		{
-			RBnode	*c = _right;
-			RBnode	*p = _parent;
+			RBnode	*c = right;
+			RBnode	*p = parent;
 
-			if (c->_left != NULL)
-				c->_left->_parent = this;
+			if (c->left)
+				c->left->parent = this;
 
-			_right = c->left;
-			_parent = c;
-			c->_left = this;
-			c->_parent = p;
+			right = c->left;
+			parent = c;
+			c->left = this;
+			c->parent = p;
 
 			if (p)
 				(p->left == this) ? p->left = c : p->right = c;
@@ -113,16 +138,16 @@ class RBnode {
 
 		void rotateR()
 		{
-			RBnode	*c = _left;
-			RBnode	*p = _parent;
+			RBnode	*c = left;
+			RBnode	*p = parent;
 
-			if (c->_right != NULL)
-				c->_right->_parent = this;
+			if (c->right)
+				c->right->parent = this;
 
-			_left = c->_right;
-			_parent = c;
-			c->_right = this;
-			c->_parent = p;
+			left = c->right;
+			parent = c;
+			c->right = this;
+			c->parent = p;
 
 			if (p)
 				(p->right == this) ? p->right = c : p->left = c;
@@ -134,17 +159,19 @@ class RBnode {
 
 		void delete_one_child()
 		{
-			RBnode *child = (_right == LEAF) ? _left: _right;
+			RBnode *child = (right->isNil()) ? left: right;
 
-			replace_node(child);
-			if (_color == BLACK)
-				(child->color == RED) ? child->color = BLACK : delete_case1(child);
-			free(this);
+			replace(this, child);
+			if (!red) {
+				if (child->red) child->red = false;
+				else child->delete1();
+			}
+			//free(this);
 		}
 
 		void delete1()
 		{
-			if (_parent)
+			if (parent)
 				delete2();
 		}
 
@@ -152,10 +179,10 @@ class RBnode {
 		{
 			RBnode *s = getS();
 
-			if (s->_color == RED) {
-				_parent->_color = RED;
-				s->_color = BLACK;
-				(this == _parent->left) ? _parent->rotateL() : _parent->rotateR();
+			if (s->red) {
+				parent->red = true;
+				s->red = false;
+				(this == parent->left) ? parent->rotateL() : parent->rotateR();
 			}
 			delete3();
 		}
@@ -164,22 +191,22 @@ class RBnode {
 		{
 			RBnode *s = getS();
 
-			if (_parent->_color == BLACK && s->_color == BLACK
-				&& s->_left->_color == BLACK && s->_right->_color == BLACK) {
-				s->_color = RED;
-				_parent->delete1();
+			if (!parent->red && !s->red
+				&& !s->left->red && !s->right->red) {
+				s->red = true;
+				parent->delete1();
 			} else
 				delete4();
 		}
 
-		void delete4(struct node *n)
+		void delete4()
 		{
-			RBnode *s = getS(n);
+			RBnode *s = getS();
 
-			if (_parent->_color == RED && s->_color == BLACK
-				&& s->_left->_color == BLACK && s->_right->_color == BLACK) {
-				s->_color = RED;
-				_parent->_color = BLACK;
+			if (parent->red && !s->red
+				&& !s->left->red && !s->right->red) {
+				s->red = true;
+				parent->red = false;
 			} else
 				delete5();
 		}
@@ -188,16 +215,16 @@ class RBnode {
 		{
 			RBnode *s = getS();
 
-			if  (s->_color == BLACK) {
-				if (this == _parent->_left && s->_right->_color == BLACK
-					&& s->_left->_color == RED) { /* this last test is trivial too due to cases 2-4. */
-					s->_color = RED;
-					s->_left->_color = BLACK;
+			if  (!s->red) {
+				if (this == parent->left && !s->right->red
+					&& s->left->red) { /* this last test is trivial too due to cases 2-4. */
+					s->red = true;
+					s->left->red = false;
 					s->rotateR();
-				} else if (this == _parent->_right && s->_left->_color == BLACK
-					&& s->_right->_color == RED) {/* this last test is trivial too due to cases 2-4. */
-					s->_color = RED;
-					s->_right->+color = BLACK;
+				} else if (this == parent->right && !s->left->red
+					&& s->right->red) {/* this last test is trivial too due to cases 2-4. */
+					s->red = true;
+					s->right->red = false;
 					s->rotateL();
 				}
 			}
@@ -208,15 +235,15 @@ class RBnode {
 		{
 			RBnode *s = getS();
 
-			s->_color = _parent->_color;
-			_parent->_color = BLACK;
+			s->red = parent->red;
+			parent->red = false;
 
-			if (this == _parent->_left) {
-				s->_right->_color = BLACK;
-				rotateL(_parent);
+			if (this == parent->left) {
+				s->right->red = false;
+				parent->rotateL();
 			} else {
-				s->_left->_color = BLACK;
-				rotateR(_parent);
+				s->left->red = false;
+				parent->rotateR();
 			}
 		}
 
@@ -226,21 +253,14 @@ class RBnode {
 
 		void replace(RBnode *n, RBnode *child)
 		{
-			child->_parent = n->_parent;
-			if (n->_parent->_left == n)
-				n->_parent->_left = child;
-			else if (n->_parent->_right == n)
-				n->_parent->_right = child;
+			child->parent = n->parent;
+			if (n->parent->left == n)
+				n->parent->left = child;
+			else if (n->parent->right == n)
+				n->parent->right = child;
 		}
-};
 
-class RBtree {
-
-	private:
-		RBnode	*root;
-
-	public:
-		RBtree() {
+		bool isLeaf(RBnode *n) {
 			
 		}
 };

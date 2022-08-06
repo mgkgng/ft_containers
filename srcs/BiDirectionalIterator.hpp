@@ -31,7 +31,7 @@ class BiDirectionalIterator {
 			return (_ptr);
 		}
 
-		BiDirectionalIterator& operator++() {
+		reference operator++() {
 			_ptr++;
 			return (*this);
 		}
@@ -58,9 +58,9 @@ class BiDirectionalIterator {
 		}
 
 		friend bool operator!=(const BiDirectionalIterator& lhs, const BiDirectionalIterator& rhs) {
-			return (lhs._ptr != rhs._ptr);
+			return (!(lhs._ptr == rhs._ptr));
 		}
 	
-
 };
+
 };
