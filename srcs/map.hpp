@@ -13,8 +13,9 @@ template<
 class map {
 
 	private:
-		RBtree	_tree;
-		size_type	_size;
+		RBtree<Key, T, Compare, Allocator>	_tree;
+		key_compare							_comp;
+		allocator_type						_alloc;
 
 	public:
 		typedef Key						key_type;
@@ -50,30 +51,34 @@ class map {
 				}
 		};
 
-		map() { // cppreference(1)
-			// Constructs an empty container
-		}
-
 		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
-			// Constructs an empty container
+			_comp = comp;
+			_alloc = alloc;
 		}
 
 		template<class InputIt>
 		map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) { // cppreference(4)
 			// Constructs the container with the contents of the range [first, last).
 			// If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
+			
 		}
 
 		map(const map& other) { // cppreference(6)
 			// Copy constructor.
+			*this = other;
 		}
 
 		~map() {
+			this->clear();
 
-		}		
+		}
 
 		map& operator=(const map& other) {
-
+			_tree = other._tree;
+			_size = other._size;
+			_comp = other._comp;
+			_alloc = other._alloc;
+			return (*this);
 		}
 
 		allocator_type get_allocator() const {
@@ -85,20 +90,20 @@ class map {
 		//////////////////////////
 
 		T& at(const Key& key) {
-
+			return ((this->find(key))->value);
 		}
 
 		const T& at(const Key& key) const {
-
+			return ((this->find(key))->value);
 		}
 
 		T& operator[](const Key& key) {
-
+			return ((this->find(key))->value);
 		}
 
 		/////////////////////
 		// ** Iterators ** //
-		/////////////////////		
+		/////////////////////
 
 		iterator begin() {
 			// Returns an iterator to the first element of the vector.
@@ -149,7 +154,7 @@ class map {
 		}
 
 		size_type size() const {
-			return (_size);
+			return (_tree->_size);
 		}
 
 		size_type max_size() const {
