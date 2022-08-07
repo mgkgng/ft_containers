@@ -70,7 +70,6 @@ class RBtree {
 			node_pointer n = _nodeAlloc.allocate(1);
 			this->initNode(n, v);
 			this->putNode(n, v);
-
 			insert1(n);
 		}
 
@@ -82,7 +81,7 @@ class RBtree {
 				if (child->red) child->red = false;
 				else delete1(child);
 			}
-			_nodeAlloc.destroy(n);
+			// _nodeAlloc.destroy(n); as i don't construct anything for now
 			_nodeAlloc.deallocate(n, 1);
 		}
 
@@ -114,7 +113,7 @@ class RBtree {
 		node_pointer recursiveTreeSearch(node_pointer n, Key &key) {
 			if (!n || n->v.first == key)
 				return (n);
-			return (n->v.first < key) ? (recursiveTreeSearch(n->left, key)) : (recursiveTreeSearch(n->right, key));
+			return (n->v.first < key) ? (this->recursiveTreeSearch(n->left, key)) : (this->recursiveTreeSearch(n->right, key));
 		}
 
 		template<typename Key>
@@ -122,27 +121,21 @@ class RBtree {
 			if (!n)
 				return (0);
 			if (n->v.first == key)
-				return (RBiter(n));
+				return (ft::RBiter(n));
 			if (_comp(n->key, key)) // less
-				return (searchKey(n->right, key));
+				return (this->searchKey(n->right, key));
 			else
-				return (searchKey(n->left, key));
+				return (this->searchKey(n->left, key));
 		}
 
 		//////////////////
 		// ** insert ** //
 		//////////////////
 
-		void insert(node_pointer n) {
-			_alloc.
-			n->parent = pos->parent;
-			insert1(n);
-		}
-
 		void insert1(node_pointer n)
 		{
 			if (!n->parent)
-				this->_root = n;
+				n->_red = false;
 			else
 				insert2(n);
 		}
@@ -337,11 +330,13 @@ class RBtree {
 		}
 
 		template<class Key>
-		void putNode(node_point n, Key &key) {
-						node_pointer pos = recursiveTreeSearch(this->_root, v.first);
-
+		void putNode(node_pointer n, Key &key) {
+			node_pointer pos = this->recursiveTreeSearch(this->_root, key);
+			if (pos) {
+				n->parent = pos->parent;
+				(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
+			}
 		}
-		
 		
 		void clear() {
 			

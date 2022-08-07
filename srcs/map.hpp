@@ -183,7 +183,7 @@ class map {
 		}
 
 		void erase(iterator pos) {
-
+			
 		}
 
 		void erase(iterator first, iterator last) {
