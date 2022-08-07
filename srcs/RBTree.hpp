@@ -1,50 +1,98 @@
 #pragma once
 
+#include "lib.hpp"
+#include "pair.hpp"
+
 #define NIL 0
 #define LEFT  0
 #define RIGHT 1
-#define left  child[LEFT]
-#define right child[RIGHT]
 
 namespace ft {
 
-class RBnode {
-	public: 
-		RBnode	*parent;
-		RBnode	*child[2];
-		bool	red;
-		int		key;
-
-		RBnode(int key) {
-			this->red = true;
-			this->left = NIL;
-			this->right = NIL;
-			this->key = key;
-		}
-};
-
-template <>
+template<
+	class Key,
+	class Value,
+	class Compare = std::less<Key>, 
+	class Allocator = std::allocator<ft::pair<const Key, Value> > 
+>
 class RBtree {
 
 	private:
-		RBnode	*_root;
-		Allocator	_alloc;
+		node_pointer	_root;
+		node_pointer	_start;
+		node_pointer	_end;
+		size_type		_size;
+		allocator_type	_alloc;
+		key_compare		_comp;
+
+		RBtree() {}
 
 	public:
-		RBtree() : _root(NIL) {}
+
+		///////////////////////////
+		// ** type definition ** //
+		///////////////////////////
+
+		typedef Key						key_type;
+		typedef Value					value_type;
+		typedef std::pair<const Key, T> pair_type;
+		typedef RBnode*					node_pointer;
+		typedef size_t					size_type;
+		typedef ptrdiff_t				difference_type;
+		typedef Compare					key_compare;
+		typedef Allocator				allocator_type;
+		typedef value_type&				reference;
+		typedef const value_type&		const_reference;
+		typedef Allocator::pointer			pointer;
+		typedef Allocator::const_pointer	const_pointer;
+		typedef ft::RBiter<pair_type>	iterator;
+		typedef ft::RBiter<pair_type>	
+
+		///////////////////////////
+		// ** Node structure ** //
+		///////////////////////////
+
+		struct RBnode {
+				RBnode		*parent;
+				RBnode		*left;
+				RBnode		*right;
+				bool		red;
+				pair_type	v;
+
+				RBnode(pair_type p) : v(p), parent(0), left(0), right(0) {}
+
+		};
+
+		////////////////////////
+		// ** Constructors ** //
+		////////////////////////
+
+		RBtree() {
+			_root = 0;
+			_start = _alloc.allocate(1);
+			_end = _start;
+		}
 
 		///////////////////////////////
 		// ** principal functions ** //
 		///////////////////////////////
 
-		void add(RBnode* n) {
-			// allocate...
-			RBnode *pos = recursiveTreeSearch(_root, n->key);
-			pos->insert1(n);
+		void add(ft::pair<Key, Value> value) {
+			RBnode* n = _alloc.allocate(1);
+			_alloc.construct(n, value);
+			insert1(n);
 		}
 
 		void remove(RBnode *n) {
-			// deallocate...
+			RBnode *child = (this->isLeaf(n->right)) ? n->left : n->right;
+
+			this->replace(n, child);
+			if (!n->red) {
+				if (child->red) child->red = false;
+				else delete1(child);
+			}
+			_alloc.destroy(n);
+			_alloc.deallocate(n);
 		}
 
 		//////////////////
@@ -83,6 +131,7 @@ class RBtree {
 
 		void insert(RBnode *n) {
 			RBnode *pos = recursiveTreeSearch(this->_root, n->key);
+			_alloc.
 			n->parent = pos->parent;
 			insert1(n);
 		}
@@ -177,19 +226,6 @@ class RBtree {
 		// ** delete ** //
 		//////////////////
 
-		void delete_one_child(RBnode *n)
-		{
-			RBnode *child = (this->isLeaf(n->right)) ? n->left : n->right;
-
-			replace(n, child);
-			if (!n->red) {
-				if (child->red) child->red = false;
-				else delete1(child);
-			}
-			_alloc.deallocate(n);
-			//free(this);
-		}
-
 		void delete1(RBnode *n)
 		{
 			if (n->parent)
@@ -232,18 +268,18 @@ class RBtree {
 				delete5(n);
 		}
 
-		void delete5()
+		void delete5(RBnode *n)
 		{
 			RBnode *s = getS(n);
 
 			if  (!s->red) {
 				if (n == n->parent->left && !s->right->red
-					&& s->left->red) { /* this last test is trivial too due to cases 2-4. */
+					&& s->left->red) {
 					s->red = true;
 					s->left->red = false;
 					rotateR(s);
 				} else if (n == n->parent->right && !s->left->red
-					&& s->right->red) {/* this last test is trivial too due to cases 2-4. */
+					&& s->right->red) {
 					s->red = true;
 					s->right->red = false;
 					rotateL(s);
@@ -252,7 +288,7 @@ class RBtree {
 			delete6(n);
 		}
 
-		void delete6()
+		void delete6(RBnode *n)
 		{
 			RBnode *s = getS(n);
 
@@ -283,6 +319,92 @@ class RBtree {
 
 		bool isLeaf(RBnode *n) {
 			
+		}
+
+};
+
+template <class T>
+class RBiter {
+	private:
+		RBnode *_node;
+
+		void increment() {
+			if (_node->right) {
+				Node *tmp = _node->right;
+				while (tmp->left)
+					tmp = tmp->left;
+				_node = tmp;
+			} else {
+				Node* tmp = _node->parent;
+				if (tmp->right = _node) {
+					while (_node == tmp->right) {
+						_node = tmp;
+						tmp = tmp->parent;
+					}
+				}
+				if (_node->right != tmp)
+					_node = tmp;
+			}
+		}
+
+		void decrement() {
+			if (_node->parent->parent = _node && _node->_red)
+				_node = _node->left;
+			else if (_node->left) {
+				while (_node->right)
+					_node = _node->right;
+			} else {
+				Node* parent = _node->parent;
+				while (parent->left == _node) {
+					_node = parent;
+					parent = parent->parent;
+				}
+				_node = parent;
+			}
+		}
+
+	public:
+		typedef RBtree<T> Node;
+		typedef RBiter<T> Iter;
+
+		RBiter(RBnode* n = 0) : _node(n) {} 
+
+		T& operator*() {
+			return (_node->v);
+		}
+
+		T* operator->() {
+			return (_node);
+		}
+
+		Iter& operator++() {
+			this->increment();
+			return (*this);
+		}
+
+		Iter& operator++(int) {
+			Iter tmp = this;
+			this->increment();
+			return (tmp);
+		}
+
+		Iter& operator--() {
+			this->decrement();
+			return (*this);
+		}
+
+		Iter& operator--(int) {
+			Iter tmp = this;
+			this->decrement();
+			return (tmp);
+		}
+
+		bool operator==(const Iter& s) {
+			return (_node == s._node);
+		}
+
+		bool operator!=(const Iter& s) {
+			return (_node != s._node);
 		}
 };
 

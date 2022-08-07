@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lib.hpp"
 #include "RBTree.hpp"
 
 namespace ft {
@@ -9,30 +8,29 @@ template<
     class Key,
     class T,
     class Compare = std::less<Key>,
-    class Allocator = std::allocator<std::pair<const Key, T> >
+    class Allocator = std::allocator<ft::pair<const Key, T> >
 >
 class map {
 
 	private:
-		RB
+		RBtree	tree;
 
 	public:
-		typedef Key	key_type;
-		typedef T	mapped_type;
+		typedef Key						key_type;
+		typedef T						mapped_type;
 		typedef std::pair<const Key, T> value_type;
-		typedef size_t	size_type;
-		typedef ptrdiff_t	difference_type;
-		typedef Compare	key_compare;
-		typedef Allocator	allocator_type;
-		typedef value_type&	reference;
-		typedef const value_type&	const_reference;
-		typedef Allocator::pointer	pointer;
+		typedef size_t					size_type;
+		typedef ptrdiff_t				difference_type;
+		typedef Compare					key_compare;
+		typedef Allocator				allocator_type;
+		typedef value_type&				reference;
+		typedef const value_type&		const_reference;
+		typedef Allocator::pointer		pointer;
 		typedef Allocator::const_pointer	const_pointer;
 		typedef ft::BiDirectionalIterator<value_type>	iterator;
 		typedef ft::BiDirectionalIterator<const value_type>	const_iterator;
 		typedef ft::reverse_iterator<iterator>	reverse_iterator;
 		typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
-
 
 		class value_compare {
 			typedef bool		result_type;
