@@ -46,7 +46,6 @@ class RBtree {
 		typedef Allocator::pointer			pointer;
 		typedef Allocator::const_pointer	const_pointer;
 		typedef ft::RBiter<pair_type>	iterator;
-		typedef ft::RBiter<pair_type>	
 
 		///////////////////////////
 		// ** Node structure ** //
@@ -119,10 +118,21 @@ class RBtree {
 		// ** search ** //
 		//////////////////
 
-		RBnode *recursiveTreeSearch(RBnode *n, int key) {
+		RBnode *recursiveTreeSearch(RBnode *n, key_type key) {
 			if (!n || n->key == key)
 				return (n);
 			return (n->key < key) ? (recursiveTreeSearch(n->left, key)) : (recursiveTreeSearch(n->right, key));
+		}
+
+		iterator searchKey(RBnode *n, key_type key) {
+			if (!n)
+				return (0);
+			if (n->key == key)
+				return (ft::RBiter(n));
+			if (comp(n->key, key)) // less
+				return (searchKey(n->right, key));
+			else
+				return (searchKey(n->left, key));
 		}
 
 		//////////////////
@@ -318,6 +328,10 @@ class RBtree {
 		}
 
 		bool isLeaf(RBnode *n) {
+			
+		}
+		
+		void clear() {
 			
 		}
 

@@ -13,7 +13,8 @@ template<
 class map {
 
 	private:
-		RBtree	tree;
+		RBtree	_tree;
+		size_type	_size;
 
 	public:
 		typedef Key						key_type;
@@ -148,7 +149,7 @@ class map {
 		}
 
 		size_type size() const {
-			return (end() - begin());
+			return (_size);
 		}
 
 		size_type max_size() const {
@@ -197,15 +198,17 @@ class map {
 		//////////////////
 
 		size_type count(const Key& key) const {
-
+			return (_tree->searchKey(_tree._root, key)) ? 1 : 0;
 		}
 
 		iterator find(const Key& key) {
-
+			iterator res = _tree->searchKey(_tree._root, key);
+			return (res) ? res : this->end();
 		}
 
 		const_iterator find(const Key& key) const {
-
+			iterator res = _tree->searchKey(_tree._root, key);
+			return (res) ? res : this->end();
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key& key) {
