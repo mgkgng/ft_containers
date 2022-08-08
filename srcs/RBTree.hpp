@@ -56,11 +56,15 @@ class RBtree {
 		// ** principal functions ** //
 		///////////////////////////////
 
-		void add(Value &v) {
+		bool add(Value &v) {
+			node_pointer n = this->recursiveTreeSearch(v.first);
+			if (n)
+				return (false);
 			node_pointer n = _nodeAlloc.allocate(1);
 			this->initNode(n, v);
 			this->putNode(n, v);
 			insert1(n);
+			return (true);
 		}
 
 		template<class Key>
@@ -116,7 +120,7 @@ class RBtree {
 			if (!n)
 				return (0);
 			if (n->v.first == key)
-				return (ft::RBiter(n));
+				return (iterator(n));
 			if (_comp(n->key, key)) // less
 				return (this->searchKey(n->right, key));
 			else
@@ -333,10 +337,33 @@ class RBtree {
 			}
 		}
 		
-		void clear() {
-			
+		void eraseAll() {
+			node_pointer n = this->begin();
+			while (n) {
+				node_pointer next = n + 1;
+				_nodeAlloc.deallocate(n, 1);
+				n = next;
+				//* or could it work like this too? -> _nodeAlloc.dealloc(n++, 1);
+			}
 		}
 
+		void swap(RBtree &other) {
+			node_pointer tmp = _root;
+			_root = other._root;
+			other._root = tmp;
+
+			size_type tmp = _size;
+			_size = other._size;
+			other._size = tmp;
+
+			std::allocator<node> tmp = _nodeAlloc;
+			_nodeAlloc = other._nodeAlloc;
+			other._nodeAlloc = tmp;
+
+			value_compare tmp = _comp;
+			_comp = other._comp;
+			other._comp = tmp;
+		}
 };
 
 };

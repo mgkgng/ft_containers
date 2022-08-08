@@ -124,11 +124,11 @@ class map {
 		iterator end() {
 			// Returns an iterator to the element following the last element of the vector.
 			// This element acts as a placeholder; attempting to access it results in undefined behavior.
-			return (_end);
+			return (0);
 		}
 
 		const_iterator end() const {
-			return (_end);
+			return (0);
 		}
 
 		reverse_iterator rbegin() {
@@ -172,7 +172,7 @@ class map {
 		////////////////////
 
 		void clear() {
-
+			_tree.eraseAll();
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
@@ -203,7 +203,7 @@ class map {
 		}
 
 		void swap(map &other) {
-
+			_tree.swap(other);
 		}
 
 		//////////////////
@@ -211,16 +211,16 @@ class map {
 		//////////////////
 
 		size_type count(const Key& key) const {
-			return (_tree->searchKey(_tree._root, key)) ? 1 : 0;
+			return (_tree.searchKey(_tree._root, key)) ? 1 : 0;
 		}
 
 		iterator find(const Key& key) {
-			iterator res = _tree->searchKey(_tree._root, key);
+			iterator res = _tree.searchKey(_tree._root, key);
 			return (res) ? res : this->end();
 		}
 
 		const_iterator find(const Key& key) const {
-			iterator res = _tree->searchKey(_tree._root, key);
+			iterator res = _tree.searchKey(_tree._root, key);
 			return (res) ? res : this->end();
 		}
 
@@ -256,7 +256,7 @@ class map {
 
 		}
 
-		value_comapre value_comp() const {
+		value_compare value_comp() const {
 
 		}
 };
