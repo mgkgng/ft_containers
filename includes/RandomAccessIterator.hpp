@@ -5,9 +5,13 @@
 namespace ft {
 
 template <class T>
-class RandomAccessIterator : public ft::BiDirectionalIterator {
+class RandomAccessIterator {
 
 	public:
+		typedef T			value_type;
+		typedef ptrdiff_t	difference_type;
+		typedef T&			reference;
+		typedef T*			pointer;
 		
 		RandomAccessIterator() {
 			_ptr = NULL;
@@ -20,11 +24,11 @@ class RandomAccessIterator : public ft::BiDirectionalIterator {
 		~RandomAccessIterator() {}
 
    		RandomAccessIterator operator+(difference_type n) const {
-			return (RandomAccessIterator(_ptr + n))
+			return (RandomAccessIterator(_ptr + n));
 		}
 
         RandomAccessIterator operator-(difference_type n) const {
-        	return (RandomAccessIterator(_ptr - n))
+        	return (RandomAccessIterator(_ptr - n));
 
 		}
 	
@@ -41,6 +45,10 @@ class RandomAccessIterator : public ft::BiDirectionalIterator {
 		reference operator[](difference_type n) const {
 			return _ptr[n];
 		}
+
+	private:
+		pointer _ptr;
+
 
 };
 

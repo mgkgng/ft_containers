@@ -4,84 +4,79 @@
 
 namespace ft {
 
-template< class Iter >
+template<typename Iter>
 class ReverseIterator {
 
-	private:
-		pointer _ptr;
+	protected:
+		typedef ft::iterator_traits<Iter>		traits_type;
 
 	public:
-		typedef Iter											iterator_type;
-		typedef typename ft::iterator_traits<Iter>::iterator_category	iterator_category;
-		typedef typename ft::iterator_traits<Iter>::value_type			value_type;
-		typedef typename ft::iterator_traits<Iter>::difference_type		difference_type;
-		typedef typename ft::iterator_traits<Iter>::pointer				pointer;
-		typedef typename ft::iterator_traits<Iter>::reference			reference;
+		typedef Iter									iterator_type;
+		typedef typename traits_type::difference_type	difference_type;
+		typedef typename traits_type::pointer			pointer;
+		typedef typename traits_type::reference			reference;
 
-		ReverseIterator() {
+		ReverseIterator() : _it() {}
 
-		}
-
-		explicit ReverseIterator(iterator_type x) {
-
-		}
+		explicit ReverseIterator(iterator_type x) : _it(x) {}
 
 		template <class U>
 		ReverseIterator(const ReverseIterator<U>& other) {
-
+			*this = other;
 		}
 
 		template<class U>
 		ReverseIterator& operator=(const ReverseIterator<U>& other) {
-			_ptr = other._ptr;
+			_it = other._it;
+			return (*this);
 		}
 
 		iterator_type base() const {
 			// Returns the underlying base iterator.
 			// The base iterator referes to the element that is next to the element the reverse_iterator is currently pointing to.
-			return (_ptr);
+			return (_it);
 		}
 
 		reference operator*() const {
-			return (*_ptr);
+			return (*_it);
 		}
 
 		pointer operator->() {
-			return (_ptr);
+			return (_it);
 		}
 
 		ReverseIterator& operator++() {
-			_ptr++;
+			_it--;
 			return (*this);
 		}
 
 		ReverseIterator operator++(int) {
 			ReverseIterator tmp = *this;
-			++(*this);
+			--(*this);
 			return (tmp);
 		}
 
 		ReverseIterator& operator--() {
-			_ptr--;
+			_it++;
 			return (*this);
 		}
 
 		ReverseIterator operator--(int) {
 			ReverseIterator tmp = *this;
-			--(*this);
+			++(*this);
 			return (tmp);
 		}
 
 		friend bool operator==(const ReverseIterator& lhs, const ReverseIterator& rhs) {
-			return (lhs._ptr == rhs._ptr);
+			return (lhs._it == rhs._it);
 		}
 
 		friend bool operator!=(const ReverseIterator& lhs, const ReverseIterator& rhs) {
-			return (lhs._ptr != rhs._ptr);
+			return (lhs._it != rhs._it);
 		}
 	
-
-
+	private:
+		iterator_type _it;
 };
 
 };

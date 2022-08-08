@@ -18,7 +18,7 @@ struct Buffer
 #define COUNT (MAX_RAM / (int)sizeof(Buffer))
 
 int main(int argc, char** argv) {
-	if (argc != 2)
+	/*if (argc != 2)
 	{
 		std::cerr << "Usage: ./test seed" << std::endl;
 		std::cerr << "Provide a seed please" << std::endl;
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 
 	{
 		ft::map<int, int> copy = map_int;
-	}
+	}*/
 
 	return (0);
 }

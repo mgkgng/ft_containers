@@ -4,27 +4,20 @@ namespace ft {
 
 template<typename T1, typename T2>
 class pair {
-	typedef T1	first_type;
-	typedef T2	second_type;
 
-	private:
+	public:
+		typedef T1	first_type;
+		typedef T2	second_type;
+
 		T1	first;
 		T2	second;
 
-	public:
-		pair() {}
+		pair() : first(first_type()), second(second_type()) {}
 
 		pair(const T1& x, const T2& y) : first(x), second(y) {}
 
 		template<class U1, class U2>
-		pair(const pair<U1, U2>& p) {
-			first = p.first;
-			second = p.second;
-		}
-
-		pair(const pair &p) {
-			*this = p;
-		}
+		pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
 
 		pair& operator=(const pair& other) {
 			first = other.first;

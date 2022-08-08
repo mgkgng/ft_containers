@@ -22,10 +22,10 @@ class vector {
 		typedef const value_type&								const_reference;
 		typedef typename Allocator::pointer 								pointer;
 		typedef typename Allocator::const_pointer 						const_pointer;
-		typedef typename ft::RandomAccessIterator<value_type> 			iterator;
-		typedef typename ft::RandomAccessIterator<const value_type>		const_iterator;
-		typedef typename ft::ReverseIterator<iterator> 					reverse_iterator;
-		typedef typename ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
+		typedef typename ft::RandomAccessIterator<T> 			iterator;
+		typedef typename ft::RandomAccessIterator<const T>		const_iterator;
+		typedef ft::ReverseIterator<iterator> 					reverse_iterator;
+		typedef ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
 
 		////////////////////////
 		// ** contstructor ** //
@@ -82,7 +82,7 @@ class vector {
 
 		~vector() {
 			this->clear();
-			_alloc.deallocate(first, _capacity);
+			_alloc.deallocate(_start, _capacity);
 		}
 
 		vector& operator=(const vector& other) {
@@ -94,6 +94,7 @@ class vector {
 			_end = _start + other._size;
 			_size = other._size;
 			_capacity = other._capacity;
+			return (*this);
 		}
 
 		void assign(size_type count, const T& value) { // cppreference (1)
@@ -116,8 +117,8 @@ class vector {
 				_alloc.construct(_start + i, *(first + i));
 		}
 
-		allocator_type get_allocator const {
-			return (this->alloc);
+		allocator_type get_allocator() const {
+			return (_alloc);
 		}
 
 		//////////////////////////
@@ -128,33 +129,33 @@ class vector {
 			// Returns a reference to the element at specified location pos, with bounds checking.
 			// If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
 			if (pos >= _size)
-				throw std::out_of_range();
-			return (V[pos]);
+				throw std::out_of_range("vector error: out of range");
+			return (*(_start + pos));
 		}
 
-		const_reference at(size_type pos) {
+		const_reference at(size_type pos) const {
 			if (pos >= _size)
-				throw std::out_of_range();
-			return (V[pos]);
+				throw std::out_of_range("vector error: out of range");
+			return (*(_start + pos));
 		}
 
 		reference operator[](size_type pos) {
 			// Returns a reference to the element at specified location pos. No bounds checking is performed.
-			return (V[pos]);
+			return (*(_start + pos));
 		}
 
 		const_reference operator[](size_type pos) const {
-			return (V[pos]);
+			return (*(_start + pos));
 		}
 
 		reference front() {
 			// Returns a reference to the first element in the container.
 			// Calling front on an empty container is undefined.
-			return (*V);
+			return (*_start);
 		}
 
 		const_reference front() const {
-			return (*V);
+			return (*_start);
 		}
 
 		reference back() {
@@ -162,13 +163,13 @@ class vector {
 			// Calling back on an empty container is undefined.
 			if (!_size)
 				return ;
-			return (V[_size - 1]);
+			return (*(_end - 1));
 		}
 
 		const_reference back() const {
 			if (!_size)
 				return ;
-			return (V[_size - 1]);
+			return (*(_end - 1));
 		}
 
 		T* data() {
@@ -208,22 +209,22 @@ class vector {
 			// Returns a reverse iterator to the first element of the reversed vector.
 			// It corresponds to the last element of the non-reversed vector.
 			// If the vector is empty, the returned iterator is equal to rend().
-			return (ReverseIterator(_end - 1));
+			return (reverse_iterator(this->end()));
 		}
 
 		const_reverse_iterator rbegin() const {
-			return (ReverseIterator(_end - 1));
+			return (const_reverse_iterator(this->end()));
 		}
 
 		reverse_iterator rend() {
 			// Returns a reverse iterator to the element following the last element of the reversed vector.
 			// It corresponds to the element preceding the first element of the non-reversed vector. 
 			// This element acts as a placeholder, attempting to access it results in undefined behavior.
-			return (ReverseIterator(_start - 1));
+			return (reverse_iterator(this->start()));
 		}
 
 		const_reverse_iterator rend() const {
-			return (ReverseIterator(_start - 1));
+			return (const_reverse_iterator(_start - 1));
 		}
 
 		////////////////////
@@ -251,12 +252,12 @@ class vector {
 			if (new_cap <= _capacity)
 				return ;
 			if (new_cap > this->max_size())
-				throw std::length_error();
+				throw std::length_error("vector error: length");
 	
 			pointer tmp = _alloc.allocate(new_cap);
 			for (int i = 0; i < _size; i++)
 				_alloc.construct(tmp + i, _start + i);
-			this->clean();
+			this->clear();
 			_alloc.deallocate(_start, _capacity);
 			_start = tmp;
 			_capacity = new_cap;
@@ -287,7 +288,8 @@ class vector {
 			if (_size == _capacity)
 				this->getMoreCapacity(_size + 1);
 			
-			for (pointer p = _end; p != pos; p--)
+			pointer p;
+			for (p = _end; p != pos; p--)
 				*p = *(p - 1);
 			*p = value;				 
 			_end++;
@@ -299,7 +301,8 @@ class vector {
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
 			
-			for (pointer p = _end + count; p != pos + count; p--)
+			pointer p;
+			for (p = _end + count; p != pos + count; p--)
 				*p = *(p - count);
 			while (p != pos - 1)
 				*(p--) = value;
@@ -313,7 +316,8 @@ class vector {
 			if (_size + size > _capacity)
 				this->getMoreCapacity(_size + size);
 
-			for (pointer p = _end + size; p != pos + size; p--)
+			pointer p;
+			for (p = _end + size; p != pos + size; p--)
 				*p = *(p - size);		
 			while (p != pos - 1)
 				*(p--) = *(last - 1);
@@ -326,7 +330,8 @@ class vector {
 		// The iterator first does not need to be dereferenceable if first==last: erasing an empty range is a no-op.
 		iterator erase(iterator pos) {
 			// Removes the element at pos
-			for (pointer p = pos; p != _end - 1; p++)
+			pointer p;
+			for (p = pos; p != _end - 1; p++)
 				*p = *(p + 1);
 			_alloc.destroy(p);
 			_end--;
@@ -336,7 +341,8 @@ class vector {
 			// Removes the elements in the range [first, last).
 			difference_type size = last - first;
 
-			for (point p = first; p != _end - size; p++)
+			pointer p;
+			for (p = first; p != _end - size; p++)
 				*p = *(p + size);
 			while (p != _end)
 				_alloc.destroy(p++);
@@ -347,14 +353,14 @@ class vector {
 			// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 			// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
 			if (_size == _capacity)
-				this->getMoreCapacity();
+				this->getMoreCapacity(_size + 1);
 			
 			*(_start + _size++) = value;
 			_end++;
 		}
 
 		void pop_back() {
-			_alloc.destroy(_end-- - 1]);
+			_alloc.destroy(_end-- - 1);
 			_size--;
 		}
 
@@ -363,7 +369,7 @@ class vector {
 			for (int i = 0; i < _size; i++)
 				_alloc.construct(tmp + i, value);
 
-			this->clean();
+			this->clear();
 			_alloc.deallocate(_start, _capacity);
 
 			this->_start = tmp;
@@ -375,21 +381,21 @@ class vector {
 			_alloc = other._alloc;
 			other._alloc = tmp;
 			
-			pointer	tmp = _start;
+			pointer	tmp2 = _start;
 			_start = other._start;
-			other._start = _start;
+			other._start = tmp2;
 
-			pointer tmp = _end;
+			pointer tmp3 = _end;
 			_end = other._end;
-			other._end = _end;
+			other._end = tmp3;
 
-			size_type tmp = _size;
+			size_type tmp4 = _size;
 			_size = other._size;
-			other._size = _size;
+			other._size = tmp4;
 
-			size_type tmp = _capacity;
+			size_type tmp5 = _capacity;
 			_capacity = other._capacity;
-			other._capacity = _capacity;
+			other._capacity = tmp5;
 		}
 
 	protected:
@@ -399,7 +405,6 @@ class vector {
 		}
 
 	private:
-		T				*V;
 		allocator_type	_alloc; // allocator to use for all memory allocations of this container
 		pointer			_start; // the starting address of the container
 		pointer			_end; // the ending address of the container

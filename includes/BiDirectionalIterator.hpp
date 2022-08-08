@@ -51,7 +51,6 @@ class BiDirectionalIterator {
 			return (!(lhs._ptr == rhs._ptr));
 		}
 
-
 	private:
 		pointer _ptr;
 };

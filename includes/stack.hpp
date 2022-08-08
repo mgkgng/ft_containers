@@ -8,18 +8,18 @@ template<class T, class Container = ft::vector<T> >
 class stack {
 		
 	typedef Container container_type;
-	typedef Container::value_type value_type;
-	typedef Container::size_type size_type;
-	typedef Container::reference reference;
-	typedef Container::const_reference const_reference;
+	typedef typename Container::value_type value_type;
+	typedef typename Container::size_type size_type;
+	typedef typename Container::reference reference;
+	typedef typename Container::const_reference const_reference;
 
 	private:
 		Container c;
 
 	public:
-		explicit stack(const Container& cont = Container()) {
-			this->c = cont;
-		}
+		stack() : c(Container()) {}
+
+		explicit stack(const Container& cont = Container()) : c(cont) {}
 
 		stack(const stack& other) {
 			*this = other;
@@ -36,7 +36,7 @@ class stack {
 			return (c.back());
 		}
 
-		const_reference top() {
+		const_reference top() const {
 			return (c.back());
 		}
 
