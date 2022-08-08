@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RBTree.hpp"
+#include "ReverseIterator.hpp"
 
 namespace ft {
 
@@ -33,8 +34,8 @@ class map {
 		typedef Allocator::const_pointer	const_pointer;
 		typedef ft::RBiter<value_type>			iterator;
 		typedef ft::RBiter<const value_type>	const_iterator;
-		typedef ft::reverse_iterator<iterator>	reverse_iterator;
-		typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef ft::ReverseIterator<iterator>	reverse_iterator;
+		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
 		typedef RBnode<value_type>*		node_pointer;
 
@@ -114,16 +115,15 @@ class map {
 		iterator begin() {
 			// Returns an iterator to the first element of the vector.
 			// If the vector is empty, the returned iterator will be equal to end().
-
-			node_pointer l = _root;
+			node_pointer l = _tree._root;
 	
 			while (l && l->_left)
 				l = l->_left;
-			return iterator(l);
+			return (iterator(l));
 		}
 
 		const_iterator begin() const {
-			return (begin());
+			return (this->begin());
 		}
 
 		iterator end() {
@@ -140,6 +140,11 @@ class map {
 			// Returns a reverse iterator to the first element of the reversed vector.
 			// It corresponds to the last element of the non-reversed vector.
 			// If the vector is empty, the returned iterator is equal to rend().
+			node_pointer r = _tree._root;
+	
+			while (r && r->_right)
+				r = r->_left;
+			return (reverse_iterator(r));
 		}
 
 		const_reverse_iterator rbegin() const {
@@ -150,10 +155,12 @@ class map {
 			// Returns a reverse iterator to the element following the last element of the reversed vector.
 			// It corresponds to the element preceding the first element of the non-reversed vector. 
 			// This element acts as a placeholder, attempting to access it results in undefined behavior.
+			return (0);
 		}
 
-		const_reverse_iterator rend() const {
 
+		const_reverse_iterator rend() const {
+			return (0);
 		}
 
 		////////////////////
@@ -224,6 +231,9 @@ class map {
 			allocator_type tmp = _alloc;
 			_alloc = other._alloc;
 			other._alloc = tmp;
+			value_compare tmp = _compV;
+			_compV = other._compV;
+			other._compV = tmp;
 		}
 
 		//////////////////
