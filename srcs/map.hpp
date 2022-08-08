@@ -13,9 +13,9 @@ template<
 class map {
 
 	private:
-		RBtree<Key, T, Compare, Allocator>	_tree;
-		key_compare							_comp;
-		allocator_type						_alloc;
+		RBtree<value_type, Compare>	_tree;
+		key_compare					_comp;
+		allocator_type				_alloc;
 
 	public:
 		typedef Key						key_type;
@@ -29,8 +29,8 @@ class map {
 		typedef const value_type&		const_reference;
 		typedef Allocator::pointer		pointer;
 		typedef Allocator::const_pointer	const_pointer;
-		typedef ft::BiDirectionalIterator<value_type>	iterator;
-		typedef ft::BiDirectionalIterator<const value_type>	const_iterator;
+		typedef ft::RBiter<value_type>			iterator;
+		typedef ft::RBiter<const value_type>	const_iterator;
 		typedef ft::reverse_iterator<iterator>	reverse_iterator;
 		typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
 
@@ -52,6 +52,7 @@ class map {
 		};
 
 		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
+			_tree = ft::RBtree(comp);
 			_comp = comp;
 			_alloc = alloc;
 		}
@@ -60,7 +61,9 @@ class map {
 		map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) { // cppreference(4)
 			// Constructs the container with the contents of the range [first, last).
 			// If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
-			
+			map(comp, alloc);
+			while (first != last)
+				_tree.add((first++)->first); // SUS
 		}
 
 		map(const map& other) { // cppreference(6)
@@ -70,19 +73,17 @@ class map {
 
 		~map() {
 			this->clear();
-
 		}
 
 		map& operator=(const map& other) {
 			_tree = other._tree;
-			_size = other._size;
 			_comp = other._comp;
 			_alloc = other._alloc;
 			return (*this);
 		}
 
 		allocator_type get_allocator() const {
-			return (this->_alloc);
+			return (_alloc);
 		}
 
 		//////////////////////////
@@ -108,11 +109,16 @@ class map {
 		iterator begin() {
 			// Returns an iterator to the first element of the vector.
 			// If the vector is empty, the returned iterator will be equal to end().
-			return (_start);
+
+			node_pointer l = _root;
+	
+			while (l && l->_left)
+				l = l->_left;
+			return iterator(l);
 		}
 
 		const_iterator begin() const {
-			return (_start);
+			return (begin());
 		}
 
 		iterator end() {

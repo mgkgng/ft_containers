@@ -2,10 +2,11 @@
 
 #include "lib.hpp"
 #include "pair.hpp"
+#include "RBiter.hpp"
 
 namespace ft {
 
-template<class T, class Compare, class Allocator = std::allocator<T> >
+template<class T, class Compare>
 class RBtree {
 
 	private:
@@ -13,7 +14,6 @@ class RBtree {
 		node_pointer			_start;
 		node_pointer			_end;
 		size_type				_size;
-		allocator_type			_alloc;
 		std::allocator<node>	_nodeAlloc;
 		value_compare			_comp;
 
@@ -27,11 +27,6 @@ class RBtree {
 		typedef size_t					size_type;
 		typedef ptrdiff_t				difference_type;
 		typedef Compare					value_compare;
-		typedef Allocator				allocator_type;
-		typedef value_type&				reference;
-		typedef const value_type&		const_reference;
-		typedef Allocator::pointer			pointer;
-		typedef Allocator::const_pointer	const_pointer;
 
 		typedef RBnode<T>				node;
 		typedef RBnode<T>*				node_pointer;
@@ -62,6 +57,11 @@ class RBtree {
 			_end = _start;
 		}
 
+		RBtree(const Compare &comp) {
+			RBtree();
+			_comp = comp;
+		}
+
 		///////////////////////////////
 		// ** principal functions ** //
 		///////////////////////////////
@@ -73,13 +73,14 @@ class RBtree {
 			insert1(n);
 		}
 
-		void remove(node_pointer n) {
-			node_pointer child = (this->isLeaf(n->right)) ? n->left : n->right;
-
+		void remove(node_pointer n) { // SUS
+			node_pointer child = (!n->right) ? n->left : n->right; // SUS
 			this->replace(n, child);
-			if (!n->red) {
-				if (child->red) child->red = false;
-				else delete1(child);
+			if (n && !n->red) { // SUS
+				if (child->red)
+					child->red = false;
+				else
+					delete1(child);
 			}
 			// _nodeAlloc.destroy(n); as i don't construct anything for now
 			_nodeAlloc.deallocate(n, 1);
@@ -151,14 +152,14 @@ class RBtree {
 		void insert3(node_pointer n)
 		{
 			node_pointer u = getU(n);
-
 			if (u && u->red) {
 				n->parent->red = false;
 				u->red = false;
 				node_pointer gp = getGP(n);
 				gp->red = true;
 				insert1(gp);
-			} else insert4(n);
+			} else
+				insert4(n);
 		}
 
 		void insert4(node_pointer n)
@@ -342,91 +343,6 @@ class RBtree {
 			
 		}
 
-};
-
-template <class T>
-class RBiter {
-	private:
-		Ptr _node;
-
-		void increment() {
-			if (_node->right) {
-				Ptr tmp = _node->right;
-				while (tmp->left)
-					tmp = tmp->left;
-				_node = tmp;
-			} else {
-				Ptr tmp = _node->parent;
-				if (tmp->right = _node) {
-					while (_node == tmp->right) {
-						_node = tmp;
-						tmp = tmp->parent;
-					}
-				}
-				if (_node->right != tmp)
-					_node = tmp;
-			}
-		}
-
-		void decrement() {
-			if (_node->parent->parent = _node && _node->_red)
-				_node = _node->left;
-			else if (_node->left) {
-				while (_node->right)
-					_node = _node->right;
-			} else {
-				Ptr parent = _node->parent;
-				while (parent->left == _node) {
-					_node = parent;
-					parent = parent->parent;
-				}
-				_node = parent;
-			}
-		}
-
-	public:
-		typedef RBtree<T>*	Ptr;
-		typedef RBiter<T> 	Iter;
-
-		RBiter(Ptr n = 0) : _node(n) {} 
-
-		T& operator*() {
-			return (_node->v);
-		}
-
-		T* operator->() {
-			return (_node);
-		}
-
-		Iter& operator++() {
-			this->increment();
-			return (*this);
-		}
-
-		Iter& operator++(int) {
-			Iter tmp = this;
-			this->increment();
-			return (tmp);
-		}
-
-		Iter& operator--() {
-			this->decrement();
-			return (*this);
-		}
-
-		Iter& operator--(int) {
-			Iter tmp = this;
-			this->decrement();
-			return (tmp);
-		}
-
-		bool operator==(const Iter& s) {
-			return (_node == s._node);
-		}
-
-		bool operator!=(const Iter& s) {
-			return (_node != s._node);
-		}
 };
 
 };
