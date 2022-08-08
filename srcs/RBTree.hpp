@@ -11,8 +11,6 @@ class RBtree {
 
 	private:
 		node_pointer			_root;
-		node_pointer			_start;
-		node_pointer			_end;
 		size_type				_size;
 		std::allocator<node>	_nodeAlloc;
 		value_compare			_comp;
@@ -38,27 +36,19 @@ class RBtree {
 		///////////////////////////
 
 		struct RBnode {
-			node_pointer parent;
-			node_pointer left;
-			node_pointer right;
-			bool		red;
-			Value		_v;
-
-			RBnode(Value v) : _v(v), parent(0), left(0), right(0) {}
+			node_pointer	parent;
+			node_pointer	left;
+			node_pointer	right;
+			bool			red;
+			Value			value;
 		};
 
 		////////////////////////
 		// ** Constructors ** //
 		////////////////////////
 
-		RBtree() {
+		explicit RBtree(const Compare &comp) {
 			_root = 0;
-			_start = _nodeAlloc.allocate(1);
-			_end = _start;
-		}
-
-		RBtree(const Compare &comp) {
-			RBtree();
 			_comp = comp;
 		}
 
@@ -73,7 +63,11 @@ class RBtree {
 			insert1(n);
 		}
 
-		void remove(node_pointer n) { // SUS
+		template<class Key>
+		void remove(Key &key) {
+			node_pointer n = this->recursiveTreeSearch(key);
+			if (!n)
+				return ;
 			node_pointer child = (!n->right) ? n->left : n->right; // SUS
 			this->replace(n, child);
 			if (n && !n->red) { // SUS
@@ -323,11 +317,11 @@ class RBtree {
 		}
 
 		void initNode(node_pointer n, Value v) {
-			n->_red = true;
-			n->_left = 0;
-			n->_right = 0;
-			n->_parent = 0;
-			n->_v = v;
+			n->red = true;
+			n->left = 0;
+			n->right = 0;
+			n->parent = 0;
+			n->value = v;
 		}
 
 		template<class Key>

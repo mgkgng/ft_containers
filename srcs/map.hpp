@@ -13,14 +13,15 @@ template<
 class map {
 
 	private:
-		RBtree<value_type, Compare>	_tree;
-		key_compare					_comp;
-		allocator_type				_alloc;
+		tree_type		_tree;
+		key_compare		_comp;
+		allocator_type	_alloc;
 
 	public:
 		typedef Key						key_type;
 		typedef T						mapped_type;
 		typedef std::pair<const Key, T> value_type;
+		typedef RBtree<value_type, Compare>	tree_type;
 		typedef size_t					size_type;
 		typedef ptrdiff_t				difference_type;
 		typedef Compare					key_compare;
@@ -52,7 +53,7 @@ class map {
 		};
 
 		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
-			_tree = ft::RBtree(comp);
+			_tree = tree_type(comp);
 			_comp = comp;
 			_alloc = alloc;
 		}
@@ -62,8 +63,7 @@ class map {
 			// Constructs the container with the contents of the range [first, last).
 			// If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 			map(comp, alloc);
-			while (first != last)
-				_tree.add((first++)->first); // SUS
+			this->insert(first, last);
 		}
 
 		map(const map& other) { // cppreference(6)
@@ -156,15 +156,15 @@ class map {
 		////////////////////
 
 		bool empty() const {
-			return ((begin() == end()) ? true : false);
+			return (_tree._size) ? false : true;
 		}
 
 		size_type size() const {
-			return (_tree->_size);
+			return (_tree._size);
 		}
 
 		size_type max_size() const {
-
+			return (_tree._nodeAlloc.max_size());
 		}
 
 		////////////////////
@@ -185,19 +185,21 @@ class map {
 
 		template<class InputIt>
 		void insert(InputIt first, InputIt last) {
-
+			while (first != last)
+				_tree.add(*first++);
 		}
 
 		void erase(iterator pos) {
-			
+			_tree.remove(pos->first);
 		}
 
 		void erase(iterator first, iterator last) {
-
+			while (first != last)
+				_tree.remove(first->first);
 		}
 
 		size_type erase(const Key& key) {
-
+			_tree.remove(key);
 		}
 
 		void swap(map &other) {
