@@ -13,12 +13,6 @@ template<
 >
 class map {
 
-	private:
-		tree_type		_tree;
-		key_compare		_comp;
-		value_compare	_compV;
-		allocator_type	_alloc;
-
 	public:
 		typedef Key						key_type;
 		typedef T						mapped_type;
@@ -30,8 +24,8 @@ class map {
 		typedef Allocator				allocator_type;
 		typedef value_type&				reference;
 		typedef const value_type&		const_reference;
-		typedef Allocator::pointer		pointer;
-		typedef Allocator::const_pointer	const_pointer;
+		typedef typename Allocator::pointer		pointer;
+		typedef typename Allocator::const_pointer	const_pointer;
 		typedef ft::RBiter<value_type>			iterator;
 		typedef ft::RBiter<const value_type>	const_iterator;
 		typedef ft::ReverseIterator<iterator>	reverse_iterator;
@@ -315,6 +309,12 @@ class map {
 		value_compare value_comp() const {
 			return (_compV);
 		}
+
+	private:
+		tree_type		_tree;
+		key_compare		_comp;
+		value_compare	_compV;
+		allocator_type	_alloc;
 };
 
 	template< class Key, class T, class Compare, class Alloc >

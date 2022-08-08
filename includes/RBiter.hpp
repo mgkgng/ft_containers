@@ -7,43 +7,6 @@ namespace ft {
 
 template <class T>
 class RBiter {
-	private:
-		Ptr _node;
-
-		void increment() {
-			if (_node->right) {
-				Ptr tmp = _node->right;
-				while (tmp->left)
-					tmp = tmp->left;
-				_node = tmp;
-			} else {
-				Ptr tmp = _node->parent;
-				if (tmp->right == _node) {
-					while (_node == tmp->right) {
-						_node = tmp;
-						tmp = tmp->parent;
-					}
-				}
-				if (_node->right != tmp)
-					_node = tmp;
-			}
-		}
-
-		void decrement() {
-			if (_node->parent->parent = _node && _node->_red)
-				_node = _node->left;
-			else if (_node->left) {
-				while (_node->right)
-					_node = _node->right;
-			} else {
-				Ptr parent = _node->parent;
-				while (parent->left == _node) {
-					_node = parent;
-					parent = parent->parent;
-				}
-				_node = parent;
-			}
-		}
 
 	public:
 		typedef RBtree<T>*	Ptr;
@@ -88,5 +51,44 @@ class RBiter {
 		bool operator!=(const Iter& s) {
 			return (_node != s._node);
 		}
+
+	private:
+		Ptr _node;
+
+		void increment() {
+			if (_node->right) {
+				Ptr tmp = _node->right;
+				while (tmp->left)
+					tmp = tmp->left;
+				_node = tmp;
+			} else {
+				Ptr tmp = _node->parent;
+				if (tmp->right == _node) {
+					while (_node == tmp->right) {
+						_node = tmp;
+						tmp = tmp->parent;
+					}
+				}
+				if (_node->right != tmp)
+					_node = tmp;
+			}
+		}
+
+		void decrement() {
+			if (_node->parent->parent == _node && _node->_red)
+				_node = _node->left;
+			else if (_node->left) {
+				while (_node->right)
+					_node = _node->right;
+			} else {
+				Ptr parent = _node->parent;
+				while (parent->left == _node) {
+					_node = parent;
+					parent = parent->parent;
+				}
+				_node = parent;
+			}
+		}
+
 };
 };

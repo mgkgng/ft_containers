@@ -22,7 +22,7 @@ class pair {
 			second = p.second;
 		}
 
-		pair(const pair &p) = default {
+		pair(const pair &p) {
 			*this = p;
 		}
 

@@ -8,20 +8,6 @@ namespace ft {
 template < typename T, typename Allocator = std::allocator<T> >
 class vector {
 	
-	private:
-		T				*V;
-		allocator_type	_alloc; // allocator to use for all memory allocations of this container
-		pointer			_start; // the starting address of the container
-		pointer			_end; // the ending address of the container
-		size_type		_count; // the size of the container
-		size_type		_capacity; // the capacity of the container
-
-	protected:
-		void	getMoreCapacity(size_type n) {
-			while (n > _capacity)
-				this->resize(_capacity * 2);
-		}
-
 	public:
 
 		////////////////////////////
@@ -34,12 +20,12 @@ class vector {
 		typedef ptrdiff_t										difference_type;
 		typedef value_type&										reference;
 		typedef const value_type&								const_reference;
-		typedef Allocator::pointer 								pointer;
-		typedef Allocator::const_pointer 						const_pointer;
-		typedef ft::RandomAccessIterator<value_type> 			iterator;
-		typedef ft::RandomAccessIterator<const value_type>		const_iterator;
-		typedef ft::ReverseIterator<iterator> 					reverse_iterator;
-		typedef ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
+		typedef typename Allocator::pointer 								pointer;
+		typedef typename Allocator::const_pointer 						const_pointer;
+		typedef typename ft::RandomAccessIterator<value_type> 			iterator;
+		typedef typename ft::RandomAccessIterator<const value_type>		const_iterator;
+		typedef typename ft::ReverseIterator<iterator> 					reverse_iterator;
+		typedef typename ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
 
 		////////////////////////
 		// ** contstructor ** //
@@ -50,7 +36,7 @@ class vector {
 			_alloc = allocator_type();
 			_start = NULL;
 			_end = NULL;
-			_count = 0;
+			_size = 0;
 			_capacity = 0;
 		}
 
@@ -60,7 +46,7 @@ class vector {
 			_alloc = alloc;
 			_start = NULL;
 			_end = NULL;
-			_count = 0;
+			_size = 0;
 			_capacity = 0;
 		}
 
@@ -71,7 +57,7 @@ class vector {
 			for (int i = 0; i < count; i++)
 				_alloc.construct(_start + i, value);
 			_end = _start + count;
-			_count = count;
+			_size = count;
 			_capacity = count;
 		}
 
@@ -79,10 +65,10 @@ class vector {
 		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
 			// Constructs the container with the contents of the range [first, last).
 			_alloc = alloc;
-			_count = last - first;
-			_start = _alloc.allocate(_count);
+			_size = last - first;
+			_start = _alloc.allocate(_size);
 			_end = _start;
-			_capacity = _count;
+			_capacity = _size;
 		}
 
 		vector(const vector& other) { // cppreference(6)
@@ -103,10 +89,10 @@ class vector {
 			// Copy assignment operator. Replaces the contents with a copy of the contents of other.
 			_alloc = other._alloc;
 			_start = _alloc.allocate(other._capacity);
-			for (int i = 0; i < other._count; i++)
+			for (int i = 0; i < other._size; i++)
 				_alloc.construct(_start + i, other._start + i);
-			_end = _start + other._count;
-			_count = other._count;
+			_end = _start + other._size;
+			_size = other._size;
 			_capacity = other._capacity;
 		}
 
@@ -253,7 +239,7 @@ class vector {
 
 		size_type size() const {
 			// Returns the number of elements in container, i.e. std::distance(begin(), end()).
-			return (_count);
+			return (_size);
 		}
 
 		size_type max_size() const {
@@ -268,7 +254,7 @@ class vector {
 				throw std::length_error();
 	
 			pointer tmp = _alloc.allocate(new_cap);
-			for (int i = 0; i < _count; i++)
+			for (int i = 0; i < _size; i++)
 				_alloc.construct(tmp + i, _start + i);
 			this->clean();
 			_alloc.deallocate(_start, _capacity);
@@ -298,8 +284,8 @@ class vector {
 		// The past-the-end iterator is also invalidated.
 		iterator insert(iterator pos, const T& value) { // cppreference(1)
 			// inserts value before pos
-			if (_count == _capacity)
-				this->getMoreCapacity(_count + 1);
+			if (_size == _capacity)
+				this->getMoreCapacity(_size + 1);
 			
 			for (pointer p = _end; p != pos; p--)
 				*p = *(p - 1);
@@ -310,8 +296,8 @@ class vector {
 
 		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
 			// inserts count copies of the value before pos
-			if (_count + count > _capacity)
-				this->getMoreCapacity(_count + count);
+			if (_size + count > _capacity)
+				this->getMoreCapacity(_size + count);
 			
 			for (pointer p = _end + count; p != pos + count; p--)
 				*p = *(p - count);
@@ -324,8 +310,8 @@ class vector {
 		void insert(iterator pos, InputIt first, InputIt last) { // cppreference(4)
 			// inserts elements from range [first, last) before pos
 			difference_type size = last - first;
-			if (_count + size > _capacity)
-				this->getMoreCapacity(_count + size);
+			if (_size + size > _capacity)
+				this->getMoreCapacity(_size + size);
 
 			for (pointer p = _end + size; p != pos + size; p--)
 				*p = *(p - size);		
@@ -360,21 +346,21 @@ class vector {
 		void push_back(const T& value) {
 			// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 			// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
-			if (_count == _capacity)
+			if (_size == _capacity)
 				this->getMoreCapacity();
 			
-			*(_start + _count++) = value;
+			*(_start + _size++) = value;
 			_end++;
 		}
 
 		void pop_back() {
 			_alloc.destroy(_end-- - 1]);
-			_count--;
+			_size--;
 		}
 
 		void resize(size_type count, T value = T()) {
 			pointer tmp = this->_alloc.allocate(count);
-			for (int i = 0; i < _count; i++)
+			for (int i = 0; i < _size; i++)
 				_alloc.construct(tmp + i, value);
 
 			this->clean();
@@ -397,21 +383,36 @@ class vector {
 			_end = other._end;
 			other._end = _end;
 
-			size_type tmp = _count;
-			_count = other._count;
-			other._count = _count;
+			size_type tmp = _size;
+			_size = other._size;
+			other._size = _size;
 
 			size_type tmp = _capacity;
 			_capacity = other._capacity;
 			other._capacity = _capacity;
 		}
+
+	protected:
+		void	getMoreCapacity(size_type n) {
+			while (n > _capacity)
+				this->resize(_capacity * 2);
+		}
+
+	private:
+		T				*V;
+		allocator_type	_alloc; // allocator to use for all memory allocations of this container
+		pointer			_start; // the starting address of the container
+		pointer			_end; // the ending address of the container
+		size_type		_size; // the size of the container
+		size_type		_capacity; // the capacity of the container
+
 	};
 
 	template<class T, class Alloc>
 	bool operator==(const ft::vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		if (lhs._count != rhs._count)
+		if (lhs._size != rhs._size)
 			return (false);
-		for (int i = 0; i < _count; i++)
+		for (int i = 0; i < lhs._size; i++)
 			if (lhs._start + i != rhs._start + i)
 				return (false);
 		return (true);

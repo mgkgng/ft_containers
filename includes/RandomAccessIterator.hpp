@@ -4,11 +4,10 @@
 
 namespace ft {
 
-template <typename T>
+template <class T>
 class RandomAccessIterator : public ft::BiDirectionalIterator {
 
 	public:
-
 		
 		RandomAccessIterator() {
 			_ptr = NULL;
@@ -43,8 +42,6 @@ class RandomAccessIterator : public ft::BiDirectionalIterator {
 			return _ptr[n];
 		}
 
-		
-
 };
 
-};
+}

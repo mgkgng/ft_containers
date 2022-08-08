@@ -6,14 +6,17 @@
 
 namespace ft {
 
+template<class Value>
+struct RBnode {
+	RBnode*	parent;
+	RBnode*	left;
+	RBnode*	right;
+	bool			red;
+	Value			value;
+};
+
 template<class T, class Compare>
 class RBtree {
-
-	private:
-		node_pointer			_root;
-		size_type				_size;
-		std::allocator<node>	_nodeAlloc;
-		value_compare			_comp;
 
 	public:
 
@@ -26,22 +29,16 @@ class RBtree {
 		typedef ptrdiff_t				difference_type;
 		typedef Compare					value_compare;
 
-		typedef RBnode<T>				node;
-		typedef RBnode<T>*				node_pointer;
+		typedef ft::RBnode<T>				node;
+		typedef ft::RBnode<T>*				node_pointer;
 
-		typedef ft::RBiter<Value>		iterator;
+		typedef typename ft::RBiter<Value>		iterator;
 
 		///////////////////////////
 		// ** Node structure ** //
 		///////////////////////////
 
-		struct RBnode {
-			node_pointer	parent;
-			node_pointer	left;
-			node_pointer	right;
-			bool			red;
-			Value			value;
-		};
+
 
 		////////////////////////
 		// ** Constructors ** //
@@ -62,7 +59,9 @@ class RBtree {
 			node_pointer n = _nodeAlloc.allocate(1);
 			this->initNode(n, v);
 			if (where)
-				this->putNode(where);
+				this->putNode(n, where);
+			else // un truc comme ca
+				this->_root = n;
 			insert1(n);
 			return (n);
 		}
@@ -93,7 +92,7 @@ class RBtree {
 		}
 
 		node_pointer getU(node_pointer n) {
-			RBnode	*gp = getGP(n);
+			node_pointer gp = getGP(n);
 			if (!gp)
 				return (0);
 			return (n->parent == gp->left) ? gp->right : gp->left;
@@ -313,7 +312,7 @@ class RBtree {
 		}
 
 		template<class Key>
-		void putNode(node_pointer where) {
+		void putNode(node_pointer n, node_pointer where) {
 			n->parent = where->parent;
 			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
@@ -333,18 +332,25 @@ class RBtree {
 			_root = other._root;
 			other._root = tmp;
 
-			size_type tmp = _size;
+			size_type tmp2 = _size;
 			_size = other._size;
-			other._size = tmp;
+			other._size = tmp2;
 
-			std::allocator<node> tmp = _nodeAlloc;
+			std::allocator<node> tmp3 = _nodeAlloc;
 			_nodeAlloc = other._nodeAlloc;
-			other._nodeAlloc = tmp;
+			other._nodeAlloc = tmp3;
 
-			value_compare tmp = _comp;
+			value_compare tmp4 = _comp;
 			_comp = other._comp;
-			other._comp = tmp;
+			other._comp = tmp4;
 		}
+
+	private:
+		node_pointer			_root;
+		size_type				_size;
+		std::allocator<node>	_nodeAlloc;
+		value_compare			_comp;
+
 };
 
 };
