@@ -49,6 +49,8 @@ class RBtree {
 
 		explicit RBtree(const Compare &comp) {
 			_root = 0;
+			_size = 0;
+			_nodeAlloc = std::allocator<RBnode>();
 			_comp = comp;
 		}
 
@@ -56,20 +58,18 @@ class RBtree {
 		// ** principal functions ** //
 		///////////////////////////////
 
-		bool add(Value &v) {
-			node_pointer n = this->recursiveTreeSearch(v.first);
-			if (n)
-				return (false);
+		void add(const Value &v, node_pointer where) {
 			node_pointer n = _nodeAlloc.allocate(1);
 			this->initNode(n, v);
-			this->putNode(n, v);
+			if (where)
+				this->putNode(where);
 			insert1(n);
-			return (true);
+			return (n);
 		}
 
 		template<class Key>
 		void remove(Key &key) {
-			node_pointer n = this->recursiveTreeSearch(key);
+			node_pointer n = this->search(key);
 			if (!n)
 				return ;
 			node_pointer child = (!n->right) ? n->left : n->right; // SUS
@@ -109,22 +109,10 @@ class RBtree {
 		//////////////////
 
 		template<typename Key>
-		node_pointer recursiveTreeSearch(node_pointer n, Key &key) {
+		node_pointer search(node_pointer n, Key &key) {
 			if (!n || n->v.first == key)
 				return (n);
-			return (n->v.first < key) ? (this->recursiveTreeSearch(n->left, key)) : (this->recursiveTreeSearch(n->right, key));
-		}
-
-		template<typename Key>
-		iterator searchKey(node_pointer n, Key &key) {
-			if (!n)
-				return (0);
-			if (n->v.first == key)
-				return (iterator(n));
-			if (_comp(n->key, key)) // less
-				return (this->searchKey(n->right, key));
-			else
-				return (this->searchKey(n->left, key));
+			return (n->v.first < key) ? (this->search(n->left, key)) : (this->search(n->right, key));
 		}
 
 		//////////////////
@@ -316,10 +304,6 @@ class RBtree {
 				n->parent->right = child;
 		}
 
-		bool isLeaf(node_pointer n) {
-			
-		}
-
 		void initNode(node_pointer n, Value v) {
 			n->red = true;
 			n->left = 0;
@@ -329,12 +313,9 @@ class RBtree {
 		}
 
 		template<class Key>
-		void putNode(node_pointer n, Key &key) {
-			node_pointer pos = this->recursiveTreeSearch(this->_root, key);
-			if (pos) {
-				n->parent = pos->parent;
-				(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
-			}
+		void putNode(node_pointer where) {
+			n->parent = where->parent;
+			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
 		
 		void eraseAll() {
