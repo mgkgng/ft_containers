@@ -352,7 +352,7 @@ class vector {
 		void push_back(const T& value) {
 			// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
 			// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
-			if (_size == _capacity)
+			if (_size >= _capacity)
 				this->getMoreCapacity(_size + 1);
 			
 			*(_start + _size++) = value;
@@ -400,6 +400,8 @@ class vector {
 
 	protected:
 		void	getMoreCapacity(size_type n) {
+			if (!_capacity)
+				this->resize(1);
 			while (n > _capacity)
 				this->resize(_capacity * 2);
 		}
