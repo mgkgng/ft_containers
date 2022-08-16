@@ -41,13 +41,40 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
 	return (comp(first1, first2));
 }
 
-template<class T>
-bool is_integral(T value) {
-	// bool, char, char16_t, char32_t, wchar_t, signed char, 
-	// short int, int, long int, long long int
-	// unsigned char, unsigned short int, unsigned int, unsigned logn int, unsigned long long int
+struct true_type {
+	typedef true_type	type;
+	typedef bool		value_type;
 
-}
+	operator value_type() const {
+		return (true);
+	};
+};
+
+struct false_type {
+	typedef false_type	type;
+	typedef bool		value_type;
+
+	operator value_type() const {
+		return (false);
+	};
+};
+
+template<class T> struct is_integral : public false_type {};
+template<> struct is_integral<char> : public true_type {};
+template<> struct is_integral<bool> : public true_type {};
+template<> struct is_integral<char16_t> : public true_type {};
+template<> struct is_integral<char32_t> : public true_type {};
+template<> struct is_integral<wchar_t> : public true_type {};
+template<> struct is_integral<signed char> : public true_type {};
+template<> struct is_integral<short int> : public true_type {};
+template<> struct is_integral<int> : public true_type {};
+template<> struct is_integral<long int> : public true_type {};
+template<> struct is_integral<long long int> : public true_type {};
+template<> struct is_integral<unsigned char> : public true_type {};
+template<> struct is_integral<unsigned short int> : public true_type {};
+template<> struct is_integral<unsigned int> : public true_type {};
+template<> struct is_integral<unsigned long int> : public true_type {};
+template<> struct is_integral<unsigned long long int> : public true_type {};
 
 struct bidrectional_iterator_tag {};
 struct random_access_iterator_tag : public bidrectional_iterator_tag {};
@@ -71,7 +98,10 @@ struct iterator_traits<T*> {
 };
 
 template< bool B, class T = void >
-struct enable_if {
+struct enable_if {};
+
+template<class T>
+struct enable_if<true, T> {
 	typedef T type;
 };
 
