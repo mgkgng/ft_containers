@@ -41,7 +41,6 @@ class vector {
 			_capacity = 0;
 		}
 
-
 		explicit vector(const Allocator& alloc) { // cppreference (2)
 			// Constructs an empty container with the given allocator alloc.
 			_alloc = alloc;
@@ -53,8 +52,8 @@ class vector {
 
 		explicit vector(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) { // cppreference (3)
 			// Constructs the container with count copies of elements with value value.
-			_alloc = alloc;
-			_start = _alloc.allocate(count); // allocator allocates automatically n * sizeof(T) bytes of uninitialized storage
+			this->_alloc = alloc;
+			this->_start = _alloc.allocate(count); // allocator allocates automatically n * sizeof(T) bytes of uninitialized storage
 			for (int i = 0; i < count; i++)
 				_alloc.construct(_start + i, value);
 			_end = _start + count;
@@ -68,6 +67,8 @@ class vector {
 			_alloc = alloc;
 			_size = last - first;
 			_start = _alloc.allocate(_size);
+			for (int i = 0; i < _size; i++)
+				_alloc.construct(_start + i, *(first + i));
 			_end = _start;
 			_capacity = _size;
 		}
