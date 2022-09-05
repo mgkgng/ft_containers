@@ -1,10 +1,8 @@
 #include "tests.hpp"
 
-#define SLEEP_DURATION 50000
 #include "vector.hpp"
-#include <memory>
 #include <vector>
-#include <unistd.h>
+
 
 template<class T>
 void printMyVector(ft::vector<T> vec) {
