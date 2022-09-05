@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "RandomAccessIterator.hpp"
 #include "ReverseIterator.hpp"
 
@@ -20,8 +21,8 @@ class vector {
 		typedef ptrdiff_t										difference_type;
 		typedef value_type&										reference;
 		typedef const value_type&								const_reference;
-		typedef typename Allocator::pointer 								pointer;
-		typedef typename Allocator::const_pointer 						const_pointer;
+		typedef typename Allocator::pointer 					pointer;
+		typedef typename Allocator::const_pointer 				const_pointer;
 		typedef typename ft::RandomAccessIterator<T> 			iterator;
 		typedef typename ft::RandomAccessIterator<const T>		const_iterator;
 		typedef ft::ReverseIterator<iterator> 					reverse_iterator;
@@ -90,7 +91,7 @@ class vector {
 			_alloc = other._alloc;
 			_start = _alloc.allocate(other._capacity);
 			for (int i = 0; i < other._size; i++)
-				_alloc.construct(_start + i, other._start + i);
+				_alloc.construct(_start + i, *(other._start + i));
 			_end = _start + other._size;
 			_size = other._size;
 			_capacity = other._capacity;

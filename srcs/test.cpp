@@ -1,18 +1,22 @@
 #include <iostream>
 #include <string>
-#include <vector>
-#include <map>
-#include <stack>
+#include <chrono>
 
-#include "vector.hpp"
-#include "map.hpp"
-#include "stack.hpp"
+#include "tests.hpp"
+
+typedef struct results {
+	bool vector;
+	bool map;
+	bool set;
+} results;
 
 int main() {
-	ft::vector<int> myVector;
-	std::vector<int> realVector;
+	results res;
 
-	myVector.push_back(345);
-	std::cout << "let's see" << myVector.at(0) << std::endl;
+	std::cout << "Test Starts." << std::endl;
 
+	res.vector = testVector();
+	//res.map = testMap();
+
+	std::cout << "Test Result:" << std::endl;
 }

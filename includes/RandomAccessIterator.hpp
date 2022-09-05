@@ -23,6 +23,28 @@ class RandomAccessIterator {
 
 		~RandomAccessIterator() {}
 
+		reference operator++() {
+			_ptr++;
+			return (*this);
+		}
+
+		RandomAccessIterator operator++(int) {
+			RandomAccessIterator tmp = *this;
+			++(*this);
+			return (tmp);
+		}
+
+		RandomAccessIterator& operator--() {
+			_ptr--;
+			return (*this);
+		}
+
+		RandomAccessIterator operator--(int) {
+			RandomAccessIterator tmp = *this;
+			--(*this);
+			return (tmp);
+		}
+
    		RandomAccessIterator operator+(difference_type n) const {
 			return (RandomAccessIterator(_ptr + n));
 		}
@@ -45,6 +67,12 @@ class RandomAccessIterator {
 		reference operator[](difference_type n) const {
 			return _ptr[n];
 		}
+
+		reference operator*() const {
+			return *_ptr;
+		}
+
+
 
 	private:
 		pointer _ptr;
