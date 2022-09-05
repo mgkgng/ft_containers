@@ -332,27 +332,30 @@ class vector {
 
 		// <erase>
 		// Invalidates iterators and referecens at or after the point of the erase, including the end() iterator.
-		// The iterator pos mmust be valid and dereferenceable. Thus the end() iterator cannot be used as a value for pos.
+		// The iterator pos must be valid and dereferenceable. Thus the end() iterator cannot be used as a value for pos.
 		// The iterator first does not need to be dereferenceable if first==last: erasing an empty range is a no-op.
 		iterator erase(iterator pos) {
 			// Removes the element at pos
-			pointer p;
-			for (p = pos; p != _end - 1; p++)
-				*p = *(p + 1);
-			_alloc.destroy(p);
+			for (iterator it = pos; it != _end - 1; it++)
+				*it = *(it + 1);
+			_alloc.destroy(_end - 1);
 			_end--;
+			_size--;
+			return (pos); //revoir
 		}
 
 		iterator erase(iterator first, iterator last) {
 			// Removes the elements in the range [first, last).
-			difference_type size = last - first;
+			difference_type count = &*last - &*first;
 
-			pointer p;
-			for (p = first; p != _end - size; p++)
-				*p = *(p + size);
-			while (p != _end)
-				_alloc.destroy(p++);
-			_end -= size;
+			iterator it;
+			for (it = first; it != last; it++)
+				*it = *(it + count);
+			while (it != _end)
+				_alloc.destroy(&*it++);
+			_end -= count;
+			_size -= count;
+			return (first); // revoir
 		}
 		
 		void push_back(const T& value) {
@@ -371,17 +374,13 @@ class vector {
 		}
 
 		void resize(size_type count, T value = T()) {
-			pointer tmp = this->_alloc.allocate(count);
-			for (int i = 0; i < _size; i++)
-				_alloc.construct(tmp + i, value);
-
-			size_type tmpSize = _size;
-			this->clear();
-			_alloc.deallocate(_start, _capacity);
-
-			this->_start = tmp;
-			this->_capacity = count;
-			this->_size = tmpSize;
+			getNewVector(count);
+			if (_size < count) {
+				iterator it = _end;
+				for (int i = 0; i < _capacity - _size; i++)
+					*(it + i) = value;
+			}
+			_size = count;
 		}
 
 		void swap(vector& other) {

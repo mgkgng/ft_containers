@@ -4,7 +4,7 @@
 #include <memory>
 #include <unistd.h>
 
-#define SLEEP_DURATION 50000
+#define SLEEP_DURATION 500000
 
 int testVector();
 int testMap();
