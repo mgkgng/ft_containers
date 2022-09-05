@@ -6,6 +6,26 @@
 #include <vector>
 #include <unistd.h>
 
+template<class T>
+void printMyVector(ft::vector<T> vec) {
+	int	i = 1;
+
+	typename ft::vector<T>::iterator it = vec.begin();
+	while (it != vec.end())
+		std::cout << i++ << ": " << *it++ << std::endl;
+	std::cout << "actual size: " << vec.size() << " capacity: " << vec.capacity() << std::endl;
+}
+
+template<class T>
+void printRealVector(std::vector<T> vec) {
+	int	i = 1;
+
+	typename std::vector<T>::iterator it = vec.begin();
+	while (it != vec.end())
+		std::cout << "--" << i++ << ": " << *it++ << std::endl;
+	std::cout << "actual size: " << vec.size() << " capacity: " << vec.capacity() << std::endl;	
+}
+
 int	printTimeResult(double realRes, double myRes) {
 	if (realRes * 20 < myRes) {
 		printf("realVector: \033[0;31m%f\t\t\033[0;37mmyVector: %f\n", realRes, myRes);
@@ -187,9 +207,11 @@ int testVector() {
 	count++;
 
 	usleep(SLEEP_DURATION);
+	n = 15;
 	std::cout << "\033[0;34m** insert 1\033[0;37m" << std::endl;
 	realVector = std::vector<int>(n, 15, std::allocator<int>());
 	myVector = ft::vector<int>(n, 15, std::allocator<int>());
+	//printMyVector(myVector);
 
 	begin = clock();
 	realVector.insert(realVector.begin() + 12, 35);
@@ -206,17 +228,40 @@ int testVector() {
 
 	usleep(SLEEP_DURATION);
 	std::cout << "\033[0;34m** insert 2\033[0;37m" << std::endl;
-	n = 15;
+	n = 4;
 
 	begin = clock();
 	realVector.insert(realVector.begin() + 7, n, 99);
 	end = clock();
 	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	printRealVector(realVector);
 
 	begin = clock();
 	myVector.insert(myVector.begin() + 7, n, 99);
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	printMyVector(myVector);
+
+	resTest += printTimeResult(realRes, myRes);
+	count++;
+
+	usleep(SLEEP_DURATION);
+	std::cout << "\033[0;34m** insert 3\033[0;37m" << std::endl;
+	n = 7;
+	testVec = std::vector<int>(n, 777, std::allocator<int>());
+	testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
+
+	begin = clock();
+	realVector.insert(realVector.begin() + 26, testVec.begin(), testVec.end());
+	end = clock();
+	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	printRealVector(realVector);
+
+	begin = clock();
+	myVector.insert(myVector.begin() + 26, testMyVec.begin(), testMyVec.end());
+	end = clock();
+	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	printMyVector(myVector);
 
 	resTest += printTimeResult(realRes, myRes);
 	count++;

@@ -287,44 +287,47 @@ class vector {
 		// The past-the-end iterator is also invalidated.
 		iterator insert(iterator pos, const T& value) { // cppreference(1)
 			// inserts value before pos
+			difference_type diff = &*pos - &*_start - 1;
 			if (_size == _capacity)
 				this->getMoreCapacity(_size + 1);
-			
-			for (iterator it = this->end(); it != pos; it--)
-				*it = *(it - 1);
-			*pos = value;				 
 			_end++;
-			return (pos);
+			_size++;
+		
+			for (iterator it = _end; it != _start + diff; it--)
+			 	*it = *(it - 1);
+			*(_start + diff) = value;
+			return (_start + diff);
 		}
 
 		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
 			// inserts count copies of the value before pos
+			difference_type diff = &*pos - &*_start - 1;
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
-			
-			std::cout << "where1" << std::endl;
-			for (iterator it = this->end(); it != pos + count; it--)
-				*it = *(it - count);
-			std::cout << "where2" << std::endl;
-			for (iterator it = pos; it != pos - 1; it++)
-				*it = value;
-			std::cout << "where3" << std::endl;
 			_end += count;
-			std::cout << "dodo" << std::endl;
+			_size += count;
+		
+			for (iterator it = _end; it != _start + diff + count; it--)
+				*it = *(it - count);
+			for (iterator it = _start + diff; it != _start + diff + count; it++)
+				*it = value;
 		}
 
 		template<class InputIt>
 		void insert(iterator pos, InputIt first, InputIt last) { // cppreference(4)
 			// inserts elements from range [first, last) before pos
-			difference_type size = last - first;
-			if (_size + size > _capacity)
-				this->getMoreCapacity(_size + size);
+			std::cout << "BONJOUR" << std::endl;
+			difference_type diff = &*pos - &*_start - 1;
+			difference_type count = &*last - &*first;
+			if (_size + count > _capacity)
+				this->getMoreCapacity(_size + count);
+			_end += count;
+			_size += count;
 
-			for (p = _end + size; p != pos + size; p--)
-				*p = *(p - size);		
-			while (p != pos - 1)
-				*(p--) = *(last - 1);
-			_end += size;
+			for (iterator it = _end; it != _start + diff + count; it--)
+				*it = *(it - count);
+			for (iterator it = _start + diff; it != _start + diff + count; it++)
+				*it = *first++;
 		}
 
 		// <erase>
@@ -372,11 +375,13 @@ class vector {
 			for (int i = 0; i < _size; i++)
 				_alloc.construct(tmp + i, value);
 
+			size_type tmpSize = _size;
 			this->clear();
 			_alloc.deallocate(_start, _capacity);
 
 			this->_start = tmp;
 			this->_capacity = count;
+			this->_size = tmpSize;
 		}
 
 		void swap(vector& other) {
@@ -402,12 +407,31 @@ class vector {
 		}
 
 	protected:
-		void	getMoreCapacity(size_type n) {
+		void getMoreCapacity(size_type n) {
 			if (!_capacity)
-				this->resize(1);
+				this->getNewVector(1);
 			while (n > _capacity)
-				this->resize(_capacity * 2);
+				this->getNewVector(_capacity * 2);
 		}
+
+		void getNewVector(size_type count) {
+			pointer tmp = this->_alloc.allocate(count);
+			if (count == 1)
+				return ;
+			int i = 0;
+			for (iterator it = _start; it != this->end(); it++)
+				_alloc.construct(tmp + i++, *it);
+
+			size_type tmpSize = _size;
+			this->clear();
+			_alloc.deallocate(_start, _capacity);
+
+			this->_start = tmp;
+			this->_capacity = count;
+			this->_size = tmpSize;
+			this->_end = _start + tmpSize;
+		}
+
 
 	private:
 		allocator_type	_alloc; // allocator to use for all memory allocations of this container
