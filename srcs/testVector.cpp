@@ -1,6 +1,6 @@
 #include "tests.hpp"
 
-#define SLEEP_DURATION 500000
+#define SLEEP_DURATION 50000
 #include "vector.hpp"
 #include <memory>
 #include <vector>
@@ -188,7 +188,38 @@ int testVector() {
 
 	usleep(SLEEP_DURATION);
 	std::cout << "\033[0;34m** insert 1\033[0;37m" << std::endl;
+	realVector = std::vector<int>(n, 15, std::allocator<int>());
+	myVector = ft::vector<int>(n, 15, std::allocator<int>());
 
+	begin = clock();
+	realVector.insert(realVector.begin() + 12, 35);
+	end = clock();
+	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	begin = clock();
+	myVector.insert(myVector.begin() + 12, 35);
+	end = clock();
+	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	resTest += printTimeResult(realRes, myRes);
+	count++;
+
+	usleep(SLEEP_DURATION);
+	std::cout << "\033[0;34m** insert 2\033[0;37m" << std::endl;
+	n = 15;
+
+	begin = clock();
+	realVector.insert(realVector.begin() + 7, n, 99);
+	end = clock();
+	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	begin = clock();
+	myVector.insert(myVector.begin() + 7, n, 99);
+	end = clock();
+	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	resTest += printTimeResult(realRes, myRes);
+	count++;
 
 	usleep(SLEEP_DURATION);
 	std::cout << std::endl << "\033[0;36mVECTOR RESULT: " << resTest << " / " << count;
@@ -196,7 +227,6 @@ int testVector() {
 		std::cout << "\033[0;34m SUCCESS\033[0;37m" << std::endl << std::endl;
 	else
 		std::cout << "\033[0;31m FAILURE\033[0;37m" << std::endl << std::endl;
-
 
 	return (0);
 }

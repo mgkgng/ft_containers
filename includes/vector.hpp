@@ -290,12 +290,11 @@ class vector {
 			if (_size == _capacity)
 				this->getMoreCapacity(_size + 1);
 			
-			pointer p;
-			for (p = _end; p != pos; p--)
-				*p = *(p - 1);
-			*p = value;				 
+			for (iterator it = this->end(); it != pos; it--)
+				*it = *(it - 1);
+			*pos = value;				 
 			_end++;
-			return (p);
+			return (pos);
 		}
 
 		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
@@ -303,12 +302,15 @@ class vector {
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
 			
-			pointer p;
-			for (p = _end + count; p != pos + count; p--)
-				*p = *(p - count);
-			while (p != pos - 1)
-				*(p--) = value;
+			std::cout << "where1" << std::endl;
+			for (iterator it = this->end(); it != pos + count; it--)
+				*it = *(it - count);
+			std::cout << "where2" << std::endl;
+			for (iterator it = pos; it != pos - 1; it++)
+				*it = value;
+			std::cout << "where3" << std::endl;
 			_end += count;
+			std::cout << "dodo" << std::endl;
 		}
 
 		template<class InputIt>
@@ -318,7 +320,6 @@ class vector {
 			if (_size + size > _capacity)
 				this->getMoreCapacity(_size + size);
 
-			pointer p;
 			for (p = _end + size; p != pos + size; p--)
 				*p = *(p - size);		
 			while (p != pos - 1)
