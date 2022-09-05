@@ -4,8 +4,6 @@
 
 #include "tests.hpp"
 
-using std::string;
-
 typedef struct results {
 	bool vector;
 	bool map;
@@ -13,7 +11,7 @@ typedef struct results {
 	bool set;
 } results;
 
-void printResult(string container, bool res) {
+void printResult(std::string container, bool res) {
 	usleep(SLEEP_DURATION);
 	std::cout << container << ": ";
 	if (res)
@@ -28,14 +26,14 @@ int main() {
 	std::cout << "Test Starts." << std::endl;
 
 	res.vector = testVector();
-	// res.map = testMap();
+	res.map = testMap();
 	// res.stack = testStack();
 	// res.set = testSet();
 
 	usleep(SLEEP_DURATION);
 	std::cout << "Test Result:" << std::endl;
 	printResult("Vector", res.vector);
-	// printResult("Map", res.map);
+	printResult("Map", res.map);
 	// printResult("Stack", res.stack);
 	// printResult("Set", res.set);
 }

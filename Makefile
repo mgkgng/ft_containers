@@ -1,4 +1,4 @@
-SRCS =	srcs/test.cpp srcs/testVector.cpp
+SRCS =	srcs/test.cpp srcs/testVector.cpp srcs/testMap.cpp srcs/testUtils.cpp
 
 OBJS =	${SRCS:.cpp=.o}
 

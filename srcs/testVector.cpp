@@ -3,6 +3,7 @@
 #include "vector.hpp"
 #include <vector>
 
+#define TIME_TEST resTest += printTimeResult((char *) "Vector", realRes, myRes)
 
 template<class T>
 void printMyVector(ft::vector<T> vec) {
@@ -23,19 +24,6 @@ void printRealVector(std::vector<T> vec) {
 		std::cout << "--" << i++ << ": " << *it++ << std::endl;
 	std::cout << "actual size: " << vec.size() << " capacity: " << vec.capacity() << std::endl;	
 }
-
-int	printTimeResult(double realRes, double myRes) {
-	if (realRes * 20 < myRes) {
-		printf("realVector: \033[0;31m%f\t\t\033[0;37mmyVector: %f\n", realRes, myRes);
-		return (0);
-	}
-	else if (realRes < myRes) 
-		printf("realVector: \033[0;33m%f\t\t\033[0;37mmyVector: %f\n", realRes, myRes);
-	else
-		printf("realVector: %f\t\tmyVector: \033[0;32m%f\033[0;37m\n", realRes, myRes);
-	return (1);
-}
-
 
 int testVector() {
 	ft::vector<int> myVector;
@@ -60,7 +48,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -76,7 +64,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -93,7 +81,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -110,7 +98,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -128,7 +116,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -146,7 +134,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -163,7 +151,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -182,7 +170,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -201,7 +189,7 @@ int testVector() {
 	end = clock();
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -222,7 +210,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -241,7 +229,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	// usleep(SLEEP_DURATION);
@@ -280,7 +268,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -298,7 +286,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -316,7 +304,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -334,7 +322,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -352,7 +340,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
@@ -372,7 +360,7 @@ int testVector() {
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	resTest += printTimeResult(realRes, myRes);
+	TIME_TEST;
 	count++;
 
 	usleep(SLEEP_DURATION);
