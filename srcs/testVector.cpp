@@ -240,12 +240,5 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
-	usleep(SLEEP_DURATION);
-	std::cout << std::endl << "\033[0;36mVECTOR RESULT: " << resClock << " / " << count;
-	if (resClock == count) {
-		std::cout << "\033[0;34m SUCCESS\033[0;37m" << std::endl << std::endl;
-		return (1);
-	}
-	std::cout << "\033[0;31m FAILURE\033[0;37m" << std::endl << std::endl;
-	return (0);
+	END_TEST(VECTOR);
 }

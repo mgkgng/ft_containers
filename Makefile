@@ -1,4 +1,4 @@
-SRCS =	srcs/test.cpp srcs/testVector.cpp srcs/testMap.cpp srcs/testUtils.cpp
+SRCS =	srcs/test.cpp srcs/testPair.cpp srcs/testUtils.cpp
 
 OBJS =	${SRCS:.cpp=.o}
 
@@ -13,7 +13,6 @@ CPPFLAG = -std=c++98
 GREEN	:= "\033[0m\033[1;32m"
 CYAN	:= "\033[0m\033[1;36m"
 RESET	:= "\033[0m"
-
 
 all:	${NAME}
 

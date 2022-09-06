@@ -2,6 +2,7 @@
 
 #include <time.h>
 #include <memory>
+#include <iostream>
 #include <unistd.h>
 
 #define VECTOR "Vector"
@@ -27,13 +28,14 @@
 	resClock += printTimeResult((char *) CONTAINER, realRes, myRes);\
 } while (0)
 
-#define COMPARE_VECTORS
+#define COMPARE compare(mine, real)
 
 #define CHECK(CONTAINER, x) do {\
 	CHECK_CLOCK(CONTAINER);\
 	if (x == WITH_COMPARE)\
-		COMPARE_VECTORS;\
+		COMPARE;\
 	count++;\
+	std::cout << std::endl;\
 } while (0)
 
 /***** CLOCK *****/
@@ -47,11 +49,24 @@
 	myRes = (double)(end - begin) / CLOCKS_PER_SEC;\
 } while (0)
 
+/***** END *****/
+#define END_TEST(CONTAINER) do {\
+	usleep(SLEEP_DURATION);\
+	std::cout << std::endl << "\033[0;36m" << CONTAINER << " Result: " << resClock << " / " << count;\
+	if (resClock == count) {\
+		std::cout << "\033[0;32m SUCCESS\033[0;37m" << std::endl << std::endl;\
+		return (1);\
+	}\
+	std::cout << "\033[0;31m FAILURE\033[0;37m" << std::endl << std::endl;\
+	return (0);\
+} while (0)
+
 using std::string;
 
 /* tester */
 int testVector();
 int testMap();
+int testPair();
 int testSet();
 int testStack();
 int testPair();

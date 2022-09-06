@@ -1,10 +1,11 @@
 #pragma once
 
+#include "lib.hpp"
+
 namespace ft {
 
 template<typename T1, typename T2>
 class pair {
-
 	public:
 		typedef T1	first_type;
 		typedef T2	second_type;
@@ -43,8 +44,7 @@ class pair {
 
 	template<class T1, class T2>
 	bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-		return (lhs.first == rhs.first) ? ft::lexicographical_compare(lhs.second, rhs.second)
-			: ft::lexicographical_compare(lhs.first, rhs.first);
+		return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
 	}
 
 	template<class T1, class T2>
@@ -54,13 +54,11 @@ class pair {
 
 	template<class T1, class T2>
 	bool operator>(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-		return (lhs.first == rhs.first) ? ft::lexicographical_compare(rhs.second, lhs.second)
-			: ft::lexicographical_compare(rhs.first, lhs.first);
+		return (lhs.first == rhs.first) ? (lhs.second > rhs.second) : (lhs.first < rhs.first);
 	}
 
 	template<class T1, class T2>
 	bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
 		return (!(lhs < rhs));
 	}
-
 };
