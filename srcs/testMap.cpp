@@ -10,19 +10,26 @@ int testMap() {
 	float	realRes, myRes;
 	int		resClock = 0, count = 0;
 
-	std::cout << "\033[0;36m*******************CONSTRUCTOR TEST*******************\033[0;37m" << std::endl << std::endl;
+	ANNOUNCE1("CONSTRUCTOR TEST");
 	
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Map Constructor Type 1: Default Constructor\033[0;37m" << std::endl;
+	ANNOUNCE2("Map Constructor Type 1: Default Constructor");
+
+	START_CLOCK;
+	realMap = std::map<int, string>(std::less<int>());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	myMap = ft::map<int, string>();
+	END_CLOCK_MY;
+	CHECK(MAP, ONLY_CLOCK);
+
+	ANNOUNCE2("Map Constructor Type 2: Constructor with iterator");
 
 	START_CLOCK;
 	realMap = std::map<int, string>();
 	END_CLOCK_REAL;
-
 	START_CLOCK;
 	myMap = ft::map<int, string>();
 	END_CLOCK_MY;
-
 	CHECK(MAP, ONLY_CLOCK);
 
 	usleep(SLEEP_DURATION);

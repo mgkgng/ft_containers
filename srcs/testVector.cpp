@@ -3,12 +3,6 @@
 #include "vector.hpp"
 #include <vector>
 
-
-
-
-
-
-
 template<class T>
 void printMyVector(ft::vector<T> vec) {
 	int	i = 1;
@@ -178,18 +172,11 @@ int testVector() {
 
 	// START_CLOCK;
 	// realVector.insert(realVector.begin() + 26, testVec.begin(), testVec.end());
-	// end = clock();
-	// realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
+	// END_CLOCK_REAL;
 	// START_CLOCK;
 	// myVector.insert(myVector.begin() + 26, testMyVec.begin(), testMyVec.end());
-	// end = clock();
-	// myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
-
-	// resClock += printTimeResult(realRes, myRes);
-	// count++;
+	// END_CLOCK_MY;
+	// CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("erase 1");
 

@@ -16,7 +16,7 @@ class map {
 	public:
 		typedef Key						key_type;
 		typedef T						mapped_type;
-		typedef ft::pair<const Key, T> value_type;
+		typedef ft::pair<const Key, T> 	value_type;
 		typedef RBtree<value_type, Compare>	tree_type;
 		typedef size_t					size_type;
 		typedef ptrdiff_t				difference_type;

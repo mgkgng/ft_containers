@@ -43,22 +43,24 @@ class pair {
 
 	template<class T1, class T2>
 	bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-
+		return (lhs.first == rhs.first) ? ft::lexicographical_compare(lhs.second, rhs.second)
+			: ft::lexicographical_compare(lhs.first, rhs.first);
 	}
 
 	template<class T1, class T2>
 	bool operator<=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-
+		return (!(lhs > rhs));
 	}
 
 	template<class T1, class T2>
 	bool operator>(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-
+		return (lhs.first == rhs.first) ? ft::lexicographical_compare(rhs.second, lhs.second)
+			: ft::lexicographical_compare(rhs.first, lhs.first);
 	}
 
 	template<class T1, class T2>
 	bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
-
+		return (!(lhs < rhs));
 	}
 
 };

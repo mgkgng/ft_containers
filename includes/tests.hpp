@@ -6,6 +6,7 @@
 
 #define VECTOR "Vector"
 #define MAP "Map"
+#define PAIR "Pair"
 
 #define SLEEP_DURATION 500000
 
