@@ -3,7 +3,11 @@
 #include "vector.hpp"
 #include <vector>
 
-#define TIME_TEST resTest += printTimeResult((char *) "Vector", realRes, myRes)
+
+
+
+
+
 
 template<class T>
 void printMyVector(ft::vector<T> vec) {
@@ -25,347 +29,233 @@ void printRealVector(std::vector<T> vec) {
 	std::cout << "actual size: " << vec.size() << " capacity: " << vec.capacity() << std::endl;	
 }
 
+template<class T>
+void compareVectors(ft::vector<T> myVec, std::vector<T> realVec) {
+	typename ft::vector<T>::iterator myIt = myVec.begin();
+	typename std::vector<T>::iterator realIt = realVec.begin();
+
+	
+}
+
 int testVector() {
-	ft::vector<int> myVector;
-	std::vector<int> realVector;
-	clock_t begin, end;
-	float	realRes, myRes;
-	int		resTest = 0;
-	int		count = 0;
+	ft::vector<int>		myVector;
+	std::vector<int>	realVector;
+	clock_t				begin, end;
+	float				realRes, myRes;
+	int					resClock = 0, count = 0;
 
-	std::cout << "\033[0;36m*******************CONSTRUCTOR TEST*******************\033[0;37m" << std::endl << std::endl;
+	ANNOUNCE1("CONSTRUCTOR TEST");
 	
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 1: Default Constructor\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 1: Default Constructor");
 
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>();
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>();
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 2: Constructor with allocator\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 2: Constructor with allocator");
 	
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(std::allocator<int>());
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(std::allocator<int>());
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 3-1: Constructor with count copies of elements with value (small size value)\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 3-1: Constructor with count copies of elements with value (small size value)");
 	size_t n = 10;
 
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(n, 15, std::allocator<int>());
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(n, 15, std::allocator<int>());
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)");
 	n = 1000;
 	
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(n, 125, std::allocator<int>());
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(n, 125, std::allocator<int>());
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 4-1: Constructor with count copies of elements with value (small size value)\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 4-1: Constructor with count copies of elements with value (small size value)");
 	n = 10;
 	std::vector<int> testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 4-2: Constructor with count copies of elements with value (big size value)\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 4-2: Constructor with count copies of elements with value (big size value)");
 	n = 1500;
 	testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** Vector Constructor Type 5: Copy Constructor\033[0;37m" << std::endl;
+	ANNOUNCE2("Vector Constructor Type 5: Copy Constructor");
 	ft::vector<int> testMyVec = ft::vector<int>(n, 3000, std::allocator<int>());
 	
-	begin = clock();
+	START_CLOCK;
 	realVector = std::vector<int>(testVec);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector = ft::vector<int>(testMyVec);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE1("CAPACITY TEST");
 
-	usleep(SLEEP_DURATION);
-	std::cout << std::endl << "\033[0;36m*******************CAPACITY TEST*******************\033[0;37m" << std::endl << std::endl;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** reserve\033[0;37m" << std::endl;
+	ANNOUNCE2("reserve");
 	
-	begin = clock();
+	START_CLOCK;
 	realVector.resize(500);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.resize(500);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE1("MODIFIER TEST");
 
-	usleep(SLEEP_DURATION);
-	std::cout << std::endl << "\033[0;36m*******************MODIFIER TEST*******************\033[0;37m" << std::endl << std::endl;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** clear\033[0;37m" << std::endl;
+	ANNOUNCE2("clear");
 	
-	begin = clock();
+	START_CLOCK;
 	realVector.clear();
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.clear();
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
+	ANNOUNCE2("insert 1");
 	n = 15;
-	std::cout << "\033[0;34m** insert 1\033[0;37m" << std::endl;
 	realVector = std::vector<int>(n, 15, std::allocator<int>());
 	myVector = ft::vector<int>(n, 15, std::allocator<int>());
-	//printMyVector(myVector);
 
-	begin = clock();
+	START_CLOCK;
 	realVector.insert(realVector.begin() + 12, 35);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.insert(myVector.begin() + 12, 35);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** insert 2\033[0;37m" << std::endl;
+	ANNOUNCE2("insert 2");
 	n = 4;
 
-	begin = clock();
+	START_CLOCK;
 	realVector.insert(realVector.begin() + 7, n, 99);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.insert(myVector.begin() + 7, n, 99);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	// usleep(SLEEP_DURATION);
-	// std::cout << "\033[0;34m** insert 3\033[0;37m" << std::endl;
+	// ANNOUNCE2("insert 3");
 	// n = 7;
 	// testVec = std::vector<int>(n, 777, std::allocator<int>());
 	// testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
 
-	// begin = clock();
+	// START_CLOCK;
 	// realVector.insert(realVector.begin() + 26, testVec.begin(), testVec.end());
 	// end = clock();
 	// realRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printRealVector(realVector);
 
-	// begin = clock();
+	// START_CLOCK;
 	// myVector.insert(myVector.begin() + 26, testMyVec.begin(), testMyVec.end());
 	// end = clock();
 	// myRes = (double)(end - begin) / CLOCKS_PER_SEC;
 	// printMyVector(myVector);
 
-	// resTest += printTimeResult(realRes, myRes);
+	// resClock += printTimeResult(realRes, myRes);
 	// count++;
 
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** erase 1\033[0;37m" << std::endl;
+	ANNOUNCE2("erase 1");
 
-	begin = clock();
+	START_CLOCK;
 	realVector.erase(realVector.begin() + 15);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.erase(myVector.begin() + 15);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE2("erase 2");
 
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** erase 2\033[0;37m" << std::endl;
-
-	begin = clock();
+	START_CLOCK;
 	realVector.erase(realVector.begin() + 2, realVector.begin() + 8);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.erase(myVector.begin() + 2, myVector.begin() + 8);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE2("push_back");
 
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** push_back\033[0;37m" << std::endl;
-
-	begin = clock();
+	START_CLOCK;
 	realVector.push_back(71359);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.push_back(71359);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE2("pop_back");
 
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** pop_back\033[0;37m" << std::endl;
-
-	begin = clock();
+	START_CLOCK;
 	realVector.pop_back();
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.pop_back();
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
+	ANNOUNCE2("resize");
 
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** resize\033[0;37m" << std::endl;
-
-	begin = clock();
+	START_CLOCK;
 	realVector.resize(40, 9);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.resize(40, 9);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
-	TIME_TEST;
-	count++;
-
-	usleep(SLEEP_DURATION);
-	std::cout << "\033[0;34m** swap\033[0;37m" << std::endl;
+	ANNOUNCE2("swap");
 	testVec = std::vector<int>(n, 777, std::allocator<int>());
 	testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
 
-	begin = clock();
+	START_CLOCK;
 	realVector.swap(testVec);
-	end = clock();
-	realRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printRealVector(realVector);
-
-	begin = clock();
+	END_CLOCK_REAL;
+	START_CLOCK;
 	myVector.swap(testMyVec);
-	end = clock();
-	myRes = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printMyVector(myVector);
-
-	TIME_TEST;
-	count++;
+	END_CLOCK_MY;
+	CHECK(VECTOR, ONLY_CLOCK);
 
 	usleep(SLEEP_DURATION);
-	std::cout << std::endl << "\033[0;36mVECTOR RESULT: " << resTest << " / " << count;
-	if (resTest == count) {
+	std::cout << std::endl << "\033[0;36mVECTOR RESULT: " << resClock << " / " << count;
+	if (resClock == count) {
 		std::cout << "\033[0;34m SUCCESS\033[0;37m" << std::endl << std::endl;
 		return (1);
 	}

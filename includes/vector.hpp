@@ -256,13 +256,7 @@ class vector {
 			if (new_cap > this->max_size())
 				throw std::length_error("vector error: length");
 	
-			pointer tmp = _alloc.allocate(new_cap);
-			for (int i = 0; i < _size; i++)
-				_alloc.construct(tmp + i, _start + i);
-			this->clear();
-			_alloc.deallocate(_start, _capacity);
-			_start = tmp;
-			_capacity = new_cap;
+			getNewVector(new_cap);
 		}
 
 		size_type capacity() const {
