@@ -27,7 +27,7 @@ int main() {
 
 	// res.vector = testVector();
 	res.pair = testPair();
-	// res.map = testMap();
+	res.map = testMap();
 	// res.stack = testStack();
 	// res.set = testSet();
 
