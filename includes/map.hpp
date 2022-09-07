@@ -53,9 +53,17 @@ class map {
 				}
 		};
 
-		map() {}
+		map() {
+			_comp = Compare();
+			_tree = tree_type(_comp);
+			_compV = value_compare(_comp);
+			_alloc = Allocator();
+			std::cout << "hello" << std::endl;
+
+		}
 		
 		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
+			std::cout << "hello2" << std::endl;
 			_tree = tree_type(comp);
 			_comp = comp;
 			_compV = value_compare(_comp);
@@ -167,7 +175,7 @@ class map {
 		}
 
 		size_type size() const {
-			return (_tree._size);
+			return (_tree.getSize());
 		}
 
 		size_type max_size() const {
@@ -311,17 +319,17 @@ class map {
 			return (_compV);
 		}
 
-	friend bool operator==(const map& lhs, const map& rhs) {
-		if (lhs._tree._size != rhs._tree._size)
-			return (false);
-		iterator lbegin = lhs.begin();
-		iterator rbegin = rhs.begin();
-		while (lbegin)
-			if ((lbegin++)->key != (rbegin++)->key || (lbegin++)->value != (rbegin++)->value)
+		friend bool operator==(const map& lhs, const map& rhs) {
+			if (lhs._tree._size != rhs._tree._size)
 				return (false);
-		return (true);
-	}
-	
+			iterator lbegin = lhs.begin();
+			iterator rbegin = rhs.begin();
+			while (lbegin)
+				if ((lbegin++)->key != (rbegin++)->key || (lbegin++)->value != (rbegin++)->value)
+					return (false);
+			return (true);
+		}
+		
 		friend bool operator!=(const map& lhs, const map& rhs) {
 			return (!(lhs == rhs));
 		}

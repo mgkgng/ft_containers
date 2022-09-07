@@ -36,8 +36,8 @@ class RBiter {
 			return (*this);
 		}
 
-		Iter& operator++(int) {
-			Iter tmp = this;
+		Iter operator++(int) {
+			Iter tmp = *this;
 			this->increment();
 			return (tmp);
 		}
@@ -47,8 +47,8 @@ class RBiter {
 			return (*this);
 		}
 
-		Iter& operator--(int) {
-			Iter tmp = this;
+		Iter operator--(int) {
+			Iter tmp = *this;
 			this->decrement();
 			return (tmp);
 		}
@@ -115,8 +115,8 @@ class RBtree {
 		typedef ptrdiff_t				difference_type;
 		typedef Compare					value_compare;
 
-		typedef ft::RBnode<T>				node;
-		typedef ft::RBnode<T>*				node_pointer;
+		typedef ft::RBnode<T>			node;
+		typedef ft::RBnode<T>*			node_pointer;
 
 		typedef ft::RBiter<Value>		iterator;
 
@@ -420,6 +420,9 @@ class RBtree {
 			}
 		}
 
+		/* GETTER */
+		size_type getSize() const { return _size; }
+
 		void swap(RBtree &other) {
 			node_pointer tmp = _root;
 			_root = other._root;
@@ -438,7 +441,7 @@ class RBtree {
 			other._comp = tmp4;
 		}
 
-	private:
+	protected:
 		node_pointer			_root;
 		size_type				_size;
 		std::allocator<node>	_nodeAlloc;
