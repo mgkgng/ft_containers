@@ -347,7 +347,7 @@ class vector {
 			difference_type count = &*last - &*first;
 
 			iterator it;
-			for (it = first; it != last; it++)
+			for (it = first; it != _end - count; it++)
 				*it = *(it + count);
 			while (it != _end)
 				_alloc.destroy(&*it++);
