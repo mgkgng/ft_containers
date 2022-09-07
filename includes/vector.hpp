@@ -130,7 +130,7 @@ class vector {
 		reference at(size_type pos) {
 			// Returns a reference to the element at specified location pos, with bounds checking.
 			// If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
-			if (pos >= _size)
+			if (pos >= _capacity)
 				throw std::out_of_range("vector error: out of range");
 			return (*(_start + pos));
 		}
@@ -282,7 +282,7 @@ class vector {
 		// The past-the-end iterator is also invalidated.
 		iterator insert(iterator pos, const T& value) { // cppreference(1)
 			// inserts value before pos
-			difference_type diff = &*pos - &*_start - 1;
+			difference_type diff = &*pos - &*_start;
 			if (_size == _capacity)
 				this->getMoreCapacity(_size + 1);
 			_end++;
@@ -296,7 +296,7 @@ class vector {
 
 		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
 			// inserts count copies of the value before pos
-			difference_type diff = &*pos - &*_start - 1;
+			difference_type diff = &*pos - &*_start;
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
 			_end += count;
@@ -311,15 +311,18 @@ class vector {
 		template<class InputIt>
 		void insert(iterator pos, InputIt first, InputIt last) { // cppreference(4)
 			// inserts elements from range [first, last) before pos
-			std::cout << "BONJOUR" << std::endl;
-			difference_type diff = &*pos - &*_start - 1;
+			difference_type diff = &*pos - &*_start;
 			difference_type count = &*last - &*first;
+			if (diff > _size) {
+				_size = diff;
+				_end = _start + _size;
+			}
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
 			_end += count;
 			_size += count;
 
-			for (iterator it = _end; it != _start + diff + count; it--)
+			for (iterator it = _end; it != _start + diff; it--)
 				*it = *(it - count);
 			for (iterator it = _start + diff; it != _start + diff + count; it++)
 				*it = *first++;
@@ -384,19 +387,9 @@ class vector {
 			this->_size = i;
 			this->_end = _start + i;
 
-			std::cout << "here?" << i << " " << count << std::endl;
-			std::cout << "start: " << _start << " end: " << _end << std::endl;
-
-			if (i < count) {
-				for (int j = 0; i + j < count; j++) {
-					_alloc.construct(this->_end + j, value);
-					std::cout << j << " ";
-				}
-			}
-
-			std::cout << "lol" << std::endl;
-			std::cout << this->at(20) << std::endl;
-			std::cout << "c'est bon ici" << std::endl;
+			if (i < count)
+				for (int j = 0; i + j < count; j++)
+					*(this->_end + j) = value;
 		}
 
 		void swap(vector& other) {
@@ -477,5 +470,4 @@ class vector {
 	void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
 		lhs.swap(rhs);
 	}
-		
 };

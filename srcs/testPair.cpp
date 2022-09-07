@@ -6,10 +6,10 @@
 template<typename T1, typename T2>
 bool compare(ft::pair<T1, T2> mine, std::pair<T1, T2> real) {
 	if (mine.first == real.first && mine.second == real.second) {
-		std::cout << "result: \033[0;32mOK\033[0;37m";
+		PRINT_OK;
 		return (true);
 	}
-	std::cout << "result: \033[0;31mKO\033[0;37m";
+	PRINT_KO;
 	return (false);
 }
 

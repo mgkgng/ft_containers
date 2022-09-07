@@ -61,6 +61,10 @@
 	return (0);\
 } while (0)
 
+/***** PRINT *****/
+#define PRINT_OK std::cout << "result: \033[0;32mOK\033[0;37m"
+#define PRINT_KO std::cout << "result: \033[0;31mKO\033[0;37m"
+
 using std::string;
 
 /* tester */
