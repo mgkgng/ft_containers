@@ -9,7 +9,7 @@
 #define MAP "Map"
 #define PAIR "Pair"
 
-#define SLEEP_DURATION 500000
+#define SLEEP_DURATION 50000
 
 /***** ANNOUNCE ******/
 #define ANNOUNCE1(s) do {\

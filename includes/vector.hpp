@@ -257,7 +257,7 @@ class vector {
 			if (new_cap > this->max_size())
 				throw std::length_error("vector error: length");
 	
-			this->resize(new_cap); //TO_DO CHECK IT
+			this->recapacity(new_cap); //TO_DO CHECK IT
 		}
 
 		size_type capacity() const {
@@ -372,24 +372,13 @@ class vector {
 		}
 
 		void resize(size_type count, T value = T()) {
-			pointer tmp = this->_alloc.allocate(count);
-			if (count == 1)
+			this->recapacity(count);
+			if (_size == count)
 				return ;
-			int i = -1;
-			for (iterator it = _start; ++i < count && it != this->_end; it++)
-				_alloc.construct(tmp + i, *it);
-
-			this->clear();
-			_alloc.deallocate(_start, _capacity);
-
-			this->_start = tmp;
-			this->_capacity = count;
-			this->_size = i;
-			this->_end = _start + i;
-
-			if (i < count)
-				for (int j = 0; i + j < count; j++)
-					*(this->_end + j) = value;
+			for (int i = 0; _size + i < count; i++)
+				_alloc.construct(_end + i, value);
+			this->_size = count;
+			this->_end = _start + count;
 		}
 
 		void swap(vector& other) {
@@ -417,11 +406,27 @@ class vector {
 	protected:
 		void getMoreCapacity(size_type n) {
 			if (!_capacity)
-				this->resize(1);
+				this->recapacity(1);
 			while (n > _capacity)
-				this->resize(_capacity * 2);
+				this->recapacity(_capacity * 2);
 		}
 
+		void recapacity(size_type count) {
+			pointer tmp = this->_alloc.allocate(count);
+			if (count == 1)
+				return ;
+			int i = 0;
+			for (iterator it = _start; i < count && it != this->_end; it++)
+				_alloc.construct(tmp + i++, *it);
+
+			this->clear();
+			_alloc.deallocate(_start, _capacity);
+
+			this->_start = tmp;
+			this->_capacity = count;
+			this->_size = i;
+			this->_end = _start + i;
+		}
 	private:
 		allocator_type	_alloc; // allocator to use for all memory allocations of this container
 		pointer			_start; // the starting address of the container
