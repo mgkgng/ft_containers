@@ -136,8 +136,9 @@ class vector {
 		}
 
 		const_reference at(size_type pos) const {
-			if (pos >= _size)
-				throw std::out_of_range("vector error: out of range");
+			// if (pos >= _size)
+			// 	throw std::out_of_range("vector error: out of range"); TO_DO REVOIR
+			std::cout << "What?" << std::endl;
 			return (*(_start + pos));
 		}
 
@@ -256,7 +257,7 @@ class vector {
 			if (new_cap > this->max_size())
 				throw std::length_error("vector error: length");
 	
-			getNewVector(new_cap);
+			this->resize(new_cap); //TO_DO CHECK IT
 		}
 
 		size_type capacity() const {
@@ -368,13 +369,34 @@ class vector {
 		}
 
 		void resize(size_type count, T value = T()) {
-			getNewVector(count);
-			if (_size < count) {
-				iterator it = _end;
-				for (int i = 0; i < _capacity - _size; i++)
-					*(it + i) = value;
+			pointer tmp = this->_alloc.allocate(count);
+			if (count == 1)
+				return ;
+			int i = -1;
+			for (iterator it = _start; ++i < count && it != this->_end; it++)
+				_alloc.construct(tmp + i, *it);
+
+			this->clear();
+			_alloc.deallocate(_start, _capacity);
+
+			this->_start = tmp;
+			this->_capacity = count;
+			this->_size = i;
+			this->_end = _start + i;
+
+			std::cout << "here?" << i << " " << count << std::endl;
+			std::cout << "start: " << _start << " end: " << _end << std::endl;
+
+			if (i < count) {
+				for (int j = 0; i + j < count; j++) {
+					_alloc.construct(this->_end + j, value);
+					std::cout << j << " ";
+				}
 			}
-			_size = count;
+
+			std::cout << "lol" << std::endl;
+			std::cout << this->at(20) << std::endl;
+			std::cout << "c'est bon ici" << std::endl;
 		}
 
 		void swap(vector& other) {
@@ -402,29 +424,10 @@ class vector {
 	protected:
 		void getMoreCapacity(size_type n) {
 			if (!_capacity)
-				this->getNewVector(1);
+				this->resize(1);
 			while (n > _capacity)
-				this->getNewVector(_capacity * 2);
+				this->resize(_capacity * 2);
 		}
-
-		void getNewVector(size_type count) {
-			pointer tmp = this->_alloc.allocate(count);
-			if (count == 1)
-				return ;
-			int i = 0;
-			for (iterator it = _start; it != this->end(); it++)
-				_alloc.construct(tmp + i++, *it);
-
-			size_type tmpSize = _size;
-			this->clear();
-			_alloc.deallocate(_start, _capacity);
-
-			this->_start = tmp;
-			this->_capacity = count;
-			this->_size = tmpSize;
-			this->_end = _start + tmpSize;
-		}
-
 
 	private:
 		allocator_type	_alloc; // allocator to use for all memory allocations of this container

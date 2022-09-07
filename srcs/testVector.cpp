@@ -24,39 +24,53 @@ void printRealVector(std::vector<T> vec) {
 }
 
 template<class T>
-void compareVectors(ft::vector<T> myVec, std::vector<T> realVec) {
-	typename ft::vector<T>::iterator myIt = myVec.begin();
-	typename std::vector<T>::iterator realIt = realVec.begin();
+bool compare(ft::vector<T> mine, std::vector<T> real) {
+	if (mine.size() != real.size())
+		return (false);
 
-	
+	typename ft::vector<T>::iterator myIt;
+	typename std::vector<T>::iterator realIt;
+	for (myIt = mine.begin(); myIt != mine.end(); myIt++)
+		if (*myIt++ != *realIt++)
+			return (false);
+	return (true);
 }
 
 int testVector() {
-	ft::vector<int>		myVector;
-	std::vector<int>	realVector;
+	ft::vector<int>		mine;
+	std::vector<int>	real;
 	clock_t				begin, end;
 	float				realRes, myRes;
 	int					resClock = 0, count = 0;
+
+	std::cout << "UN TEST ==========" << std::endl;
+	std::vector<int> re = std::vector<int>();
+	re.resize(100);
+	std::cout << "empty but: " << re.at(50) << std::endl;
+	std::cout << "BUT MINE ==========" << std::endl;
+	ft::vector<int> ree = ft::vector<int>();
+	ree.resize(100);
+	std::cout << "eee but: " << ree.at(50) << std::endl;
 
 	ANNOUNCE1("CONSTRUCTOR TEST");
 	
 	ANNOUNCE2("Vector Constructor Type 1: Default Constructor");
 
 	START_CLOCK;
-	realVector = std::vector<int>();
+	real = std::vector<int>();
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>();
+	mine = ft::vector<int>();
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("Vector Constructor Type 2: Constructor with allocator");
 	
 	START_CLOCK;
-	realVector = std::vector<int>(std::allocator<int>());
+	real = std::vector<int>(std::allocator<int>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(std::allocator<int>());
+	mine = ft::vector<int>(std::allocator<int>());
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
@@ -64,68 +78,68 @@ int testVector() {
 	size_t n = 10;
 
 	START_CLOCK;
-	realVector = std::vector<int>(n, 15, std::allocator<int>());
+	real = std::vector<int>(n, 15, std::allocator<int>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(n, 15, std::allocator<int>());
+	mine = ft::vector<int>(n, 15, std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)");
 	n = 1000;
 	
 	START_CLOCK;
-	realVector = std::vector<int>(n, 125, std::allocator<int>());
+	real = std::vector<int>(n, 125, std::allocator<int>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(n, 125, std::allocator<int>());
+	mine = ft::vector<int>(n, 125, std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("Vector Constructor Type 4-1: Constructor with count copies of elements with value (small size value)");
 	n = 10;
 	std::vector<int> testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	
 	START_CLOCK;
-	realVector = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
+	real = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
+	mine = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("Vector Constructor Type 4-2: Constructor with count copies of elements with value (big size value)");
 	n = 1500;
 	testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	
 	START_CLOCK;
-	realVector = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
+	real = std::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
+	mine = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("Vector Constructor Type 5: Copy Constructor");
 	ft::vector<int> testMyVec = ft::vector<int>(n, 3000, std::allocator<int>());
 	
 	START_CLOCK;
-	realVector = std::vector<int>(testVec);
+	real = std::vector<int>(testVec);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector = ft::vector<int>(testMyVec);
+	mine = ft::vector<int>(testMyVec);
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE1("CAPACITY TEST");
 
 	ANNOUNCE2("reserve");
 	
 	START_CLOCK;
-	realVector.resize(500);
+	real.resize(500);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.resize(500);
+	mine.resize(500);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
@@ -134,36 +148,36 @@ int testVector() {
 	ANNOUNCE2("clear");
 	
 	START_CLOCK;
-	realVector.clear();
+	real.clear();
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.clear();
+	mine.clear();
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("insert 1");
 	n = 15;
-	realVector = std::vector<int>(n, 15, std::allocator<int>());
-	myVector = ft::vector<int>(n, 15, std::allocator<int>());
+	real = std::vector<int>(n, 15, std::allocator<int>());
+	mine = ft::vector<int>(n, 15, std::allocator<int>());
 
 	START_CLOCK;
-	realVector.insert(realVector.begin() + 12, 35);
+	real.insert(real.begin() + 12, 35);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.insert(myVector.begin() + 12, 35);
+	mine.insert(mine.begin() + 12, 35);
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	ANNOUNCE2("insert 2");
 	n = 4;
 
 	START_CLOCK;
-	realVector.insert(realVector.begin() + 7, n, 99);
+	real.insert(real.begin() + 7, n, 99);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.insert(myVector.begin() + 7, n, 99);
+	mine.insert(mine.begin() + 7, n, 99);
 	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
+	CHECK(VECTOR, WITH_COMPARE);
 
 	// ANNOUNCE2("insert 3");
 	// n = 7;
@@ -171,60 +185,60 @@ int testVector() {
 	// testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
 
 	// START_CLOCK;
-	// realVector.insert(realVector.begin() + 26, testVec.begin(), testVec.end());
+	// real.insert(real.begin() + 26, testVec.begin(), testVec.end());
 	// END_CLOCK_REAL;
 	// START_CLOCK;
-	// myVector.insert(myVector.begin() + 26, testMyVec.begin(), testMyVec.end());
+	// mine.insert(mine.begin() + 26, testMyVec.begin(), testMyVec.end());
 	// END_CLOCK_MY;
 	// CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("erase 1");
 
 	START_CLOCK;
-	realVector.erase(realVector.begin() + 15);
+	real.erase(real.begin() + 15);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.erase(myVector.begin() + 15);
+	mine.erase(mine.begin() + 15);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("erase 2");
 
 	START_CLOCK;
-	realVector.erase(realVector.begin() + 2, realVector.begin() + 8);
+	real.erase(real.begin() + 2, real.begin() + 8);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.erase(myVector.begin() + 2, myVector.begin() + 8);
+	mine.erase(mine.begin() + 2, mine.begin() + 8);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("push_back");
 
 	START_CLOCK;
-	realVector.push_back(71359);
+	real.push_back(71359);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.push_back(71359);
+	mine.push_back(71359);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("pop_back");
 
 	START_CLOCK;
-	realVector.pop_back();
+	real.pop_back();
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.pop_back();
+	mine.pop_back();
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
 	ANNOUNCE2("resize");
 
 	START_CLOCK;
-	realVector.resize(40, 9);
+	real.resize(40, 9);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.resize(40, 9);
+	mine.resize(40, 9);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
@@ -233,10 +247,10 @@ int testVector() {
 	testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
 
 	START_CLOCK;
-	realVector.swap(testVec);
+	real.swap(testVec);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	myVector.swap(testMyVec);
+	mine.swap(testMyVec);
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 

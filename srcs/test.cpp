@@ -25,7 +25,7 @@ int main() {
 
 	std::cout << "Test Starts." << std::endl;
 
-	// res.vector = testVector();
+	res.vector = testVector();
 	res.pair = testPair();
 	res.map = testMap();
 	// res.stack = testStack();
@@ -33,7 +33,7 @@ int main() {
 
 	usleep(SLEEP_DURATION);
 	std::cout << "Test Result:" << std::endl;
-	// printResult("Vector", res.vector);
+	printResult("Vector", res.vector);
 	printResult("Pair", res.pair);
 	printResult("Map", res.map);
 	// printResult("Stack", res.stack);
