@@ -2,6 +2,7 @@
 
 #include <map>
 #include "map.hpp"
+#include <utility>
 
 template<class Key, class Value>
 bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
@@ -42,31 +43,35 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, ONLY_CLOCK);
 
-	std::cout << "what?" << std::endl;
-	ft::map<int, string>::iterator myIt = mine.begin();
-	std::map<int, string>::iterator realIt = real.begin();
-	std::cout << "pardon?" << std::endl;
-	std::cout << "my type: " << typeid(myIt).name() << std::endl;
-	std::cout << "real type: " << typeid(realIt).name() << std::endl;
+	// ft::map<int, string>::iterator myIt = mine.begin();
+	// std::map<int, string>::iterator realIt = real.begin();
+	// std::cout << "pardon?" << std::endl;
+	// std::cout << "my type: " << typeid(myIt).name() << std::endl;
+	// std::cout << "real type: " << typeid(realIt).name() << std::endl;
 
 
-	ANNOUNCE2("Map Constructor Type 2: Constructor with iterator");
+	ANNOUNCE2("Map Constructor Type 2: Default Constructor with compare and allocator");
 
 	START_CLOCK;
-	real = std::map<int, string>();
+	real = std::map<int, string>(std::less<int>(), std::allocator<std::pair<const int, string> >());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine = ft::map<int, string>();
+	mine = ft::map<int, string>(std::less<int>(), std::allocator<ft::pair<const int, string> >());
 	END_CLOCK_MY;
 	CHECK(MAP, ONLY_CLOCK);
 
-	ANNOUNCE2("Map Constructor Type 2: Constructor with iterator");
+	ANNOUNCE2("Map Constructor Type 3: Constructor with iterator");
+	std::map<int, string> testMap;
 
+	testMap[2] = "lol";
+	testMap[5] = "five";
+	testMap[1] = "prime";
+	std::cout << "test value at begin: " << (*testMap.begin()).second << std::endl;
 	START_CLOCK;
-	real = std::map<int, string>();
+	real = std::map<int, string>(testMap.begin(), testMap.end());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine = ft::map<int, string>();
+	mine = ft::map<int, string>(testMap.begin(), testMap.end());
 	END_CLOCK_MY;
 	CHECK(MAP, ONLY_CLOCK);
 

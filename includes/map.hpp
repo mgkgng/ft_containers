@@ -17,7 +17,6 @@ class map {
 		typedef Key						key_type;
 		typedef T						mapped_type;
 		typedef ft::pair<const Key, T> 	value_type;
-		typedef RBtree<value_type, Compare>	tree_type;
 		typedef size_t					size_type;
 		typedef ptrdiff_t				difference_type;
 		typedef Compare					key_compare;
@@ -26,12 +25,13 @@ class map {
 		typedef const value_type&		const_reference;
 		typedef typename Allocator::pointer		pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
-		typedef ft::RBiter<value_type>			iterator;
-		typedef ft::RBiter<const value_type>	const_iterator;
 		typedef ft::ReverseIterator<iterator>	reverse_iterator;
 		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
-		typedef RBnode<value_type>*		node_pointer;
+		typedef RBtree<key_type, mapped_type, Compare, Allocator>	tree_type;
+		typedef RBnode<value_type>		node;
+		typedef ft::RBiter<value_type>			iterator;
+		typedef ft::RBiter<const value_type>	const_iterator;
 
 		class value_compare {
 
@@ -55,19 +55,16 @@ class map {
 
 		map() {
 			_comp = Compare();
-			_tree = tree_type(_comp);
 			_compV = value_compare(_comp);
 			_alloc = Allocator();
-			std::cout << "hello" << std::endl;
-
+			_tree = tree_type();
 		}
 		
 		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
-			std::cout << "hello2" << std::endl;
-			_tree = tree_type(comp);
 			_comp = comp;
 			_compV = value_compare(_comp);
 			_alloc = alloc;
+			_tree = tree_type();
 		}
 
 		template<class InputIt>
@@ -75,7 +72,13 @@ class map {
 			// Constructs the container with the contents of the range [first, last).
 			// If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 			map(comp, alloc);
-			this->insert(first, last);
+			//this->insert(first, last);
+			while (first != last) {
+				
+				this->_tree.add(*first++, _tree.getRoot());
+			}
+			
+			
 		}
 
 		map(const map& other) { // cppreference(6)
@@ -360,8 +363,13 @@ class map {
 		key_compare		_comp;
 		value_compare	_compV;
 		allocator_type	_alloc;
+
+		node *initNode(value_type v) {
+			n->red = true;
+			n->left = 0;
+			n->right = 0;
+			n->parent = 0;
+			n->value = v;
+		}
 };
-
-
-
 };
