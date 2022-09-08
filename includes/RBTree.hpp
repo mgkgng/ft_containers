@@ -118,7 +118,8 @@ class RBtree {
 		///////////////////////////
 		// ** type definition ** //
 		///////////////////////////
-		typedef RBnode<ft::pair<const Key, T> >  node;
+		typedef ft::pair<const Key, T>			 value_type;
+		typedef RBnode<value_type>  			 node;
 		typedef std::allocator<node>			 node_allocator;
 		typedef typename node_allocator::pointer node_ptr;
 		typedef unsigned int					 size_type;
@@ -136,23 +137,23 @@ class RBtree {
 		// ** principal functions ** //
 		///////////////////////////////
 
-		node *add(const Value &v) {
-			node_ptr ptr = nodeAlloc.allocate(1);
-			node newNode = RBnode(v);
+		node_ptr *add(const value_type &v) {
+			node_ptr	ptr = nodeAlloc.allocate(1);
+			node		newNode = RBnode<value_type>(v);
 			nodeAlloc.construct(ptr, newNode);
 
 			node *where = search(v.first, this->root);
-			if (where)
+			if (where == this->root)
+				this->root = n;
+			else
 				this->putNodePos(&newNode, where);
-			else // un truc comme ca
-				this->_root = n;
-			insert1(n);
-			return (n);
+			insert1(newNode);
+			return (newNode);
 		}
 
 		template<class Key>
 		void remove(Key &key) {
-			node *n = this->search(key, _root);
+			node *n = this->search(key, root);
 			if (!n)
 				return ;
 			node *child = (!n->right) ? n->left : n->right; // SUS
@@ -163,8 +164,8 @@ class RBtree {
 				else
 					delete1(child);
 			}
-			// _nodeAlloc.destroy(n); as i don't construct anything for now
-			_nodeAlloc.deallocate(n, 1);
+			// nodeAlloc.destroy(n); as i don't construct anything for now
+			nodeAlloc.deallocate(n, 1);
 		}
 
 		//////////////////
@@ -188,7 +189,7 @@ class RBtree {
 		}
 
 		node *getRoot() {
-			return (_root);
+			return (root);
 		}
 
 		//////////////////
@@ -391,14 +392,13 @@ class RBtree {
 				n->parent->right = child;
 		}
 
-		template<class Key>
 		void putNodePos(node *n, node *where) {
 			n->parent = where->parent;
 			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
 		
 		node *beginPtr() {
-			node *l = _root;
+			node *l = root;
 	
 			while (l && l->left)
 				l = l->left;
@@ -409,40 +409,37 @@ class RBtree {
 			node *n = this->beginPtr();
 			while (n) {
 				node *next = n + 1;
-				_nodeAlloc.deallocate(n, 1);
+				nodeAlloc.deallocate(n, 1);
 				n = next;
-				//* or could it work like this too? -> _nodeAlloc.dealloc(n++, 1);
+				//* or could it work like this too? -> nodeAlloc.dealloc(n++, 1);
 			}
 		}
 
 		/* GETTER */
-		size_type getSize() const { return _size; }
+		size_type getSize() const { return size; }
 
 		void swap(RBtree &other) {
-			node *tmp = _root;
-			_root = other._root;
-			other._root = tmp;
+			node *tmp = root;
+			root = other.root;
+			other.root = tmp;
 
-			size_type tmp2 = _size;
-			_size = other._size;
-			other._size = tmp2;
+			size_type tmp2 = size;
+			size = other.size;
+			other.size = tmp2;
 
-			std::allocator<node> tmp3 = _nodeAlloc;
-			_nodeAlloc = other._nodeAlloc;
-			other._nodeAlloc = tmp3;
+			std::allocator<node> tmp3 = nodeAlloc;
+			nodeAlloc = other.nodeAlloc;
+			other.nodeAlloc = tmp3;
 
-			value_compare tmp4 = _comp;
-			_comp = other._comp;
-			other._comp = tmp4;
+			valuecompare tmp4 = comp;
+			comp = other.comp;
+			other.comp = tmp4;
 		}
 
 	protected:
 		node			*root;
 		size_type		size;
 		node_allocator	nodeAlloc;
-		// value_compare			comp;
+		Compare			comp;
 };
-
-
-
 };
