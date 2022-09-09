@@ -164,8 +164,6 @@ class vector {
 		reference back() {
 			// Returns a reference to the last element in the container.
 			// Calling back on an empty container is undefined.
-			if (!_size)
-				return ;
 			return (*(_end - 1));
 		}
 
@@ -405,8 +403,10 @@ class vector {
 
 	protected:
 		void getMoreCapacity(size_type n) {
-			if (!_capacity)
-				this->recapacity(1);
+			if (!_capacity) {
+				this->recapacity(n);
+				return ;
+			}
 			while (n > _capacity)
 				this->recapacity(_capacity * 2);
 		}

@@ -8,6 +8,7 @@
 #define VECTOR "Vector"
 #define MAP "Map"
 #define PAIR "Pair"
+#define STACK "Stack"
 
 #define SLEEP_DURATION 50000
 
@@ -23,16 +24,16 @@
 
 /***** CHECKER *****/
 #define ONLY_CLOCK 0
-#define WITH_COMPARE 1
+#define DO_BOTH 1
 #define CHECK_CLOCK(CONTAINER) do {\
-	resClock += printTimeResult((char *) CONTAINER, realRes, myRes);\
+	res += printTimeResult((char *) CONTAINER, realRes, myRes);\
 } while (0)
 
-#define COMPARE compare(mine, real)
+#define COMPARE res *= compare(mine, real)
 
 #define CHECK(CONTAINER, x) do {\
 	CHECK_CLOCK(CONTAINER);\
-	if (x == WITH_COMPARE)\
+	if (x == DO_BOTH)\
 		COMPARE;\
 	count++;\
 	std::cout << std::endl;\
@@ -52,8 +53,8 @@
 /***** END *****/
 #define END_TEST(CONTAINER) do {\
 	usleep(SLEEP_DURATION);\
-	std::cout << std::endl << "\033[0;36m" << CONTAINER << " Result: " << resClock << " / " << count;\
-	if (resClock == count) {\
+	std::cout << std::endl << "\033[0;36m" << CONTAINER << " Result: " << res << " / " << count;\
+	if (res == count) {\
 		std::cout << "\033[0;32m SUCCESS\033[0;37m" << std::endl << std::endl;\
 		return (1);\
 	}\

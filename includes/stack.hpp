@@ -17,13 +17,9 @@ class stack {
 		Container c;
 
 	public:
-		stack() : c(Container()) {}
-
 		explicit stack(const Container& cont = Container()) : c(cont) {}
 
-		stack(const stack& other) {
-			*this = other;
-		}
+		stack(const stack& other) { *this = other; }
 
 		~stack() {}
 
@@ -56,5 +52,4 @@ class stack {
 			c.pop_back();
 		}
 };
-
 };

@@ -42,7 +42,7 @@ int testVector() {
 	std::vector<int>	real;
 	clock_t				begin, end;
 	float				realRes, myRes;
-	int					resClock = 0, count = 0;
+	int					res = 0, count = 0;
 
 	ANNOUNCE1("CONSTRUCTOR TEST");
 	
@@ -72,7 +72,7 @@ int testVector() {
 	START_CLOCK;
 	mine = ft::vector<int>(n, 15, std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)");
 	n = 1000;
@@ -82,7 +82,7 @@ int testVector() {
 	START_CLOCK;
 	mine = ft::vector<int>(n, 125, std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("Vector Constructor Type 4-1: Constructor with count copies of elements with value (small size value)");
 	n = 10;
@@ -93,7 +93,7 @@ int testVector() {
 	START_CLOCK;
 	mine = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("Vector Constructor Type 4-2: Constructor with count copies of elements with value (big size value)");
 	n = 1500;
@@ -104,7 +104,7 @@ int testVector() {
 	START_CLOCK;
 	mine = ft::vector<int>(testVec.begin(), testVec.end(), std::allocator<int>());
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("Vector Constructor Type 5: Copy Constructor");
 	ft::vector<int> testMyVec = ft::vector<int>(n, 3000, std::allocator<int>());
@@ -114,7 +114,7 @@ int testVector() {
 	START_CLOCK;
 	mine = ft::vector<int>(testMyVec);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE1("CAPACITY TEST");
 
@@ -136,7 +136,7 @@ int testVector() {
 	START_CLOCK;
 	mine.clear();
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("insert 1");
 	n = 15;
@@ -148,7 +148,7 @@ int testVector() {
 	START_CLOCK;
 	mine.insert(mine.begin() + 12, 35);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("insert 2");
 	n = 4;
@@ -158,7 +158,7 @@ int testVector() {
 	START_CLOCK;
 	mine.insert(mine.begin() + 7, n, 99);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("insert 3");
 	n = 7;
@@ -170,7 +170,7 @@ int testVector() {
 	START_CLOCK;
 	mine.insert(mine.begin() + 26, testMyVec.begin(), testMyVec.end());
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("erase 1");
 	START_CLOCK;
@@ -179,7 +179,7 @@ int testVector() {
 	START_CLOCK;
 	mine.erase(mine.begin() + 15);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("erase 2");
 	START_CLOCK;
@@ -188,7 +188,7 @@ int testVector() {
 	START_CLOCK;
 	mine.erase(mine.begin() + 2, mine.begin() + 8);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("push_back");
 	START_CLOCK;
@@ -197,7 +197,7 @@ int testVector() {
 	START_CLOCK;
 	mine.push_back(71359);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("pop_back");
 	START_CLOCK;
@@ -206,7 +206,7 @@ int testVector() {
 	START_CLOCK;
 	mine.pop_back();
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("resize");
 	START_CLOCK;
@@ -215,7 +215,7 @@ int testVector() {
 	START_CLOCK;
 	mine.resize(40, 9);
 	END_CLOCK_MY;
-	CHECK(VECTOR, WITH_COMPARE);
+	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("swap");
 	testVec = std::vector<int>(n, 777, std::allocator<int>());

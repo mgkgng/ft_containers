@@ -139,7 +139,7 @@ bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
 int testMap() {
 	clock_t begin, end;
 	float	realRes, myRes;
-	int		resClock = 0, count = 0;
+	int		res = 0, count = 0;
 
 	ANNOUNCE1("CONSTRUCTOR TEST");
 	

@@ -18,7 +18,7 @@ int testPair() {
 	ft::pair<int, string>	mine;
 	clock_t					begin, end;
 	float					realRes, myRes;
-	int						resClock = 0, count = 0;
+	int						res = 0, count = 0;
 
 	ANNOUNCE2("Pair Constructor Type 1: Default constructor");
 
@@ -38,7 +38,7 @@ int testPair() {
 	START_CLOCK;
 	mine = ft::pair<int, string>(51, "Absolument");
 	END_CLOCK_MY;
-	CHECK(PAIR, WITH_COMPARE);
+	CHECK(PAIR, DO_BOTH);
 
 	ANNOUNCE2("Pair Constructor Type 3: Copy constructor");
 	std::pair<int, string>	testReal = std::pair<int, string>(12, "Je");
@@ -50,7 +50,7 @@ int testPair() {
 	START_CLOCK;
 	mine = ft::pair<int, string>(testMy);
 	END_CLOCK_MY;
-	CHECK(PAIR, WITH_COMPARE);
+	CHECK(PAIR, DO_BOTH);
 
 	ANNOUNCE2("make_pair");
 	
@@ -60,7 +60,7 @@ int testPair() {
 	START_CLOCK;
 	mine = ft::make_pair(1, "M");
 	END_CLOCK_MY;
-	CHECK(PAIR, WITH_COMPARE);
+	CHECK(PAIR, DO_BOTH);
 
 	END_TEST(PAIR);
 }
