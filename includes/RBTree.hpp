@@ -139,11 +139,14 @@ class RBtree {
 			nodeAlloc.construct(newNode, RBnode<value_type>(v));
 
 			node *where = search(v.first, this->root);
-			std::cout << "aaaaaaa" << std::endl;
+			std::cout << "aaaaaaa" << where << this->root << std::endl;
 			if (where == this->root)
 				this->root = newNode;
-			else
+			else {
+				std::cout << "gogo" << std::endl;
 				this->putNodePos(newNode, where);
+				std::cout << "dada" << std::endl;
+			}
 			std::cout << "bbbbb" << std::endl;
 			insert1(newNode);
 			return (newNode);
@@ -388,7 +391,9 @@ class RBtree {
 		}
 
 		void putNodePos(node *n, node *where) {
+			std::cout << "what?" << where << std::endl;
 			n->parent = where->parent;
+			std::cout << "why?" << std::endl;
 			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
 		
