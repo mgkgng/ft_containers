@@ -18,10 +18,19 @@ namespace ft {
 		typedef const value_type&							const_reference;
 		typedef Allocator::pointer							pointer;
 		typedef Allocator::const_pointer					const_pointer;
-		typedef ft::BiDirectionalIterator<value_type>		iterator;
-		typedef ft::BiDirectionalIterator<const value_type>	const_iterator;
-		typedef ft::reverse_iterator<iterator>				reverse_iterator;
-		typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
+		// typedef ft::BiDirectionalIterator<value_type>		iterator;
+		// typedef ft::BiDirectionalIterator<const value_type>	const_iterator;
+		// typedef ft::reverse_iterator<iterator>				reverse_iterator;
+		// typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
+
+		typedef RBtree<key_type, key_type, Compare>	tree_type;
+		typedef RBnode<value_type>					node;
+		typedef std::allocator<node>			 	node_allocator;
+
+		typedef RBiter<node>			iterator;
+		typedef RBiter<const node>	const_iterator;
+		typedef ft::ReverseIterator<iterator>	reverse_iterator;
+		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 	
 	private:
 

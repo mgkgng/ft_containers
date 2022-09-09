@@ -110,8 +110,8 @@ class RBiter {
 };
 
 template<
-    class Key,
-    class T,
+	class Key,
+    class Value,
     class Compare = std::less<Key>
 >
 class RBtree {
@@ -120,8 +120,9 @@ class RBtree {
 
 		///////////////////////////
 		// ** type definition ** //
-		///////////////////////////ß
-		typedef ft::pair<const Key, T>	value_type;
+		///////////////////////////
+		typedef Key						key_type;
+		typedef Value					value_type;
 		typedef RBnode<value_type>		node;
 		typedef RBiter<node>			iterator;
 		typedef std::allocator<node>	node_allocator;
@@ -149,7 +150,7 @@ class RBtree {
 			return (newNode);
 		}
 
-		void remove(Key &key) {
+		void remove(key_type &key) {
 			node *n = this->search(key, root);
 			if (!n)
 				return ;
@@ -192,7 +193,7 @@ class RBtree {
 		// ** search ** //
 		//////////////////
 
-		node *search(const Key &key, node *n) {
+		node *search(const key_type &key, node *n) {
 			if (!n || n->value.first == key)
 				return (n);
 			return (n->value.first < key) ? (this->search(key, n->left)) : (this->search(key, n->right));

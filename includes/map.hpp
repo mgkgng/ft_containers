@@ -26,9 +26,9 @@ class map {
 		typedef typename Allocator::pointer		pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
-		typedef RBtree<key_type, mapped_type, Compare>	tree_type;
-		typedef RBnode<value_type>									node;
-		typedef std::allocator<node>			 					node_allocator;
+		typedef RBtree<key_type, value_type, Compare>	tree_type;
+		typedef RBnode<value_type>						node;
+		typedef std::allocator<node>			 		node_allocator;
 
 		typedef RBiter<node>			iterator;
 		typedef RBiter<const node>	const_iterator;
