@@ -117,11 +117,10 @@ class RBtree {
 
 		///////////////////////////
 		// ** type definition ** //
-		///////////////////////////
+		///////////////////////////ß
 		typedef ft::pair<const Key, T>			 value_type;
 		typedef RBnode<value_type>  			 node;
 		typedef std::allocator<node>			 node_allocator;
-		typedef typename node_allocator::pointer node_ptr;
 		typedef unsigned int					 size_type;
 
 		////////////////////////
@@ -137,21 +136,19 @@ class RBtree {
 		// ** principal functions ** //
 		///////////////////////////////
 
-		node_ptr *add(const value_type &v) {
-			node_ptr	ptr = nodeAlloc.allocate(1);
-			node		newNode = RBnode<value_type>(v);
-			nodeAlloc.construct(ptr, newNode);
+		node *add(value_type &v) {
+			node	*newNode = nodeAlloc.allocate(1);
+			nodeAlloc.construct(newNode, RBnode<value_type>(v));
 
 			node *where = search(v.first, this->root);
 			if (where == this->root)
-				this->root = n;
+				this->root = newNode;
 			else
-				this->putNodePos(&newNode, where);
+				this->putNodePos(newNode, where);
 			insert1(newNode);
 			return (newNode);
 		}
 
-		template<class Key>
 		void remove(Key &key) {
 			node *n = this->search(key, root);
 			if (!n)
@@ -196,8 +193,7 @@ class RBtree {
 		// ** search ** //
 		//////////////////
 
-		template<typename Key>
-		node *search(Key &key, node *n) {
+		node *search(const Key &key, node *n) {
 			if (!n || n->value.first == key)
 				return (n);
 			return (n->value.first < key) ? (this->search(key, n->left)) : (this->search(key, n->right));
@@ -431,7 +427,7 @@ class RBtree {
 			nodeAlloc = other.nodeAlloc;
 			other.nodeAlloc = tmp3;
 
-			valuecompare tmp4 = comp;
+			Compare tmp4 = comp;
 			comp = other.comp;
 			other.comp = tmp4;
 		}
