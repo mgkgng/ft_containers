@@ -25,14 +25,15 @@ class map {
 		typedef const value_type&		const_reference;
 		typedef typename Allocator::pointer		pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
-		typedef ft::RBiter<value_type>			iterator;
-		typedef ft::RBiter<const value_type>	const_iterator;
-		typedef ft::ReverseIterator<iterator>	reverse_iterator;
-		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
 		typedef RBtree<key_type, mapped_type, Compare, Allocator>	tree_type;
 		typedef RBnode<value_type>									node;
 		typedef std::allocator<node>			 					node_allocator;
+
+		typedef RBiter<value_type>			iterator;
+		typedef RBiter<const value_type>	const_iterator;
+		typedef ft::ReverseIterator<iterator>	reverse_iterator;
+		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
 
 		class value_compare {
@@ -117,8 +118,8 @@ class map {
 
 		T& operator[](const Key& key) {
 			iterator it = this->find(key);
-			if (it != this.end())
-				return (it->second);
+			if (it != this->end())
+				return (it->value.second);
 			tree.add(ft::make_pair(key, T()));
 			return (this->tree.getRoot()->value.second);
 		}

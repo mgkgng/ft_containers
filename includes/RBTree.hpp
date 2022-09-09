@@ -3,8 +3,6 @@
 #include "lib.hpp"
 #include "pair.hpp"
 
-namespace ft {
-
 template<class Value>
 struct RBnode {
 	RBnode*	parent;
@@ -18,87 +16,80 @@ struct RBnode {
 		RBnode() : empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
-		void increment() {
-			if (_node->right) {
-				RBnode* tmp = this->right;
-				while (tmp->left)
-					tmp = tmp->left;
-				this = tmp;
-			} else {
-				Ptr tmp = this->parent;
-				if (tmp->right == this) {
-					while (this == tmp->right) {
-						this = tmp;
-						tmp = tmp->parent;
-					}
-				}
-				if (this->right != tmp)
-					this = tmp;
-			}
+		RBnode *next() const {
+			if (this->empty)
+				return (NULL);
+
+			if (this->right)
+				return (this->right->min());
+
+			if (this == this->parent->left)
+				return (this->parent);
+			
+			RBnode *where;
+			for (where = this->parent; where && where == where->parent->right; where = where->parent);
+			return ((where) ? where->parent : NULL);
 		}
 
-		void decrement() {
-			if (this->parent->parent == this && this->_red)
-				this = this->left;
-			else if (this->left) {
-				while (this->right)
-					this = this->right;
-			} else {
-				Ptr parent = this->parent;
-				while (parent->left == this) {
-					this = parent;
-					parent = parent->parent;
-				}
-				this = parent;
-			}
+		RBnode *prev() const {
+			if (this->empty)
+				return (NULL);
+
+			if (this->left)
+				return (this->left->max());
+
+			if (this == this->parent->right)
+				return (parent);
+
+			RBnode *where;
+			for (where = this->parent; where && where == where->parent->left; where = where->parent);
+			return ((where) ? where->parent : NULL);
+
 		}
 };
 
-template <class Node>
+template <typename Value>
 class RBiter {
-	protected:
-		Node	*ptr;
-
 	public:
+		typedef RBnode<Value> node;
+
 		explicit RBiter() : ptr(NULL) {} 
 
-		Node& operator*() {
-			return (_node->value);
-		}
+		Value& operator*() { return (ptr->value); }
+		node* operator->() { return (ptr); }
 
-		Node* operator->() {
-			return (&_node->value);
-		}
-
-		Iter& operator++() {
-			this->increment();
+		RBiter& operator++() {
+			ptr = ptr->next();
 			return (*this);
 		}
 
-		Iter operator++(int) {
-			Iter tmp = *this;
-			this->increment();
+		RBiter operator++(int) {
+			RBiter tmp = *this;
+			ptr = ptr->next();
 			return (tmp);
 		}
 
-		Iter& operator--() {
-			this->decrement();
+		RBiter& operator--() {
+			ptr = ptr->prev();
 			return (*this);
 		}
 
-		Iter operator--(int) {
-			Iter tmp = *this;
-			this->decrement();
+		RBiter operator--(int) {
+			RBiter tmp = *this;
+			ptr = ptr->prev();
 			return (tmp);
 		}
 
-		bool operator==(const Iter& s) {
-			return (_node == s._node);
+		bool operator==(const RBiter& s) {
+			return (ptr == s.ptr);
 		}
 
-		bool operator!=(const Iter& s) {
-			return (_node != s._node);
+		bool operator!=(const RBiter& s) {
+			return (ptr != s.ptr);
 		}
+	
+	protected:
+		node	*ptr;
 };
 
 template<
@@ -164,22 +155,6 @@ class RBtree {
 		//////////////////
 		// ** getter ** //
 		//////////////////
-
-		node *getGP(node *n) {
-			return (n && n->parent) ? n->parent->parent : 0;
-		}
-
-		node *getU(node *n) {
-			node *gp = getGP(n);
-			if (!gp)
-				return (0);
-			return (n->parent == gp->left) ? gp->right : gp->left;
-		}
-
-		node *getS(node *n)
-		{
-			return (n == n->parent->left) ? n->parent->right : n->parent->left;
-		}
 
 		node *getRoot() {
 			return (root);
@@ -433,5 +408,5 @@ class RBtree {
 		size_type		size;
 		node_allocator	nodeAlloc;
 		Compare			comp;
-};
+
 };
