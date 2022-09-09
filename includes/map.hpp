@@ -365,6 +365,8 @@ class map {
 			lhs.swap(rhs);
 		}
 
+		tree_type &getTree() { return (this->tree); }
+
 	private:
 		tree_type		tree;
 		key_compare		compK;

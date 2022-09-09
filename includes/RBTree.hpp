@@ -15,15 +15,19 @@ struct RBnode {
 	public:
 		typedef Value value_type;
 
-		RBnode() : empty(true) {}
+		RBnode() : red(true), left(0), right(0), parent(0), value(Value()), empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
 		RBnode *min() {
-			return ((this->left) ? this : this->left->min());
+			
+
+			std::cout << "yo" << std::endl;
+			RBnode* test = (!this->left) ? this : this->left->min();
+			return ((!this->left) ? this : this->left->min());
 		}
 
 		RBnode *max() {
-			return ((this->right) ? this : this->right->max());
+			return ((!this->right) ? this : this->right->max());
 		}
 
 		RBnode *next() {
@@ -216,7 +220,8 @@ class RBtree {
 					} else
 						curr = curr->left;
 				}
-			} 
+			}
+			size++;
 		}
 
 		void adjust(node *newNode) {
@@ -224,13 +229,16 @@ class RBtree {
 
 			//Case 1: Root node
 			if (!p) {
+				std::cout << "111111" << std::endl;
 				newNode->red = false;
 				return ;
 			}
 
 			//Case 2: Parent is BLACK
-			if (!p->red)
+			if (!p->red) {
+				std::cout << "222222" << std::endl;
 				return;
+			}
 			
 			node *u = getU(newNode);
 			node *gp = getGP(newNode);
@@ -241,6 +249,7 @@ class RBtree {
 				u->red = false;
 				gp->red = true;
 				adjust(gp);
+				std::cout << "3333333" << std::endl;
 				return;
 			}
 
@@ -256,6 +265,7 @@ class RBtree {
 					gp->red = true;
 					rotateR(gp);
 				}
+				std::cout << "4444444" << std::endl;
 				return;
 			} else {
 				if (newNode == p->left) {
@@ -267,6 +277,7 @@ class RBtree {
 					gp->red = true;
 					rotateL(gp);
 				}
+				std::cout << "555555" << std::endl;
 				return;
 			}
 		}
@@ -452,7 +463,7 @@ class RBtree {
 
 		iterator max()  { return (this->root->empty) ? end() : iterator(this->root->max()); }
 		iterator min()  { return (this->root->empty) ? end() : iterator(this->root->min());	}
-		iterator begin() { return this->root->min(); }
+		iterator begin() { return this->min(); }
 		iterator end() 	{ return iterator(); }
 
 

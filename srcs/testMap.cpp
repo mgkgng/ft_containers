@@ -175,8 +175,8 @@ int testMap() {
 
 	ft_hitchcock(realHitchcock, myHitchcock);
 
-	std::cout << "test value at begin: " << (*realHitchcock.begin()).first << std::endl;
-	std::cout << "my test value at begin: " << (*myHitchcock.begin()).first << std::endl;
+	std::cout << "test value at begin: " << (*realHitchcock.begin()).first << " " << realHitchcock.size() << std::endl;
+	std::cout << "my test value at begin: " << (*myHitchcock.begin()).first << (*myHitchcock.getTree().getRoot()->left).value.first << " " << myHitchcock.size() << std::endl;
 
 	START_CLOCK;
 	real = std::map<string, int>(realHitchcock.begin(), realHitchcock.end());
