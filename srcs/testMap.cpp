@@ -60,6 +60,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Family Plot"] = 1976;
 
 	mine["The Pleasure Garden"] = 1925;
+	std::cout << "already?" << std::endl;
 	mine["The Lodger"] = 1927;
 	mine["The Ring"] = 1927;
 	mine["Downhill"] = 1927;
@@ -162,10 +163,10 @@ int testMap() {
 	ANNOUNCE2("Map Constructor Type 2: Default Constructor with compare and allocator");
 
 	START_CLOCK;
-	real = std::map<string, int>(std::less<string>(), std::allocator<std::pair<const string, int> >());
+	real = std::map<string, int>(std::less<string>());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine = ft::map<string, int>(std::less<string>(), std::allocator<ft::pair<const string, int> >());
+	mine = ft::map<string, int>(std::less<string>());
 	END_CLOCK_MY;
 	CHECK(MAP, ONLY_CLOCK);
 

@@ -89,9 +89,7 @@ class map {
 			*this = other;
 		}
 
-		~map() {
-			this->clear();
-		}
+		~map() {}
 
 		map& operator=(const map& other) {
 			tree = other.tree;
@@ -118,7 +116,11 @@ class map {
 		}
 
 		T& operator[](const Key& key) {
-			return ((this->find(key))->second);
+			iterator it = this->find(key);
+			if (it != this.end())
+				return (it->second);
+			tree.add(ft::make_pair(key, T()));
+			return (this->tree.getRoot()->value.second);
 		}
 
 		/////////////////////
@@ -254,13 +256,13 @@ class map {
 		}
 
 		iterator find(const Key& key) {
-			node *res = tree.search(key, tree.getRoot());
-			return (res) ? iterator(res) : this->end();
+			node *where = tree.search(key, tree.getRoot());
+			return (where == tree.getRoot() && where->empty) ? this->end() : iterator(where);
 		}
 
 		const_iterator find(const Key& key) const {
-			node *res = tree.search(key, tree.getRoot());
-			return (res) ? const_interator(res) : this->end();
+			node *where = tree.search(key, tree.getRoot());
+			return (where == tree.getRoot() && where->empty) ? this->end() : const_iterator(where);
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key& key) {

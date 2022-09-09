@@ -12,26 +12,61 @@ struct RBnode {
 	RBnode*	right;
 	bool	red;
 	Value	value;
+	bool	empty;
 
 	public:
-		RBnode() {}
-		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v) {}
+		RBnode() : empty(true) {}
+		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
+
+		void increment() {
+			if (_node->right) {
+				RBnode* tmp = this->right;
+				while (tmp->left)
+					tmp = tmp->left;
+				this = tmp;
+			} else {
+				Ptr tmp = this->parent;
+				if (tmp->right == this) {
+					while (this == tmp->right) {
+						this = tmp;
+						tmp = tmp->parent;
+					}
+				}
+				if (this->right != tmp)
+					this = tmp;
+			}
+		}
+
+		void decrement() {
+			if (this->parent->parent == this && this->_red)
+				this = this->left;
+			else if (this->left) {
+				while (this->right)
+					this = this->right;
+			} else {
+				Ptr parent = this->parent;
+				while (parent->left == this) {
+					this = parent;
+					parent = parent->parent;
+				}
+				this = parent;
+			}
+		}
 };
 
-template <class T>
+template <class Node>
 class RBiter {
+	protected:
+		Node	*ptr;
 
 	public:
-		typedef RBnode<T>*	Ptr;
-		typedef RBiter<T> 	Iter;
+		explicit RBiter() : ptr(NULL) {} 
 
-		RBiter(Ptr n = 0) : _node(n) {} 
-
-		T& operator*() {
+		Node& operator*() {
 			return (_node->value);
 		}
 
-		T* operator->() {
+		Node* operator->() {
 			return (&_node->value);
 		}
 
@@ -64,45 +99,6 @@ class RBiter {
 		bool operator!=(const Iter& s) {
 			return (_node != s._node);
 		}
-
-	private:
-		Ptr _node;
-
-		void increment() {
-			if (_node->right) {
-				Ptr tmp = _node->right;
-				while (tmp->left)
-					tmp = tmp->left;
-				_node = tmp;
-			} else {
-				Ptr tmp = _node->parent;
-				if (tmp->right == _node) {
-					while (_node == tmp->right) {
-						_node = tmp;
-						tmp = tmp->parent;
-					}
-				}
-				if (_node->right != tmp)
-					_node = tmp;
-			}
-		}
-
-		void decrement() {
-			if (_node->parent->parent == _node && _node->_red)
-				_node = _node->left;
-			else if (_node->left) {
-				while (_node->right)
-					_node = _node->right;
-			} else {
-				Ptr parent = _node->parent;
-				while (parent->left == _node) {
-					_node = parent;
-					parent = parent->parent;
-				}
-				_node = parent;
-			}
-		}
-
 };
 
 template<
