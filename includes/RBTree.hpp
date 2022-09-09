@@ -19,9 +19,11 @@ struct RBnode {
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
 		RBnode *min() {
-			
+			// else
+			// 	// std::cout << "no left!" << std::endl;
+			// if (this->right)
+			// 	std::cout << this->right->value.first << std::endl;
 
-			std::cout << "yo" << std::endl;
 			RBnode* test = (!this->left) ? this : this->left->min();
 			return ((!this->left) ? this : this->left->min());
 		}
@@ -229,14 +231,14 @@ class RBtree {
 
 			//Case 1: Root node
 			if (!p) {
-				std::cout << "111111" << std::endl;
+				// std::cout << "111111" << std::endl;
 				newNode->red = false;
 				return ;
 			}
 
 			//Case 2: Parent is BLACK
 			if (!p->red) {
-				std::cout << "222222" << std::endl;
+				// std::cout << "222222" << std::endl;
 				return;
 			}
 			
@@ -249,7 +251,7 @@ class RBtree {
 				u->red = false;
 				gp->red = true;
 				adjust(gp);
-				std::cout << "3333333" << std::endl;
+				// std::cout << "3333333" << std::endl;
 				return;
 			}
 
@@ -265,7 +267,7 @@ class RBtree {
 					gp->red = true;
 					rotateR(gp);
 				}
-				std::cout << "4444444" << std::endl;
+				// std::cout << "4444444" << std::endl;
 				return;
 			} else {
 				if (newNode == p->left) {
@@ -277,7 +279,7 @@ class RBtree {
 					gp->red = true;
 					rotateL(gp);
 				}
-				std::cout << "555555" << std::endl;
+				// std::cout << "555555" << std::endl;
 				return;
 			}
 		}
