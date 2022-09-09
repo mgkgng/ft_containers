@@ -59,6 +59,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Frenzy"] = 1972;
 	real["Family Plot"] = 1976;
 
+	std::cout << "bom" << std::endl;
 	mine["The Pleasure Garden"] = 1925;
 	std::cout << "already?" << std::endl;
 	mine["The Lodger"] = 1927;

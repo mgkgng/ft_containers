@@ -16,7 +16,15 @@ struct RBnode {
 		RBnode() : empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
-		RBnode *next() const {
+		RBnode *min() {
+			return ((this->left) ? this : this->left->min());
+		}
+
+		RBnode *max() {
+			return ((this->right) ? this : this->right->max());
+		}
+
+		RBnode *next() {
 			if (this->empty)
 				return (NULL);
 
@@ -31,7 +39,7 @@ struct RBnode {
 			return ((where) ? where->parent : NULL);
 		}
 
-		RBnode *prev() const {
+		RBnode *prev() {
 			if (this->empty)
 				return (NULL);
 
@@ -44,7 +52,6 @@ struct RBnode {
 			RBnode *where;
 			for (where = this->parent; where && where == where->parent->left; where = where->parent);
 			return ((where) ? where->parent : NULL);
-
 		}
 };
 
@@ -54,6 +61,7 @@ class RBiter {
 		typedef RBnode<Value> node;
 
 		explicit RBiter() : ptr(NULL) {} 
+		RBiter(node *where) : ptr(where) {}
 
 		Value& operator*() { return (ptr->value); }
 		node* operator->() { return (ptr); }
@@ -123,7 +131,7 @@ class RBtree {
 		// ** principal functions ** //
 		///////////////////////////////
 
-		node *add(value_type &v) {
+		node *add(value_type v) {
 			node	*newNode = nodeAlloc.allocate(1);
 			nodeAlloc.construct(newNode, RBnode<value_type>(v));
 
@@ -155,6 +163,21 @@ class RBtree {
 		//////////////////
 		// ** getter ** //
 		//////////////////
+
+		node *getGP(node *n) {
+			return (n && n->parent) ? n->parent->parent : 0;
+		}
+
+		node *getU(node *n) {
+			node *gp = getGP(n);
+			if (!gp)
+				return (0);
+			return (n->parent == gp->left) ? gp->right : gp->left;
+		}
+
+		node *getS(node *n) {
+			return (n == n->parent->left) ? n->parent->right : n->parent->left;
+		}
 
 		node *getRoot() {
 			return (root);
