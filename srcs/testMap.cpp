@@ -59,9 +59,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Frenzy"] = 1972;
 	real["Family Plot"] = 1976;
 
-	std::cout << "bom" << std::endl;
 	mine["The Pleasure Garden"] = 1925;
-	std::cout << "already?" << std::endl;
 	mine["The Lodger"] = 1927;
 	mine["The Ring"] = 1927;
 	mine["Downhill"] = 1927;
@@ -177,7 +175,9 @@ int testMap() {
 
 	ft_hitchcock(realHitchcock, myHitchcock);
 
-	std::cout << "test value at begin: " << (*realHitchcock.begin()).second << std::endl;
+	std::cout << "test value at begin: " << (*realHitchcock.begin()).first << std::endl;
+	std::cout << "my test value at begin: " << (*myHitchcock.begin()).first << std::endl;
+
 	START_CLOCK;
 	real = std::map<string, int>(realHitchcock.begin(), realHitchcock.end());
 	END_CLOCK_REAL;

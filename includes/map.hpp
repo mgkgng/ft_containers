@@ -26,7 +26,7 @@ class map {
 		typedef typename Allocator::pointer		pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
-		typedef RBtree<key_type, mapped_type, Compare, Allocator>	tree_type;
+		typedef RBtree<key_type, mapped_type, Compare>	tree_type;
 		typedef RBnode<value_type>									node;
 		typedef std::allocator<node>			 					node_allocator;
 
@@ -117,14 +117,10 @@ class map {
 		}
 
 		T& operator[](const Key& key) {
-			std::cout << "avant find" << std::endl;
 			iterator it = this->find(key); // DES FOIS CA MARCHE PAS
-			std::cout << "apres find" << &*it << "end" << &*this->end() << this->tree.getRoot() << std::endl;
 			if (it != this->end())
 				return (it->value.second);
-			std::cout << "IT'S EMPTY" << std::endl;
 			node* newNode = tree.add(ft::make_pair(key, T()));
-			std::cout << "so i made a node" << newNode << std::endl;
 			return (newNode->value.second);
 
 		}
@@ -262,9 +258,7 @@ class map {
 		}
 
 		iterator find(const Key& key) {
-			std::cout << "avant search" << std::endl;
 			node *where = tree.search(key, tree.getRoot());
-			std::cout << "search done." << std::endl;
 			return (!where) ? this->end() : iterator(where);
 		}
 

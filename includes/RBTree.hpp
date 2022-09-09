@@ -106,8 +106,7 @@ class RBiter {
 template<
     class Key,
     class T,
-    class Compare = std::less<Key>,
-    class Allocator = std::allocator<ft::pair<const Key, T> >
+    class Compare = std::less<Key>
 >
 class RBtree {
 
@@ -128,6 +127,7 @@ class RBtree {
 
 		RBtree() : root(NULL), size(0) {
 			nodeAlloc = node_allocator();
+			comp = Compare();
 		}
 
 		///////////////////////////////
@@ -138,17 +138,8 @@ class RBtree {
 			node	*newNode = nodeAlloc.allocate(1);
 			nodeAlloc.construct(newNode, RBnode<value_type>(v));
 
-			node *where = search(v.first, this->root);
-			std::cout << "aaaaaaa" << where << this->root << std::endl;
-			if (where == this->root)
-				this->root = newNode;
-			else {
-				std::cout << "gogo" << std::endl;
-				this->putNodePos(newNode, where);
-				std::cout << "dada" << std::endl;
-			}
-			std::cout << "bbbbb" << std::endl;
-			insert1(newNode);
+			insert(newNode);
+			adjust(newNode);
 			return (newNode);
 		}
 
@@ -201,62 +192,85 @@ class RBtree {
 			return (n->value.first < key) ? (this->search(key, n->left)) : (this->search(key, n->right));
 		}
 
-		//////////////////
-		// ** insert ** //
-		//////////////////
-
-		void insert1(node *n)
-		{
-			if (!n->parent)
-				n->red = false;
-			else
-				this->insert2(n);
-		}
-
-		void insert2(node *n)
-		{
-    		if (!n->parent->red)
+		void insert(node* newNode) {
+			if (!this->root) {
+				this->root = newNode;
+				size++;
 				return;
-			else
-				this->insert3(n);
-		}
-
-		void insert3(node *n)
-		{
-			node *u = getU(n);
-			if (u && u->red) {
-				n->parent->red = false;
-				u->red = false;
-				node *gp = getGP(n);
-				gp->red = true;
-				this->insert1(gp);
-			} else
-				this->insert4(n);
-		}
-
-		void insert4(node *n)
-		{
-			node *gp = getGP(n);
-
-			if (n == n->parent->right && n->parent == gp->left) {
-				this->rotateL(n->parent);
-				n = n->left;
-			} else if (n == n->parent->left && n->parent == gp->right) {
-				this->rotateR(n->parent);
-				n = n->right;
 			}
-			this->insert5(n);
+
+			node *curr= this->root;
+			while (1) {
+				if (this->comp(curr->value.first, newNode->value.first)) {
+					if (!curr->right) {
+						newNode->parent= curr;
+						curr->right= newNode;
+						break;
+					} else
+						curr = curr->right;
+				} else {
+					if (!curr->left) {
+						newNode->parent = curr;
+						curr->left= newNode;
+						break;
+					} else
+						curr = curr->left;
+				}
+			} 
 		}
 
-		void insert5(node *n)
-		{
-			node *gp = this->getGP(n);
+		void adjust(node *newNode) {
+			node *p = newNode->parent;
 
-			n->parent->red = false;
-			gp->red = true;
-			(n == n->parent->left) ? this->rotateR(gp) : this->rotateL(gp);
+			//Case 1: Root node
+			if (!p) {
+				newNode->red = false;
+				return ;
+			}
+
+			//Case 2: Parent is BLACK
+			if (!p->red)
+				return;
+			
+			node *u = getU(newNode);
+			node *gp = getGP(newNode);
+
+			//Case 3: Parent and Uncle are RED
+			if (p->red && (u && u->red)) {
+				p->red = false;
+				u->red = false;
+				gp->red = true;
+				adjust(gp);
+				return;
+			}
+
+			//Case 4: Parent is Red and Uncle is Black(Or NULL)
+			//If parent is left son
+			if (p == gp->left) {
+				if (newNode == p->right) {
+					newNode = p;
+					rotateL(p);
+				}
+				p->red = false;
+				if (gp) {
+					gp->red = true;
+					rotateR(gp);
+				}
+				return;
+			} else {
+				if (newNode == p->left) {
+					newNode = p;
+					rotateR(p);
+				}
+				p->red = false;
+				if (gp) {
+					gp->red = true;
+					rotateL(gp);
+				}
+				return;
+			}
 		}
-
+		
 		//////////////////
 		// ** rotate ** //
 		//////////////////
