@@ -30,8 +30,8 @@ class map {
 		typedef RBnode<value_type>									node;
 		typedef std::allocator<node>			 					node_allocator;
 
-		typedef RBiter<value_type>			iterator;
-		typedef RBiter<const value_type>	const_iterator;
+		typedef RBiter<node>			iterator;
+		typedef RBiter<const node>	const_iterator;
 		typedef ft::ReverseIterator<iterator>	reverse_iterator;
 		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
@@ -117,11 +117,16 @@ class map {
 		}
 
 		T& operator[](const Key& key) {
-			iterator it = this->find(key);
+			std::cout << "avant find" << std::endl;
+			iterator it = this->find(key); // DES FOIS CA MARCHE PAS
+			std::cout << "apres find" << &*it << "end" << &*this->end() << this->tree.getRoot() << std::endl;
 			if (it != this->end())
 				return (it->value.second);
-			tree.add(ft::make_pair(key, T()));
-			return (this->tree.getRoot()->value.second);
+			std::cout << "IT'S EMPTY" << std::endl;
+			node* newNode = tree.add(ft::make_pair(key, T()));
+			std::cout << "so i made a node" << newNode << std::endl;
+			return (newNode->value.second);
+
 		}
 
 		/////////////////////
@@ -131,21 +136,21 @@ class map {
 		iterator begin() {
 			// Returns an iterator to the first element of the vector.
 			// If the vector is empty, the returned iterator will be equal to end().
-			return (iterator(tree.beginPtr()));
+			return (this->tree.begin());
 		}
 
 		const_iterator begin() const {
-			return (this->begin());
+			return (this->tree.begin());
 		}
 
 		iterator end() {
 			// Returns an iterator to the element following the last element of the vector.
 			// This element acts as a placeholder; attempting to access it results in undefined behavior.
-			return (0);
+			return (this->tree.end());
 		}
 
 		const_iterator end() const {
-			return (0);
+			return (this->tree.end());
 		}
 
 		reverse_iterator rbegin() {
@@ -257,8 +262,10 @@ class map {
 		}
 
 		iterator find(const Key& key) {
+			std::cout << "avant search" << std::endl;
 			node *where = tree.search(key, tree.getRoot());
-			return (where == tree.getRoot() && where->empty) ? this->end() : iterator(where);
+			std::cout << "search done." << std::endl;
+			return (!where) ? this->end() : iterator(where);
 		}
 
 		const_iterator find(const Key& key) const {

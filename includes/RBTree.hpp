@@ -13,6 +13,8 @@ struct RBnode {
 	bool	empty;
 
 	public:
+		typedef Value value_type;
+
 		RBnode() : empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
@@ -55,16 +57,17 @@ struct RBnode {
 		}
 };
 
-template <typename Value>
+template <typename Node>
 class RBiter {
 	public:
-		typedef RBnode<Value> node;
+
+		typedef typename Node::value_type& reference;			
 
 		explicit RBiter() : ptr(NULL) {} 
-		RBiter(node *where) : ptr(where) {}
+		RBiter(Node *where) : ptr(where) {}
 
-		Value& operator*() { return (ptr->value); }
-		node* operator->() { return (ptr); }
+		reference operator*() { return (ptr->value); }
+		Node* operator->() { return (ptr); }
 
 		RBiter& operator++() {
 			ptr = ptr->next();
@@ -97,7 +100,7 @@ class RBiter {
 		}
 	
 	protected:
-		node	*ptr;
+		Node	*ptr;
 };
 
 template<
@@ -113,18 +116,18 @@ class RBtree {
 		///////////////////////////
 		// ** type definition ** //
 		///////////////////////////ß
-		typedef ft::pair<const Key, T>			 value_type;
-		typedef RBnode<value_type>  			 node;
-		typedef std::allocator<node>			 node_allocator;
-		typedef unsigned int					 size_type;
+		typedef ft::pair<const Key, T>	value_type;
+		typedef RBnode<value_type>		node;
+		typedef RBiter<node>			iterator;
+		typedef std::allocator<node>	node_allocator;
+		typedef unsigned int			size_type;
 
 		////////////////////////
 		// ** Constructors ** //
 		////////////////////////
 
-		RBtree() : size(0) {
+		RBtree() : root(NULL), size(0) {
 			nodeAlloc = node_allocator();
-			root = nodeAlloc.allocate(1);
 		}
 
 		///////////////////////////////
@@ -136,10 +139,12 @@ class RBtree {
 			nodeAlloc.construct(newNode, RBnode<value_type>(v));
 
 			node *where = search(v.first, this->root);
+			std::cout << "aaaaaaa" << std::endl;
 			if (where == this->root)
 				this->root = newNode;
 			else
 				this->putNodePos(newNode, where);
+			std::cout << "bbbbb" << std::endl;
 			insert1(newNode);
 			return (newNode);
 		}
@@ -425,6 +430,12 @@ class RBtree {
 			comp = other.comp;
 			other.comp = tmp4;
 		}
+
+		iterator max()  { return (this->root->empty) ? end() : iterator(this->root->max()); }
+		iterator min()  { return (this->root->empty) ? end() : iterator(this->root->min());	}
+		iterator begin() { return this->root->min(); }
+		iterator end() 	{ return iterator(); }
+
 
 	protected:
 		node			*root;
