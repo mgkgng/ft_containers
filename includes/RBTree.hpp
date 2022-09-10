@@ -15,7 +15,7 @@ struct RBnode {
 	public:
 		typedef Value value_type;
 
-		RBnode() : red(true), left(0), right(0), parent(0), value(Value()), empty(true) {}
+		RBnode() : red(false), left(0), right(0), parent(0), value(Value()), empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
 		RBnode *min() { return ((!this->left) ? this : this->left->min()); }
@@ -23,19 +23,19 @@ struct RBnode {
 
 		RBnode *next() {
 			if (this->empty)
-				return (NULL);
+				return (this->nil);
 			if (this->right)
 				return (this->right->min());
 			if (this == this->parent->left)
 				return (this->parent);
 			RBnode *where = this->parent;
 			for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
-			return ((where) ? where->parent : NULL);
+			return ((where) ? where->parent : this->nil);
 		}
 
 		RBnode *prev() {
 			if (this->empty)
-				return (NULL);
+				return (this->nil);
 
 			if (this->left)
 				return (this->left->max());
@@ -45,7 +45,7 @@ struct RBnode {
 
 			RBnode *where;
 			for (where = this->parent; where && where == where->parent->left; where = where->parent);
-			return ((where) ? where->parent : NULL);
+			return ((where) ? where->parent : this->nil);
 		}
 };
 
@@ -57,7 +57,7 @@ class RBiter {
 		typedef typename Node::value_type* pointer;			
 		
 
-		explicit RBiter() : ptr(NULL) {} 
+		explicit RBiter() : ptr(this->nil) {} 
 		RBiter(Node *where) : ptr(where) {}
 
 		reference operator*() { return (ptr->value); }
@@ -124,9 +124,11 @@ class RBtree {
 		// ** Constructors ** //
 		////////////////////////
 
-		RBtree() : root(NULL), size(0) {
+		RBtree() : root(this->nil), size(0) {
 			nodeAlloc = node_allocator();
 			comp = Compare();
+			nil = nodeAlloc.allocate(1);
+			nil = RBnode<ft::pair<Key, Value> >();
 		}
 
 		///////////////////////////////
@@ -261,46 +263,6 @@ class RBtree {
 			rc->left = n;
 		}
 
-		node* getSuccessor(node *n) {
-			if (n->right)
-				return (n->right->min());
-
-			node* x = n->parent;
-			while (x && n == x->right) {
-				n = x;
-				x = x->parent;
-			}
-			return (x);
-		}
-
-		// void remove(node *n){
-		// 	node *x, y;
-	
-		// 	if (!n->left || !n->right)
-		// 		y = n;
-		// 	else
-		// 		y = getSuccessor(n);
-	
-		// 	if (y->left)
-		// 		x = y->left;
-		// 	else
-		// 		x = y->right;
-		// 	x->parent = y->parent;
-		// 	if (!y->parent)
-		// 		this->root = x;
-		// 	else {
-		// 		if (y == y->parent->left)
-		// 			y->parent->left = x;
-		// 		else
-		// 			y->parent->right = x;
-		// 	}
-		// 	if (y != n)
-		// 		n->key = y->key;
-		// 	if (!y->red)
-		// 		rbDeleteFixup(x);
-		// 	delete y;
-		// }
-
 		void fix(node *n){
 			while (n != this->root && !n->red){
 				if (n == n->parent->left) {
@@ -362,14 +324,17 @@ class RBtree {
 
 			y = n;
 			yRed = n->red;
-
+			std::cout << "dodo" << std::endl;
 			if (!n->left) {
+				std::cout << "111" << std::endl;
 				x = n->right;
 				transplant(n, n->right);
 			} else if(!n->right){
+				std::cout << "2222" << std::endl;
 				x = n->left;
 				transplant(n, n->left);
 			} else {
+				std::cout << "3333" << std::endl;
 				y = n->right->min();
 				yRed = y->red;
 
@@ -387,6 +352,8 @@ class RBtree {
 				y->left->parent = y;
 				y->red = n->red;
 			}
+
+			std::cout << "coucou" << std::endl;
 			if (!yRed)
 				fix(x);
 
@@ -480,7 +447,7 @@ class RBtree {
 				nodeAlloc.destroy(it.getPtr());
 				//nodeAlloc.deallocate(it.getPtr(), 1);
 			}
-			this->root = NULL;
+			this->root = this->nil;
 			this->size = 0;
 		}
 
@@ -507,14 +474,16 @@ class RBtree {
 		}
 
 		void transplant(node *n, node *child)
-		{
+		{			
 			if (!n->parent)
 				this->root = child;
 			else if (n == n->parent->left)
 				n->parent->left = child;
 			else
 				n->parent->right = child;
+			std::cout << "t ou" << child << std::endl;
 			child->parent = n->parent;
+			std::cout << "trouver le batard" << std::endl;
 		}
 
 		void putNodePos(node *n, node *where) {
@@ -561,6 +530,7 @@ class RBtree {
 
 	protected:
 		node			*root;
+		node			*nil;
 		size_type		size;
 		node_allocator	nodeAlloc;
 		Compare			comp;

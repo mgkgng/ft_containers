@@ -300,6 +300,16 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 
+	ANNOUNCE2("erase1: erase with iterator");
+	START_CLOCK;
+	real.erase(realHitchcock.begin());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase(myHitchcock.begin());
+	std::cout << "OUT" << std::endl;
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
 	END_TEST(MAP);
 
 }

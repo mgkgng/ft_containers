@@ -202,9 +202,7 @@ class map {
 			node *pos = tree.search(value.first, tree.getRoot());
 			if (pos)
 				return (ft::make_pair<iterator, bool>(iterator(pos), false));
-			std::cout << "coucou" << std::endl;
 			node *where = tree.add(value);
-			std::cout << "bangbang" << std::endl;
 			return (ft::make_pair<iterator, bool>(iterator(where), true));
 		}
 
@@ -223,12 +221,14 @@ class map {
 		}
 
 		void erase(iterator pos) {
-			tree.remove(pos->first);
+			std::cout << "bonjour" << std::endl;
+			tree.remove(pos.getPtr());
+			std::cout << "au revoir" << std::endl;
 		}
 
 		void erase(iterator first, iterator last) {
 			while (first != last)
-				tree.remove(first->first);
+				tree.remove(first++->first);
 		}
 
 		size_type erase(const Key& key) {
