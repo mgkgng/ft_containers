@@ -35,7 +35,7 @@ int main() {
 	std::cout << "Test Result:" << std::endl;
 	// printResult("Vector", res.vector);
 	// printResult("Pair", res.pair);
-	// printResult("Map", res.map);
-	printResult("Stack", res.stack);
+	printResult("Map", res.map);
+	// printResult("Stack", res.stack);
 	// printResult("Set", res.set);
 }

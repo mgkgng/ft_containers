@@ -25,15 +25,23 @@
 /***** CHECKER *****/
 #define ONLY_CLOCK 0
 #define DO_BOTH 1
+
 #define CHECK_CLOCK(CONTAINER) do {\
 	res += printTimeResult((char *) CONTAINER, realRes, myRes);\
 } while (0)
 
+#define CHECK_RESULT do {\
+	(myResult == realResult) ? PRINT_OK : PRINT_KO;\
+	std::cout << std::endl;\
+	res += (myResult == realResult);\
+	count++;\
+} while (0)
+
 #define COMPARE res *= compare(mine, real)
 
-#define CHECK(CONTAINER, x) do {\
+#define CHECK(CONTAINER, test) do {\
 	CHECK_CLOCK(CONTAINER);\
-	if (x == DO_BOTH)\
+	if (test == DO_BOTH)\
 		COMPARE;\
 	count++;\
 	std::cout << std::endl;\

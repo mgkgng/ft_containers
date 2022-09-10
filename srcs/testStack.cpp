@@ -21,17 +21,16 @@ template<class T>
 bool compare(ft::stack<T> mine, std::stack<T> real) {
 	if (mine.size() != real.size()) {
 		PRINT_KO;
-		std::cout << "SIZE IS DIFFERENT: " << mine.size() << " / " << real.size() << std::endl;
 		return (false);
 	}
 
-	for (int i = 0; i < mine.size(); i++) {
-		// if (mine[i] != real[i]) {
-		// 	PRINT_KO;
-		// 	printMine(mine);
-		// 	printReal(real);
-		// 	return (false);
-		// }
+	while (mine.size()) {
+		if (mine.top() != real.top()) {
+			PRINT_KO;
+			return (false);
+		}
+		mine.pop();
+		real.pop();
 	}
 	PRINT_OK;
 	return (true);
@@ -74,27 +73,21 @@ int testStack() {
 	try {
 		int myResult = mine.top();
 		int realResult = real.top();
-		std::cout << "Result: " << ((myResult == realResult) ? "OK" : "KO") << std::endl;
-		res += (myResult == realResult);
-		count++;
+		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
 	ANNOUNCE2("empty");
 	try {
 		bool myResult = mine.empty();
 		bool realResult = real.empty();
-		std::cout << "Result: " << ((myResult == realResult) ? "OK" : "KO") << std::endl;
-		res += (myResult == realResult);
-		count++;
+		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
 	ANNOUNCE2("size");
 	try {
 		size_t myResult = mine.size();
 		size_t realResult = real.size();
-		std::cout << "Result: " << ((myResult == realResult) ? "OK" : "KO") << std::endl;
-		res += (myResult == realResult);
-		count++;
+		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
 	ANNOUNCE2("push");
@@ -104,16 +97,20 @@ int testStack() {
 	START_CLOCK;
 	mine.push(9473);
 	END_CLOCK_MY;
-	CHECK(STACK, ONLY_CLOCK);
+	CHECK(STACK, DO_BOTH);
 
 	ANNOUNCE2("pop");
+	real.push(335);
+	real.push(194);
+	mine.push(335);
+	mine.push(194);
 	START_CLOCK;
 	real.pop();
 	END_CLOCK_REAL;
 	START_CLOCK;
 	mine.pop();
 	END_CLOCK_MY;
-	CHECK(STACK, ONLY_CLOCK);
+	CHECK(STACK, DO_BOTH);
 
 	END_TEST(STACK);
 }
