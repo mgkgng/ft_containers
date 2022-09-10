@@ -152,7 +152,7 @@ class RBtree {
 		}
 
 		node *search(const key_type &key, node *n) {
- 			if (!n || n->value.first == key)
+ 			if (!n ||  n->value.first == key)
 				return (n);
 			return (!comp(n->value.first, key)) ? (this->search(key, n->left)) : (this->search(key, n->right));
 		}

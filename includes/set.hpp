@@ -1,50 +1,40 @@
 #pragma once
 
 #include "lib.hpp"
-#include "BiDirectionalIterator.hpp"
+#include "RBTree.hpp"
+#include "ReverseIterator.hpp"
 
 namespace ft {
 
-	template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-	class set {
+template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
+class set {
+	public:
 		typedef Key			key_type;
-		typedef Key			value_type;
+		typedef ft::pair<key_type, key_type> sorry_type;
 		typedef size_t		size_type;
-		typedef ptrdiff_t	difference_type;
 		typedef Compare		key_compare;
-		typedef Compare		value_compare;
 		typedef Allocator	allocator_type;
-		typedef value_type&	reference;
-		typedef const value_type&							const_reference;
-		typedef Allocator::pointer							pointer;
-		typedef Allocator::const_pointer					const_pointer;
-		// typedef ft::BiDirectionalIterator<value_type>		iterator;
-		// typedef ft::BiDirectionalIterator<const value_type>	const_iterator;
-		// typedef ft::reverse_iterator<iterator>				reverse_iterator;
-		// typedef ft::const_reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef typename Allocator::pointer					pointer;
+		typedef typename Allocator::const_pointer			const_pointer;
 
-		typedef RBtree<key_type, key_type, Compare>	tree_type;
-		typedef RBnode<value_type>					node;
+		typedef RBtree<key_type, sorry_type, Compare>	tree_type; // la flemme
+		typedef RBnode<sorry_type>					node;
 		typedef std::allocator<node>			 	node_allocator;
 
 		typedef RBiter<node>			iterator;
 		typedef RBiter<const node>	const_iterator;
 		typedef ft::ReverseIterator<iterator>	reverse_iterator;
 		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
-	
-	private:
 
-		allocator_type _alloc;
-	
-	public:
-
-		set() { // cppreference(1)
-			// Constructs an empty container
-		}
+		allocator_type	allocator;
+		Compare			comp;
+		tree_type		tree;
 
 		explicit set(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
 			// Constructs an empty container
-
+			this->comp = comp;
+			this->allocator = alloc;
+			this->tree = tree_type();
 		}
 
 		template<class InputIt>
@@ -74,23 +64,19 @@ namespace ft {
 		/////////////////////		
 
 		iterator begin() {
-			// Returns an iterator to the first element of the vector.
-			// If the vector is empty, the returned iterator will be equal to end().
-			return (_start);
+			return (this->tree.begin());
 		}
 
 		const_iterator begin() const {
-			return (_start);
+			return (this->tree.begin());
 		}
 
 		iterator end() {
-			// Returns an iterator to the element following the last element of the vector.
-			// This element acts as a placeholder; attempting to access it results in undefined behavior.
-			return (_end);
+			return (this->tree.end());
 		}
 
 		const_iterator end() const {
-			return (_end);
+			return (this->tree.end());
 		}
 
 		reverse_iterator rbegin() {
@@ -138,32 +124,55 @@ namespace ft {
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
-
+			node *pos = tree.search(value, tree.root);
+			if (pos)
+				return (ft::make_pair<iterator, bool>(iterator(pos), false));
+			node *where = tree.add(value);
+			return (ft::make_pair<iterator, bool>(iterator(where), true));
 		}
 
 		iterator insert(iterator hint, const value_type& value) {
-
+			node *pos = tree.search(value, hint.getPtr());
+			if (pos)
+				return (iterator(pos)); //TODO LET'S CHECK IT LATER
+			node *where = tree.add(value);
+			return (iterator(where));
 		}
 
 		template<class InputIt>
 		void insert(InputIt first, InputIt last) {
-
+			while (first != last)
+				tree.add(*first++);
 		}
 
 		void erase(iterator pos) {
-
+			tree.remove(pos.getPtr());
+			tree.size--;
 		}
 
 		void erase(iterator first, iterator last) {
-
+			while (*first != *last) {
+				tree.erase(first++->first);
+				tree.size--;
+			}
 		}
 
 		size_type erase(const Key& key) {
-
+			bool res = tree.erase(key);
+			if (res)
+				tree.size--;
+			return (res);
 		}
 
 		void swap(set &other) {
-
+			tree.swap(other.tree);
+			
+			Compare tmp = comp;
+			comp = other.comp;
+			other.comp = tmp;
+			allocator_type tmp2 = allocator;
+			allocator = other.allocator;
+			other.allocator = tmp2;
 		}
 
 		//////////////////
@@ -214,7 +223,7 @@ namespace ft {
 
 		}
 
-		value_comapre value_comp() const {
+		value_compare value_comp() const {
 
 		}
 	};

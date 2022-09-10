@@ -9,6 +9,7 @@
 #define MAP "Map"
 #define PAIR "Pair"
 #define STACK "Stack"
+#define SET "Set"
 
 #define SLEEP_DURATION 50000
 
