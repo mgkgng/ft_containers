@@ -123,7 +123,7 @@ void ft_kubrick(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Lolita"] = 1962;
 	real["Dr.Strangelove"] = 1964;
 	real["2001 : Space Odyssey"] = 1968;
-	real["A Clockword Orange"] = 1971;
+	real["A Clockwork Orange"] = 1971;
 	real["Barry Lyndon"] = 1975;
 	real["The Shining"] = 1980;
 	real["Full Metal Jacket"] = 1987;
@@ -137,7 +137,7 @@ void ft_kubrick(std::map<string, int> &real, ft::map<string, int> &mine){
 	mine["Lolita"] = 1962;
 	mine["Dr.Strangelove"] = 1964;
 	mine["2001 : Space Odyssey"] = 1968;
-	mine["A Clockword Orange"] = 1971;
+	mine["A Clockwork Orange"] = 1971;
 	mine["Barry Lyndon"] = 1975;
 	mine["The Shining"] = 1980;
 	mine["Full Metal Jacket"] = 1987;
@@ -155,6 +155,7 @@ bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
 
 	typename ft::map<Key, Value>::iterator	myIt;
 	typename std::map<Key, Value>::iterator	realIt = real.begin();
+	
 	for (myIt = mine.begin(); myIt != mine.end(); myIt++) {
 		if (myIt->first != (realIt++)->first) {
 			PRINT_KO;
@@ -225,6 +226,50 @@ int testMap() {
 	END_CLOCK_REAL;
 	START_CLOCK;
 	mine = ft::map<string, int>(myKubrick);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("at");
+	try {
+		int realResult = real.at("A Clockwork Orange");
+		int myResult = mine.at("A Clockwork Orange");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("operator[]");
+	try {
+		int realResult = real["The Shining"];
+		int myResult = mine["The Shining"];
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("operator[] for a key which doesn't exist");
+	try {
+		int realResult = real["Iron Man"];
+		int myResult = mine["Iron Man"];
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("empty");
+	try {
+		int realResult = real.empty();
+		int myResult = mine.empty();
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("size");
+	try {
+		int realResult = real.size();
+		int myResult = mine.size();
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("clear");
+	START_CLOCK;
+	real.clear();
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.clear();
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 

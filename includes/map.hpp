@@ -3,6 +3,8 @@
 #include "RBTree.hpp"
 #include "ReverseIterator.hpp"
 
+
+//TODO should use friend class to get access to the data of tree 
 namespace ft {
 
 template<
@@ -168,7 +170,6 @@ class map {
 			return (NULL);
 		}
 
-
 		const_reverse_iterator rend() const {
 			return (NULL);
 		}
@@ -178,7 +179,7 @@ class map {
 		////////////////////
 
 		bool empty() const {
-			return (tree._size) ? false : true;
+			return ((tree.getSize()) ? false : true);
 		}
 
 		size_type size() const {
@@ -186,7 +187,7 @@ class map {
 		}
 
 		size_type max_size() const {
-			return (tree._nodeAlloc.max_size());
+			return (tree.max_size());
 		}
 
 		////////////////////
@@ -194,7 +195,7 @@ class map {
 		////////////////////
 
 		void clear() {
-			tree.eraseAll();
+			tree.clear();
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
@@ -261,7 +262,7 @@ class map {
 
 		const_iterator find(const Key& key) const {
 			node *where = tree.search(key, tree.getRoot());
-			return (where == tree.getRoot() && where->empty) ? this->end() : const_iterator(where);
+			return (!where) ? this->end() : const_iterator(where);
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key& key) {

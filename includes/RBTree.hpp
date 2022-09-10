@@ -92,6 +92,10 @@ class RBiter {
 		bool operator!=(const RBiter& s) {
 			return (ptr != s.ptr);
 		}
+
+		Node *getPtr() const {
+			return (ptr);
+		}
 	
 	protected:
 		Node	*ptr;
@@ -148,7 +152,7 @@ class RBtree {
 		node *search(const key_type &key, node *n) {
 			if (!n || n->value.first == key)
 				return (n);
-			return (n->value.first < key) ? (this->search(key, n->left)) : (this->search(key, n->right));
+			return (!comp(n->value.first, key)) ? (this->search(key, n->left)) : (this->search(key, n->right));
 		}
 
 		void insert(node* newNode) {
@@ -471,6 +475,15 @@ class RBtree {
 			lc->right = n;
 		}
 
+		void clear() {
+			for (iterator it = begin(); it != end(); it++) {
+				nodeAlloc.destroy(it.getPtr());
+				//nodeAlloc.deallocate(it.getPtr(), 1);
+			}
+			this->root = NULL;
+			this->size = 0;
+		}
+
 		//////////////////
 		// ** utils ** //
 		//////////////////
@@ -517,16 +530,6 @@ class RBtree {
 			return (l);
 		}
 
-		void eraseAll() {
-			node *n = this->beginPtr();
-			while (n) {
-				node *next = n + 1;
-				nodeAlloc.deallocate(n, 1);
-				n = next;
-				//* or could it work like this too? -> nodeAlloc.dealloc(n++, 1);
-			}
-		}
-
 		/* GETTER */
 		size_type getSize() const { return size; }
 
@@ -548,16 +551,20 @@ class RBtree {
 			other.comp = tmp4;
 		}
 
-		iterator max()  { return (this->root->empty) ? end() : iterator(this->root->max()); }
-		iterator min()  { return (this->root->empty) ? end() : iterator(this->root->min());	}
-		iterator begin() { return this->min(); }
+		iterator max()  { return (!this->root) ? end() : iterator(this->root->max()); }
+		iterator min()  { return (!this->root) ? end() : iterator(this->root->min()); }
+		iterator begin() { return (this->min()); }
 		iterator end() 	{ return iterator(); }
-
+		size_t max_size() const {
+			return (nodeAlloc.max_size());
+		}
 
 	protected:
 		node			*root;
 		size_type		size;
 		node_allocator	nodeAlloc;
 		Compare			comp;
+
+		friend class map;
 
 };
