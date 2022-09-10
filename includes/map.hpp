@@ -78,11 +78,8 @@ class map {
 			compV = value_compare(compK);
 			allocator = alloc;
 			tree = tree_type();
-			//this->insert(first, last);
-			while (first != last) {
-				
+			while (first != last)
 				this->tree.add(*first++);
-			}
 		}
 
 		map(const map& other) { // cppreference(6)
@@ -119,7 +116,7 @@ class map {
 		T& operator[](const Key& key) {
 			iterator it = this->find(key); // DES FOIS CA MARCHE PAS
 			if (it != this->end())
-				return (it->value.second);
+				return (it->second);
 			node* newNode = tree.add(ft::make_pair(key, T()));
 			return (newNode->value.second);
 
@@ -168,12 +165,12 @@ class map {
 			// Returns a reverse iterator to the element following the last element of the reversed vector.
 			// It corresponds to the element preceding the first element of the non-reversed vector. 
 			// This element acts as a placeholder, attempting to access it results in undefined behavior.
-			return (0);
+			return (NULL);
 		}
 
 
 		const_reverse_iterator rend() const {
-			return (0);
+			return (NULL);
 		}
 
 		////////////////////

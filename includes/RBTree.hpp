@@ -18,32 +18,18 @@ struct RBnode {
 		RBnode() : red(true), left(0), right(0), parent(0), value(Value()), empty(true) {}
 		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
 
-		RBnode *min() {
-			// else
-			// 	// std::cout << "no left!" << std::endl;
-			// if (this->right)
-			// 	std::cout << this->right->value.first << std::endl;
-
-			RBnode* test = (!this->left) ? this : this->left->min();
-			return ((!this->left) ? this : this->left->min());
-		}
-
-		RBnode *max() {
-			return ((!this->right) ? this : this->right->max());
-		}
+		RBnode *min() { return ((!this->left) ? this : this->left->min()); }
+		RBnode *max() { return ((!this->right) ? this : this->right->max()); }
 
 		RBnode *next() {
 			if (this->empty)
 				return (NULL);
-
 			if (this->right)
 				return (this->right->min());
-
 			if (this == this->parent->left)
 				return (this->parent);
-			
-			RBnode *where;
-			for (where = this->parent; where && where == where->parent->right; where = where->parent);
+			RBnode *where = this->parent;
+			for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
 			return ((where) ? where->parent : NULL);
 		}
 
@@ -67,13 +53,15 @@ template <typename Node>
 class RBiter {
 	public:
 
-		typedef typename Node::value_type& reference;			
+		typedef typename Node::value_type& reference;
+		typedef typename Node::value_type* pointer;			
+		
 
 		explicit RBiter() : ptr(NULL) {} 
 		RBiter(Node *where) : ptr(where) {}
 
 		reference operator*() { return (ptr->value); }
-		Node* operator->() { return (ptr); }
+		pointer operator->() { return (&ptr->value); }
 
 		RBiter& operator++() {
 			ptr = ptr->next();
@@ -150,48 +138,12 @@ class RBtree {
 			return (newNode);
 		}
 
-		void remove(key_type &key) {
-			node *n = this->search(key, root);
+		void erase(key_type k) {
+			node *n = search(k, this->root);
 			if (!n)
 				return ;
-			node *child = (!n->right) ? n->left : n->right; // SUS
-			this->replace(n, child);
-			if (n && !n->red) { // SUS
-				if (child->red)
-					child->red = false;
-				else
-					delete1(child);
-			}
-			// nodeAlloc.destroy(n); as i don't construct anything for now
-			nodeAlloc.deallocate(n, 1);
+			remove(n);
 		}
-
-		//////////////////
-		// ** getter ** //
-		//////////////////
-
-		node *getGP(node *n) {
-			return (n && n->parent) ? n->parent->parent : 0;
-		}
-
-		node *getU(node *n) {
-			node *gp = getGP(n);
-			if (!gp)
-				return (0);
-			return (n->parent == gp->left) ? gp->right : gp->left;
-		}
-
-		node *getS(node *n) {
-			return (n == n->parent->left) ? n->parent->right : n->parent->left;
-		}
-
-		node *getRoot() {
-			return (root);
-		}
-
-		//////////////////
-		// ** search ** //
-		//////////////////
 
 		node *search(const key_type &key, node *n) {
 			if (!n || n->value.first == key)
@@ -284,144 +236,276 @@ class RBtree {
 				return;
 			}
 		}
-		
-		//////////////////
-		// ** rotate ** //
-		//////////////////
 
 		void rotateL(node *n)
 		{
-			node *c = n->right;
-			node *p = n->parent;
+			node *rc = n->right ;
+			n->right = rc->left;
 
-			if (c->left)
-				c->left->parent = n;
+			if (n->right)
+				n->right->parent = n;
+			
+			if (!n->parent)
+				this->root = rc;
+			else if (n == n->parent->left)
+				n->parent->left = rc;
+			else
+				n->parent->right = rc;	
 
-			n->right = c->left;
-			n->parent = c;
-			c->left = n;
-			c->parent = p;
-
-			if (p)
-				(p->left == n) ? p->left = c : p->right = c;
+			rc->parent = n->parent ;
+			n->parent = rc;
+			rc->left = n;
 		}
+
+		node* getSuccessor(node *n) {
+			if (n->right)
+				return (n->right->min());
+
+			node* x = n->parent;
+			while (x && n == x->right) {
+				n = x;
+				x = x->parent;
+			}
+			return (x);
+		}
+
+		// void remove(node *n){
+		// 	node *x, y;
+	
+		// 	if (!n->left || !n->right)
+		// 		y = n;
+		// 	else
+		// 		y = getSuccessor(n);
+	
+		// 	if (y->left)
+		// 		x = y->left;
+		// 	else
+		// 		x = y->right;
+		// 	x->parent = y->parent;
+		// 	if (!y->parent)
+		// 		this->root = x;
+		// 	else {
+		// 		if (y == y->parent->left)
+		// 			y->parent->left = x;
+		// 		else
+		// 			y->parent->right = x;
+		// 	}
+		// 	if (y != n)
+		// 		n->key = y->key;
+		// 	if (!y->red)
+		// 		rbDeleteFixup(x);
+		// 	delete y;
+		// }
+
+		void fix(node *n){
+			while (n != this->root && !n->red){
+				if (n == n->parent->left) {
+					node *x = n->parent->right;
+					if (x->red) {
+						x->red = false;
+						n->parent->red = true;
+						rotateL(n->parent);
+						x = n->parent->right;
+					}
+					if (!x->left->red && !x->right->red) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if(x->right->red == false) {
+							x->left->red = false;
+							x->red = true;
+							rotateR(x);
+							x = n->parent->right;
+						}
+						x->red = n->parent->red;
+						n->parent->red = false;
+						x->right->red = false;
+						rotateL(n->parent);
+						n = root;
+					}
+				} else {
+					node *x = n->parent->left;
+					if (x->red) {
+						x->red = false;
+						n->parent->red = true;
+						rotateR(n->parent);
+						x = n->parent->left;
+					}
+					if (!x->right->red && !x->left->red) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if(x->left->red == false) {
+							x->right->red = false;
+							x->red = true;
+							rotateL(x);
+							x = n->parent->left;
+						}
+						x->red = n->parent->red;
+						n->parent->red = false;
+						x->left->red = false;
+						rotateR(n->parent);
+						n = this->root;
+					}
+				}
+			}
+			n->red = false;
+		}
+
+		void remove(node *n){
+			node *x, *y;
+			int yRed;
+
+			y = n;
+			yRed = n->red;
+
+			if (!n->left) {
+				x = n->right;
+				transplant(n, n->right);
+			} else if(!n->right){
+				x = n->left;
+				transplant(n, n->left);
+			} else {
+				y = n->right->min();
+				yRed = y->red;
+
+				x = y->right;
+
+				if (y->parent == n)
+					x->parent = y;
+				else {
+					transplant(y, y->right);
+					y->right = n->right;
+					y->right->parent = y;
+				}
+				transplant(n, y);
+				y->left = n->left;
+				y->left->parent = y;
+				y->red = n->red;
+			}
+			if (!yRed)
+				fix(x);
+
+			nodeAlloc.destroy(n);
+			nodeAlloc.deallocate(n, 1);
+		}
+
+		// void fix(node *n){
+		// 	node *x;	
+
+		// 	while (n != this->root && !n->red) {
+		// 		if (n == n->parent->left){
+		// 			x = n->parent->right;
+		// 			if (x->red) {
+		// 				x->red = false;
+		// 				n->parent->red = true;
+		// 				rotateL(n->parent);
+		// 				x = n->parent->right;
+		// 			}
+
+		// 			if(!x->left->red && !x->right->red){
+		// 				x->red = true;
+		// 				n->parent->red = false;
+		// 				n = n->parent;
+		// 			} else {
+		// 				if (!x->right->red) {
+		// 					x->red = true;
+		// 					x->left->red = false;
+		// 					rotateR(x);
+		// 					x = n->parent->right;
+		// 				}
+		// 				x->red = n->parent->red;
+		// 				n->parent->red = false;
+		// 				n->right->red = false;
+		// 				rotateL(n->parent);
+		// 				n = this->root;		
+		// 			}
+		// 		} else {
+		// 			x = n->parent->left;
+		// 			if (x->red) {
+		// 				x->red = false;
+		// 				n->parent->red = false;
+		// 				rotateR(n->parent);
+		// 				x = n->parent->left;
+		// 			}
+
+		// 			if (!x->left->red && !x->right->red){
+		// 				x->red = true;
+		// 				n->parent->red = false;
+		// 				n = n->parent;
+		// 			} else {
+		// 				if (!x->left->red) {
+		// 					x->red = true;
+		// 					x->right->red = false;
+		// 					rotateL(x);
+		// 					x = n->parent->left;
+		// 				}
+		// 				x->red = n->parent->red;
+		// 				n->parent->red = false;
+		// 				x->left->red = false;
+		// 				rotateR(n->parent);
+		// 				n = this->root;
+		// 			}
+		// 		}
+		// 	}
+		// 	n->red = false;
+		// }
 
 		void rotateR(node *n)
 		{
-			node *c = n->left;
-			node *p = n->parent;
+			node *lc = n->left ;
+			n->left = lc->right;
 
-			if (c->right)
-				c->right->parent = n;
+			if (n->left)
+				n->left->parent = n;
+			
+			if (!n->parent)
+				this->root = lc;
+			else if (n == n->parent->left)
+				n->parent->left = lc;
+			else
+				n->parent->right = lc;	
 
-			n->left = c->right;
-			n->parent = c;
-			c->right = n;
-			c->parent = p;
-
-			if (p)
-				(p->right == n) ? p->right = c : p->left = c;
-		}
-
-		//////////////////
-		// ** delete ** //
-		//////////////////
-
-		void delete1(node *n)
-		{
-			if (n->parent)
-				this->delete2(n);
-		}
-
-		void delete2(node *n)
-		{
-			node *s = getS(n);
-
-			if (s->red) {
-				n->parent->red = true;
-				s->red = false;
-				(n == n->parent->left) ? rotateL(n->parent) : rotateR(n->parent);
-			}
-			delete3(n);
-		}
-
-		void delete3(node *n)
-		{
-			node *s = getS(n);
-
-			if (!n->parent->red && !s->red
-				&& !s->left->red && !s->right->red) {
-				s->red = true;
-				delete1(n->parent);
-			} else
-				delete4(n);
-		}
-
-		void delete4(node *n)
-		{
-			node *s = getS(n);
-
-			if (n->parent->red && !s->red
-				&& !s->left->red && !s->right->red) {
-				s->red = true;
-				n->parent->red = false;
-			} else
-				delete5(n);
-		}
-
-		void delete5(node *n)
-		{
-			node *s = getS(n);
-
-			if  (!s->red) {
-				if (n == n->parent->left && !s->right->red
-					&& s->left->red) {
-					s->red = true;
-					s->left->red = false;
-					rotateR(s);
-				} else if (n == n->parent->right && !s->left->red
-					&& s->right->red) {
-					s->red = true;
-					s->right->red = false;
-					rotateL(s);
-				}
-			}
-			delete6(n);
-		}
-
-		void delete6(node *n)
-		{
-			node *s = getS(n);
-
-			s->red = n->parent->red;
-			n->parent->red = false;
-
-			if (n == n->parent->left) {
-				s->right->red = false;
-				rotateL(n->parent);
-			} else {
-				s->left->red = false;
-				rotateR(n->parent);
-			}
+			lc->parent = n->parent ;
+			n->parent = lc;
+			lc->right = n;
 		}
 
 		//////////////////
 		// ** utils ** //
 		//////////////////
+		node *getGP(node *n) {
+			return (n && n->parent) ? n->parent->parent : 0;
+		}
 
-		void replace(node *n, node *child)
+		node *getU(node *n) {
+			node *gp = getGP(n);
+			if (!gp)
+				return (0);
+			return (n->parent == gp->left) ? gp->right : gp->left;
+		}
+
+		node *getS(node *n) {
+			return (n == n->parent->left) ? n->parent->right : n->parent->left;
+		}
+
+		node *getRoot() {
+			return (root);
+		}
+
+		void transplant(node *n, node *child)
 		{
-			child->parent = n->parent;
-			if (n->parent->left == n)
+			if (!n->parent)
+				this->root = child;
+			else if (n == n->parent->left)
 				n->parent->left = child;
-			else if (n->parent->right == n)
+			else
 				n->parent->right = child;
+			child->parent = n->parent;
 		}
 
 		void putNodePos(node *n, node *where) {
-			std::cout << "what?" << where << std::endl;
 			n->parent = where->parent;
-			std::cout << "why?" << std::endl;
 			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
 		

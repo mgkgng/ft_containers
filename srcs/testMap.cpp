@@ -47,7 +47,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Rear Window"] = 1954;
 	real["To Catch a Thief"] = 1955;
 	real["The Trouble with Harry"] = 1955;
-	real["The Man Who Knew Too Much"] = 1956;
+	// real["The Man Who Knew Too Much"] = 1956;
 	real["The Wrong Man"] = 1956;
 	real["Vertigo"] = 1958;
 	real["North by Northwest"] = 1959;
@@ -101,7 +101,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	mine["Rear Window"] = 1954;
 	mine["To Catch a Thief"] = 1955;
 	mine["The Trouble with Harry"] = 1955;
-	mine["The Man Who Knew Too Much"] = 1956;
+	// mine["The Man Who Knew Too Much"] = 1956;
 	mine["The Wrong Man"] = 1956;
 	mine["Vertigo"] = 1958;
 	mine["North by Northwest"] = 1959;
@@ -112,6 +112,37 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	mine["Topaz"] = 1969;
 	mine["Frenzy"] = 1972;
 	mine["Family Plot"] = 1976;
+}
+
+void ft_kubrick(std::map<string, int> &real, ft::map<string, int> &mine){
+	real["Fear and Desire"] = 1952;
+	real["Killer's Kiss"] = 1955;
+	real["Killing"] = 1956;
+	real["Paths of Glory"] = 1957;
+	real["Spartacus"] = 1960;
+	real["Lolita"] = 1962;
+	real["Dr.Strangelove"] = 1964;
+	real["2001 : Space Odyssey"] = 1968;
+	real["A Clockword Orange"] = 1971;
+	real["Barry Lyndon"] = 1975;
+	real["The Shining"] = 1980;
+	real["Full Metal Jacket"] = 1987;
+	real["Eyes Wide Shut"] = 1999;
+
+	mine["Fear and Desire"] = 1952;
+	mine["Killer's Kiss"] = 1955;
+	mine["Killing"] = 1956;
+	mine["Paths of Glory"] = 1957;
+	mine["Spartacus"] = 1960;
+	mine["Lolita"] = 1962;
+	mine["Dr.Strangelove"] = 1964;
+	mine["2001 : Space Odyssey"] = 1968;
+	mine["A Clockword Orange"] = 1971;
+	mine["Barry Lyndon"] = 1975;
+	mine["The Shining"] = 1980;
+	mine["Full Metal Jacket"] = 1987;
+	mine["Eyes Wide Shut"] = 1999;
+
 }
 
 template<class Key, class Value>
@@ -125,12 +156,10 @@ bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
 	typename ft::map<Key, Value>::iterator	myIt;
 	typename std::map<Key, Value>::iterator	realIt = real.begin();
 	for (myIt = mine.begin(); myIt != mine.end(); myIt++) {
-		// if (*myIt != *realIt++) {
-		// 	PRINT_KO;
-		// 	// printMine(mine);
-		// 	// printReal(real);
-		// 	return (false);
-		// }
+		if (myIt->first != (realIt++)->first) {
+			PRINT_KO;
+			return (false);
+		}
 	}
 	PRINT_OK;
 	return (true);
@@ -174,18 +203,30 @@ int testMap() {
 	ft::map<string, int>	myHitchcock;
 
 	ft_hitchcock(realHitchcock, myHitchcock);
-
-	std::cout << "test value at begin: " << (*realHitchcock.begin()).first << " " << realHitchcock.size() << std::endl;
-	std::cout << "my test value at begin: " << (*myHitchcock.begin()).first << " " << (*myHitchcock.getTree().getRoot()->min()).value.first << " " << myHitchcock.size() << std::endl;
-
 	// TO_DO SAME KEY DOESNT REPLACE YET
-	// START_CLOCK;
-	// real = std::map<string, int>(realHitchcock.begin(), realHitchcock.end());
-	// END_CLOCK_REAL;
-	// START_CLOCK;
-	// mine = ft::map<string, int>(myHitchcock.begin(), myHitchcock.end());
-	// END_CLOCK_MY;
-	// CHECK(MAP, ONLY_CLOCK);
+	
+	START_CLOCK;
+	real = std::map<string, int>(realHitchcock.begin(), realHitchcock.end());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine = ft::map<string, int>(myHitchcock.begin(), myHitchcock.end());
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("Map Constructor Type 4: Copy Constructor");
+	std::map<string, int>	realKubrick;
+	ft::map<string, int>	myKubrick;
+
+	ft_kubrick(realKubrick, myKubrick);
+	// TO_DO SAME KEY DOESNT REPLACE YET
+	
+	START_CLOCK;
+	real = std::map<string, int>(realKubrick);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine = ft::map<string, int>(myKubrick);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
 
 	END_TEST(MAP);
 }
