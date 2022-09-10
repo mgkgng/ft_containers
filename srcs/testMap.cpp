@@ -347,6 +347,13 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
+	ANNOUNCE2("find");
+	try {
+		int realResult = (real.find("The Birds"))->second;
+		int myResult = (mine.find("The Birds"))->second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
 	END_TEST(MAP);
 
 }

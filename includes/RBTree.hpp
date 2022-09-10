@@ -23,19 +23,19 @@ struct RBnode {
 
 		RBnode *next() {
 			if (this->empty)
-				return (this->nil);
+				return (NULL);
 			if (this->right)
 				return (this->right->min());
 			if (this == this->parent->left)
 				return (this->parent);
 			RBnode *where = this->parent;
 			for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
-			return ((where) ? where->parent : this->nil);
+			return ((where) ? where->parent : NULL);
 		}
 
 		RBnode *prev() {
 			if (this->empty)
-				return (this->nil);
+				return (NULL);
 
 			if (this->left)
 				return (this->left->max());
@@ -45,7 +45,7 @@ struct RBnode {
 
 			RBnode *where;
 			for (where = this->parent; where && where == where->parent->left; where = where->parent);
-			return ((where) ? where->parent : this->nil);
+			return ((where) ? where->parent : NULL);
 		}
 };
 
@@ -57,7 +57,7 @@ class RBiter {
 		typedef typename Node::value_type* pointer;			
 		
 
-		explicit RBiter() : ptr(this->nil) {} 
+		explicit RBiter() : ptr(NULL) {} 
 		RBiter(Node *where) : ptr(where) {}
 
 		reference operator*() { return (ptr->value); }
@@ -124,11 +124,9 @@ class RBtree {
 		// ** Constructors ** //
 		////////////////////////
 
-		RBtree() : root(this->nil), size(0) {
+		RBtree() : root(NULL), size(0) {
 			nodeAlloc = node_allocator();
 			comp = Compare();
-			nil = nodeAlloc.allocate(1);
-			nil = RBnode<ft::pair<Key, Value> >();
 		}
 
 		///////////////////////////////
@@ -401,7 +399,7 @@ class RBtree {
 				nodeAlloc.destroy(it.getPtr());
 				//nodeAlloc.deallocate(it.getPtr(), 1);
 			}
-			this->root = this->nil;
+			this->root = NULL;
 			this->size = 0;
 		}
 
