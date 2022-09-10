@@ -37,7 +37,7 @@
 	count++;\
 } while (0)
 
-#define COMPARE res *= compare(mine, real)
+#define COMPARE res -= !(compare(mine, real))
 
 #define CHECK(CONTAINER, test) do {\
 	CHECK_CLOCK(CONTAINER);\

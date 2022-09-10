@@ -142,15 +142,17 @@ class RBtree {
 			return (newNode);
 		}
 
-		void erase(key_type k) {
+		bool erase(key_type k) {
 			node *n = search(k, this->root);
+			usleep(1);
 			if (!n)
-				return ;
+				return (false);
 			remove(n);
+			return (true);
 		}
 
 		node *search(const key_type &key, node *n) {
-			if (!n || n->value.first == key)
+ 			if (!n || n->value.first == key)
 				return (n);
 			return (!comp(n->value.first, key)) ? (this->search(key, n->left)) : (this->search(key, n->right));
 		}
@@ -243,6 +245,9 @@ class RBtree {
 
 		void rotateL(node *n)
 		{
+			if (!n || !n->right)
+				return;
+
 			node *rc = n->right ;
 			n->right = rc->left;
 
@@ -261,112 +266,22 @@ class RBtree {
 			rc->left = n;
 		}
 
-		node* getSuccessor(node *n) {
-			if (n->right)
-				return (n->right->min());
-
-			node* x = n->parent;
-			while (x && n == x->right) {
-				n = x;
-				x = x->parent;
-			}
-			return (x);
-		}
-
-		// void remove(node *n){
-		// 	node *x, y;
-	
-		// 	if (!n->left || !n->right)
-		// 		y = n;
-		// 	else
-		// 		y = getSuccessor(n);
-	
-		// 	if (y->left)
-		// 		x = y->left;
-		// 	else
-		// 		x = y->right;
-		// 	x->parent = y->parent;
-		// 	if (!y->parent)
-		// 		this->root = x;
-		// 	else {
-		// 		if (y == y->parent->left)
-		// 			y->parent->left = x;
-		// 		else
-		// 			y->parent->right = x;
-		// 	}
-		// 	if (y != n)
-		// 		n->key = y->key;
-		// 	if (!y->red)
-		// 		rbDeleteFixup(x);
-		// 	delete y;
-		// }
-
-		void fix(node *n){
-			while (n != this->root && !n->red){
-				if (n == n->parent->left) {
-					node *x = n->parent->right;
-					if (x->red) {
-						x->red = false;
-						n->parent->red = true;
-						rotateL(n->parent);
-						x = n->parent->right;
-					}
-					if (!x->left->red && !x->right->red) {
-						x->red = true;
-						n = n->parent;
-					} else {
-						if(x->right->red == false) {
-							x->left->red = false;
-							x->red = true;
-							rotateR(x);
-							x = n->parent->right;
-						}
-						x->red = n->parent->red;
-						n->parent->red = false;
-						x->right->red = false;
-						rotateL(n->parent);
-						n = root;
-					}
-				} else {
-					node *x = n->parent->left;
-					if (x->red) {
-						x->red = false;
-						n->parent->red = true;
-						rotateR(n->parent);
-						x = n->parent->left;
-					}
-					if (!x->right->red && !x->left->red) {
-						x->red = true;
-						n = n->parent;
-					} else {
-						if(x->left->red == false) {
-							x->right->red = false;
-							x->red = true;
-							rotateL(x);
-							x = n->parent->left;
-						}
-						x->red = n->parent->red;
-						n->parent->red = false;
-						x->left->red = false;
-						rotateR(n->parent);
-						n = this->root;
-					}
-				}
-			}
-			n->red = false;
-		}
-
 		void remove(node *n){
-			node *x, *y;
+			node *x, *y, *tmp;
 			int yRed;
 
 			y = n;
 			yRed = n->red;
 
-			if (!n->left) {
+			if (!n->left && !n->right) {
+				tmp = newNode(n->value);
+				tmp->red = false;
+				transplant(n, tmp);
+				x = tmp;
+			} else if (!n->left) {
 				x = n->right;
 				transplant(n, n->right);
-			} else if(!n->right){
+			} else if (!n->right){
 				x = n->left;
 				transplant(n, n->left);
 			} else {
@@ -389,74 +304,78 @@ class RBtree {
 			}
 			if (!yRed)
 				fix(x);
+			
+			if (tmp) {
+				transplant(tmp, NULL);
+				//deleteNode(tmp);
+			}
 
-			nodeAlloc.destroy(n);
-			nodeAlloc.deallocate(n, 1);
+			//nodeAlloc.destroy(n);
+			//nodeAlloc.deallocate(n, 1);
 		}
 
-		// void fix(node *n){
-		// 	node *x;	
-
-		// 	while (n != this->root && !n->red) {
-		// 		if (n == n->parent->left){
-		// 			x = n->parent->right;
-		// 			if (x->red) {
-		// 				x->red = false;
-		// 				n->parent->red = true;
-		// 				rotateL(n->parent);
-		// 				x = n->parent->right;
-		// 			}
-
-		// 			if(!x->left->red && !x->right->red){
-		// 				x->red = true;
-		// 				n->parent->red = false;
-		// 				n = n->parent;
-		// 			} else {
-		// 				if (!x->right->red) {
-		// 					x->red = true;
-		// 					x->left->red = false;
-		// 					rotateR(x);
-		// 					x = n->parent->right;
-		// 				}
-		// 				x->red = n->parent->red;
-		// 				n->parent->red = false;
-		// 				n->right->red = false;
-		// 				rotateL(n->parent);
-		// 				n = this->root;		
-		// 			}
-		// 		} else {
-		// 			x = n->parent->left;
-		// 			if (x->red) {
-		// 				x->red = false;
-		// 				n->parent->red = false;
-		// 				rotateR(n->parent);
-		// 				x = n->parent->left;
-		// 			}
-
-		// 			if (!x->left->red && !x->right->red){
-		// 				x->red = true;
-		// 				n->parent->red = false;
-		// 				n = n->parent;
-		// 			} else {
-		// 				if (!x->left->red) {
-		// 					x->red = true;
-		// 					x->right->red = false;
-		// 					rotateL(x);
-		// 					x = n->parent->left;
-		// 				}
-		// 				x->red = n->parent->red;
-		// 				n->parent->red = false;
-		// 				x->left->red = false;
-		// 				rotateR(n->parent);
-		// 				n = this->root;
-		// 			}
-		// 		}
-		// 	}
-		// 	n->red = false;
-		// }
+		void fix(node *n){
+			while (n != this->root && !n->red) {
+				if (n == n->parent->left) {
+					node *x = n->parent->right;
+					if (x && x->red) {
+						x->red = false;
+						n->parent->red = true;
+						rotateL(n->parent);
+						x = n->parent->right;
+					}
+					if (x && (!x->left || !x->left->red) && (!x->right || !x->right->red)) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if (x && (!x->right || !x->right->red)) {
+							if (x->left)
+								x->left->red = false;
+							x->red = true;
+							rotateR(x);
+							x = n->parent->right;
+						}
+						if (x) {
+							x->red = n->parent->red;
+							x->right->red = false;
+						}
+						n->parent->red = false;
+						rotateL(n->parent);
+						n = root;
+					}
+				} else {
+					node *x = n->parent->left;
+					if (x && x->red) {
+						x->red = false;
+						n->parent->red = true;
+						rotateR(n->parent);
+						x = n->parent->left;
+					}
+					if (!x->right->red && !x->left->red) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if (!x->left->red) {
+							x->right->red = false;
+							x->red = true;
+							rotateL(x);
+							x = n->parent->left;
+						}
+						x->red = n->parent->red;
+						n->parent->red = false;
+						x->left->red = false;
+						rotateR(n->parent);
+						n = this->root;
+					}
+				}
+			}
+			n->red = false;
+		}
 
 		void rotateR(node *n)
 		{
+			if (!n || !n->left)
+				return;
 			node *lc = n->left ;
 			n->left = lc->right;
 
@@ -514,7 +433,8 @@ class RBtree {
 				n->parent->left = child;
 			else
 				n->parent->right = child;
-			child->parent = n->parent;
+			if (child)
+				child->parent = n->parent;
 		}
 
 		void putNodePos(node *n, node *where) {
@@ -522,14 +442,6 @@ class RBtree {
 			(n == n->parent->left) ? n->parent->left = n : n->parent->right = n;
 		}
 		
-		node *beginPtr() {
-			node *l = root;
-	
-			while (l && l->left)
-				l = l->left;
-			return (l);
-		}
-
 		/* GETTER */
 		size_type getSize() const { return size; }
 
@@ -551,6 +463,17 @@ class RBtree {
 			other.comp = tmp4;
 		}
 
+		node *newNode(const value_type &val) {
+			node* n = nodeAlloc.allocate(1);
+			nodeAlloc.construct(n, val);
+			return (n);
+		}
+
+		void deleteNode(node *n) {
+			nodeAlloc.destroy(n);
+			nodeAlloc.deallocate(n, 1);
+		}
+
 		iterator max()  { return (!this->root) ? end() : iterator(this->root->max()); }
 		iterator min()  { return (!this->root) ? end() : iterator(this->root->min()); }
 		iterator begin() { return (this->min()); }
@@ -559,9 +482,10 @@ class RBtree {
 			return (nodeAlloc.max_size());
 		}
 
-	protected:
-		node			*root;
 		size_type		size;
+		node			*root;
+
+	protected:
 		node_allocator	nodeAlloc;
 		Compare			comp;
 

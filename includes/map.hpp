@@ -202,9 +202,7 @@ class map {
 			node *pos = tree.search(value.first, tree.getRoot());
 			if (pos)
 				return (ft::make_pair<iterator, bool>(iterator(pos), false));
-			std::cout << "coucou" << std::endl;
 			node *where = tree.add(value);
-			std::cout << "bangbang" << std::endl;
 			return (ft::make_pair<iterator, bool>(iterator(where), true));
 		}
 
@@ -223,20 +221,26 @@ class map {
 		}
 
 		void erase(iterator pos) {
-			tree.remove(pos->first);
+			tree.remove(pos.getPtr());
+			tree.size--;
 		}
 
 		void erase(iterator first, iterator last) {
-			while (first != last)
-				tree.remove(first->first);
+			while (first->first != last->first) {
+				tree.erase(first++->first);
+				tree.size--;
+			}
 		}
 
 		size_type erase(const Key& key) {
-			tree.remove(key);
+			bool res = tree.erase(key);
+			if (res)
+				tree.size--;
+			return (res);
 		}
 
 		void swap(map &other) {
-			tree.swap(other);
+			tree.swap(other.tree);
 			
 			key_compare tmp = compK;
 			compK = other.compK;
@@ -254,11 +258,11 @@ class map {
 		//////////////////
 
 		size_type count(const Key& key) const {
-			return (tree.search(key, tree.getRoot())) ? 1 : 0;
+			return (tree.search(key, tree.root)) ? 1 : 0;
 		}
 
 		iterator find(const Key& key) {
-			node *where = tree.search(key, tree.getRoot());
+			node *where = tree.search(key, (node *) tree.getRoot());
 			return (!where) ? this->end() : iterator(where);
 		}
 
