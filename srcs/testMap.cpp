@@ -149,7 +149,7 @@ template<class Key, class Value>
 bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
 	if (mine.size() != real.size()) {
 		PRINT_KO;
-		std::cout << "SIZE IS DIFFERENT: " << mine.size() << " / " << real.size() << std::endl;
+		std::cout << "MYSIZE: " << mine.size() << " / REALSIZE: " << real.size() << std::endl;
 		return (false);
 	}
 
@@ -302,13 +302,50 @@ int testMap() {
 
 	ANNOUNCE2("erase1: erase with iterator");
 	START_CLOCK;
-	real.erase(realHitchcock.begin());
+	real.erase(real.begin());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine.erase(myHitchcock.begin());
-	std::cout << "OUT" << std::endl;
+	mine.erase(mine.begin());
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
+
+
+	ANNOUNCE2("erase2: erase with iteratable");
+	std::map<string, int>::iterator realIt = real.find("Paths of Glory");
+	ft::map<string, int>::iterator myIt = mine.find("Paths of Glory");
+
+	START_CLOCK;
+	real.erase(real.begin(), realIt);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase(mine.begin(), myIt);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("erase3: erase with a key");
+	START_CLOCK;
+	real.erase("Paths of Glory");
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase("Paths of Glory");
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("swap");
+	START_CLOCK;
+	real.swap(realHitchcock);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.swap(myHitchcock);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("count");
+	try {
+		int realResult = real.count("Container");
+		int myResult = mine.count("Container");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
 
 	END_TEST(MAP);
 

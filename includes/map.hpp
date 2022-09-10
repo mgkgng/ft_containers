@@ -221,6 +221,7 @@ class map {
 		}
 
 		void erase(iterator pos) {
+<<<<<<< HEAD
 			std::cout << "bonjour" << std::endl;
 			tree.remove(pos.getPtr());
 			std::cout << "au revoir" << std::endl;
@@ -229,14 +230,28 @@ class map {
 		void erase(iterator first, iterator last) {
 			while (first != last)
 				tree.remove(first++->first);
+=======
+			tree.remove(pos.getPtr());
+			tree.size--;
+		}
+
+		void erase(iterator first, iterator last) {
+			while (first->first != last->first) {
+				tree.erase(first++->first);
+				tree.size--;
+			}
+>>>>>>> save
 		}
 
 		size_type erase(const Key& key) {
-			tree.remove(key);
+			bool res = tree.erase(key);
+			if (res)
+				tree.size--;
+			return (res);
 		}
 
 		void swap(map &other) {
-			tree.swap(other);
+			tree.swap(other.tree);
 			
 			key_compare tmp = compK;
 			compK = other.compK;
@@ -254,11 +269,11 @@ class map {
 		//////////////////
 
 		size_type count(const Key& key) const {
-			return (tree.search(key, tree.getRoot())) ? 1 : 0;
+			return (tree.search(key, tree.root)) ? 1 : 0;
 		}
 
 		iterator find(const Key& key) {
-			node *where = tree.search(key, tree.getRoot());
+			node *where = tree.search(key, (node *) tree.getRoot());
 			return (!where) ? this->end() : iterator(where);
 		}
 
