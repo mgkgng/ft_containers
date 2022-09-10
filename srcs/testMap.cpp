@@ -264,12 +264,30 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
-	ANNOUNCE2("clear");
+	// ANNOUNCE2("clear");
+	// START_CLOCK;
+	// real.clear();
+	// END_CLOCK_REAL;
+	// START_CLOCK;
+	// mine.clear();
+	// END_CLOCK_MY;
+	// CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("insert1: insert a pair");
 	START_CLOCK;
-	real.clear();
+	real.insert(std::make_pair("France", 33));
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine.clear();
+	mine.insert(ft::make_pair("France", 33));
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("insert2: insert a pair with a hint");
+	START_CLOCK;
+	real.insert(real.begin(), std::make_pair("Argentina", 54));
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.insert(mine.begin(), ft::make_pair("Argentina", 54));
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 

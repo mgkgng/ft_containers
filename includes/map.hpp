@@ -199,19 +199,21 @@ class map {
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
-			node *pos = tree.search(value, tree.getRoot());
+			node *pos = tree.search(value.first, tree.getRoot());
 			if (pos)
 				return (ft::make_pair<iterator, bool>(iterator(pos), false));
-			node *where = tree.add(value, pos);
+			std::cout << "coucou" << std::endl;
+			node *where = tree.add(value);
+			std::cout << "bangbang" << std::endl;
 			return (ft::make_pair<iterator, bool>(iterator(where), true));
 		}
 
 		iterator insert(iterator hint, const value_type& value) {
-			node *pos = tree.search(value, *hint);
+			node *pos = tree.search(value.first, hint.getPtr());
 			if (pos)
-				return (ft::make_pair<iterator, bool>(iterator(pos), false));
-			node *where = tree.add(value, pos);
-			return (ft::make_pair<iterator, bool>(iterator(where), true));
+				return (iterator(pos)); //TODO LET'S CHECK IT LATER
+			node *where = tree.add(value);
+			return (iterator(where));
 		}
 
 		template<class InputIt>
