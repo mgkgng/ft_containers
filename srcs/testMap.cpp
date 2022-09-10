@@ -291,6 +291,16 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 
+	ANNOUNCE2("insert3: insert with iterator");
+	START_CLOCK;
+	real.insert(realHitchcock.begin(), realHitchcock.end());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.insert(myHitchcock.begin(), myHitchcock.end());
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
 	END_TEST(MAP);
+
 }
 
