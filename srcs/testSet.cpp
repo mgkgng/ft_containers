@@ -407,7 +407,7 @@ bool compare(ft::set<Key, Value> mine, std::set<Key, Value> real) {
 	typename std::set<Key, Value>::iterator	realIt = real.begin();
 	
 	for (myIt = mine.begin(); myIt != mine.end(); myIt++) {
-		if (myIt->first != (realIt++)->first) {
+		if (*myIt != *realIt++) {
 			PRINT_KO;
 			return (false);
 		}

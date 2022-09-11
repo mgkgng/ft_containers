@@ -55,7 +55,6 @@ class RBiter {
 
 		typedef typename Node::value_type& reference;
 		typedef typename Node::value_type* pointer;			
-		
 
 		explicit RBiter() : ptr(NULL) {} 
 		RBiter(Node *where) : ptr(where) {}
@@ -102,9 +101,8 @@ class RBiter {
 };
 
 template<
-	class Key,
-    class Value,
-    class Compare = std::less<Key>
+	class Value,
+    class Compare
 >
 class RBtree {
 
@@ -113,7 +111,6 @@ class RBtree {
 		///////////////////////////
 		// ** type definition ** //
 		///////////////////////////
-		typedef Key						key_type;
 		typedef Value					value_type;
 		typedef RBnode<value_type>		node;
 		typedef RBiter<node>			iterator;
@@ -134,16 +131,15 @@ class RBtree {
 		///////////////////////////////
 
 		node *add(value_type v) {
-			node	*newNode = nodeAlloc.allocate(1);
-			nodeAlloc.construct(newNode, RBnode<value_type>(v));
+			node *newNode = addNode(v);
 
 			insert(newNode);
 			adjust(newNode);
 			return (newNode);
 		}
 
-		bool erase(key_type k) {
-			node *n = search(k, this->root);
+		bool erase(value_type v) {
+			node *n = search(v, this->root);
 			usleep(1);
 			if (!n)
 				return (false);
@@ -151,10 +147,10 @@ class RBtree {
 			return (true);
 		}
 
-		node *search(const key_type &key, node *n) {
- 			if (!n ||  n->value.first == key)
+		node *search(const value_type &v, node *n) {
+ 			if (!n || comp(n->value, v))
 				return (n);
-			return (!comp(n->value.first, key)) ? (this->search(key, n->left)) : (this->search(key, n->right));
+			return (!comp(n->value, v)) ? (this->search(v, n->left)) : (this->search(v, n->right));
 		}
 
 		void insert(node* newNode) {
@@ -166,7 +162,7 @@ class RBtree {
 
 			node *curr= this->root;
 			while (1) {
-				if (this->comp(curr->value.first, newNode->value.first)) {
+				if (this->comp(curr->value, newNode->value)) {
 					if (!curr->right) {
 						newNode->parent= curr;
 						curr->right= newNode;
@@ -274,7 +270,7 @@ class RBtree {
 			yRed = n->red;
 
 			if (!n->left && !n->right) {
-				tmp = newNode(n->value);
+				tmp = addNode(n->value);
 				tmp->red = false;
 				transplant(n, tmp);
 				x = tmp;
@@ -463,9 +459,9 @@ class RBtree {
 			other.comp = tmp4;
 		}
 
-		node *newNode(const value_type &val) {
+		node *addNode(const value_type &v) {
 			node* n = nodeAlloc.allocate(1);
-			nodeAlloc.construct(n, val);
+			nodeAlloc.construct(n, v);
 			return (n);
 		}
 

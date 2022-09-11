@@ -28,35 +28,26 @@ class map {
 		typedef typename Allocator::pointer		pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
-		typedef RBtree<key_type, value_type, Compare>	tree_type;
-		typedef RBnode<value_type>						node;
-		typedef std::allocator<node>			 		node_allocator;
+		class value_compare {
+			friend class map;
+			protected:
+				Compare comp;
+			public:
+				typedef bool		result_type;
+				typedef	value_type	first_argument_type;
+				typedef value_type	second_argument_type;
+				value_compare(Compare c) : comp(c) {}
+				bool operator()(const value_type& lhs, const value_type& rhs) const { return (comp(lhs.first, rhs.first)); }
+		};
+
+		typedef RBtree<value_type, value_compare>	tree_type;
+		typedef RBnode<value_type>				node;
+		typedef std::allocator<node>			node_allocator;
 
 		typedef RBiter<node>			iterator;
 		typedef RBiter<const node>	const_iterator;
 		typedef ft::ReverseIterator<iterator>	reverse_iterator;
 		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
-
-
-		class value_compare {
-
-			protected:
-				Compare comp;
-
-			public:
-				typedef bool		result_type;
-				typedef	value_type	first_argument_type;
-				typedef value_type	second_argument_type;
-
-				value_compare() {}
-				value_compare(Compare c) {
-					comp = c;
-				}
-
-				bool operator()(const value_type& lhs, const value_type& rhs) const {
-					return (comp(lhs.first, rhs.first));
-				}
-		};
 
 		map() {
 			compK = Compare();
@@ -128,67 +119,22 @@ class map {
 		// ** Iterators ** //
 		/////////////////////
 
-		iterator begin() {
-			// Returns an iterator to the first element of the vector.
-			// If the vector is empty, the returned iterator will be equal to end().
-			return (this->tree.begin());
-		}
-
-		const_iterator begin() const {
-			return (this->tree.begin());
-		}
-
-		iterator end() {
-			// Returns an iterator to the element following the last element of the vector.
-			// This element acts as a placeholder; attempting to access it results in undefined behavior.
-			return (this->tree.end());
-		}
-
-		const_iterator end() const {
-			return (this->tree.end());
-		}
-
-		reverse_iterator rbegin() {
-			// Returns a reverse iterator to the first element of the reversed vector.
-			// It corresponds to the last element of the non-reversed vector.
-			// If the vector is empty, the returned iterator is equal to rend().
-			node *r = tree._root;
-	
-			while (r && r->_right)
-				r = r->_left;
-			return (reverse_iterator(r));
-		}
-
-		const_reverse_iterator rbegin() const {
-
-		}
-
-		reverse_iterator rend() {
-			// Returns a reverse iterator to the element following the last element of the reversed vector.
-			// It corresponds to the element preceding the first element of the non-reversed vector. 
-			// This element acts as a placeholder, attempting to access it results in undefined behavior.
-			return (NULL);
-		}
-
-		const_reverse_iterator rend() const {
-			return (NULL);
-		}
+		iterator begin() { return (this->tree.begin()); }
+		const_iterator begin() const { return (this->tree.begin()); }
+		iterator end() { return (this->tree.end()); }
+		const_iterator end() const { return (this->tree.end()); }
+		// reverse_iterator rbegin() { return (this->tree.end()); } //TODO
+		// const_reverse_iterator rbegin() const { return (NULL); }
+		// reverse_iterator rend() { return (NULL); }
+		// const_reverse_iterator rend() const { return (NULL); }
 
 		////////////////////
 		// ** Capacity ** //
 		////////////////////
 
-		bool empty() const {
-			return ((tree.getSize()) ? false : true);
-		}
-
-		size_type size() const {
-			return (tree.getSize());
-		}
-
-		size_type max_size() const {
-			return (tree.max_size());
-		}
+		bool empty() const { return ((tree.getSize()) ? false : true); }
+		size_type size() const { return (tree.getSize()); }
+		size_type max_size() const { return (tree.max_size()); }
 
 		////////////////////
 		// ** Modifier ** //
@@ -325,13 +271,8 @@ class map {
 		// ** Observers ** //
 		/////////////////////
 
-		key_compare key_comp() const {
-			return (compK);
-		}
-
-		value_compare value_comp() const {
-			return (compV);
-		}
+		key_compare key_comp() const { return (compK); }
+		value_compare value_comp() const { return (compV); }
 
 		friend bool operator==(const map& lhs, const map& rhs) {
 			if (lhs.tree._size != rhs.tree._size)

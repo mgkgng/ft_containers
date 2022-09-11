@@ -10,7 +10,8 @@ template<class Key, class Compare = std::less<Key>, class Allocator = std::alloc
 class set {
 	public:
 		typedef Key			key_type;
-		typedef ft::pair<key_type, key_type> sorry_type;
+		typedef Key			value_type;
+		typedef ft::pair<Key, Key> sorry_type;
 		typedef size_t		size_type;
 		typedef Compare		key_compare;
 		typedef Allocator	allocator_type;
@@ -30,6 +31,7 @@ class set {
 		Compare			comp;
 		tree_type		tree;
 
+		set() {}
 		explicit set(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
 			// Constructs an empty container
 			this->comp = comp;
