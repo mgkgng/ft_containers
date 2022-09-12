@@ -484,7 +484,7 @@ int testSet() {
 	// START_CLOCK;
 	// mine.clear();
 	// END_CLOCK_MY;
-	// CHECK(MAP, DO_BOTH);
+	// CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("insert1: insert a pair");
 	START_CLOCK;
@@ -493,7 +493,7 @@ int testSet() {
 	START_CLOCK;
 	mine.insert("Gondor");
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("insert2: insert a pair with a hint");
 	START_CLOCK;
@@ -502,7 +502,7 @@ int testSet() {
 	START_CLOCK;
 	mine.insert(mine.begin(), "Rohan");
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("insert3: insert with iterator");
 	std::set<string> testReal;
@@ -517,7 +517,7 @@ int testSet() {
 	START_CLOCK;
 	mine.insert(testMine.begin(), testMine.end());
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("erase1: erase with iterator");
 	START_CLOCK;
@@ -526,7 +526,7 @@ int testSet() {
 	START_CLOCK;
 	mine.erase(mine.begin());
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("erase2: erase with iteratable");
 	std::set<string>::iterator realIt = real.find("Japan");
@@ -537,7 +537,7 @@ int testSet() {
 	START_CLOCK;
 	mine.erase(mine.begin(), myIt);
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("erase3: erase with a key");
 	START_CLOCK;
@@ -546,7 +546,7 @@ int testSet() {
 	START_CLOCK;
 	mine.erase("Thailand");
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("swap");
 	START_CLOCK;
@@ -555,7 +555,7 @@ int testSet() {
 	START_CLOCK;
 	mine.swap(testMine);
 	END_CLOCK_MY;
-	CHECK(MAP, DO_BOTH);
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("count");
 	try {

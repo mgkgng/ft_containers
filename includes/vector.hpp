@@ -136,36 +136,14 @@ class vector {
 		}
 
 		const_reference at(size_type pos) const {
-			// if (pos >= _size)
-			// 	throw std::out_of_range("vector error: out of range"); TO_DO REVOIR
-			std::cout << "What?" << std::endl;
 			return (*(_start + pos));
 		}
 
-		reference operator[](size_type pos) {
-			// Returns a reference to the element at specified location pos. No bounds checking is performed.
-			return (*(_start + pos));
-		}
-
-		const_reference operator[](size_type pos) const {
-			return (*(_start + pos));
-		}
-
-		reference front() {
-			// Returns a reference to the first element in the container.
-			// Calling front on an empty container is undefined.
-			return (*_start);
-		}
-
-		const_reference front() const {
-			return (*_start);
-		}
-
-		reference back() {
-			// Returns a reference to the last element in the container.
-			// Calling back on an empty container is undefined.
-			return (*(_end - 1));
-		}
+		reference operator[](size_type pos) { return (*(_start + pos)); }
+		const_reference operator[](size_type pos) const { return (*(_start + pos));}
+		reference front() { return (*_start); }
+		const_reference front() const { return (*_start); }
+		reference back() { return (*(_end - 1)); }
 
 		const_reference back() const {
 			if (!_size)

@@ -352,6 +352,34 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
+	ANNOUNCE2("lower_bound");
+	try {
+		int realResult = real.lower_bound("The Birds")->second;
+		int myResult = mine.lower_bound("The Birds")->second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("upper_bound");
+	try {
+		int realResult = real.upper_bound("The Birds")->second;
+		int myResult = mine.upper_bound("The Birds")->second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("equal_range pair first");
+	try {
+		int realResult = real.equal_range("Notorious").first->second;
+		int myResult = mine.equal_range("Notorious").first->second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("equal_range pair second");
+	try {
+		int realResult = real.equal_range("Notorious").second->second;
+		int myResult = mine.equal_range("Notorious").second->second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
 	END_TEST(MAP);
 
 }

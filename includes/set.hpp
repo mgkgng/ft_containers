@@ -71,9 +71,6 @@ class set {
 		const_iterator end() const { return (this->tree.end()); }
 
 		reverse_iterator rbegin() {
-			// Returns a reverse iterator to the first element of the reversed vector.
-			// It corresponds to the last element of the non-reversed vector.
-			// If the vector is empty, the returned iterator is equal to rend().
 		}
 
 		const_reverse_iterator rbegin() const {
