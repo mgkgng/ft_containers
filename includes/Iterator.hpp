@@ -11,13 +11,8 @@ class RandomAccessIterator {
 		typedef T*			pointer;
 		
 		RandomAccessIterator() : _ptr(NULL) {}
-
 		RandomAccessIterator(pointer p) : _ptr(p) {}
-
-		RandomAccessIterator(const RandomAccessIterator<T> &other) {
-			_ptr = other._ptr;
-		}
-
+		RandomAccessIterator(const RandomAccessIterator<T> &other) { _ptr = other._ptr; }
 		~RandomAccessIterator() {}
 
 		RandomAccessIterator&  operator++() {
@@ -76,13 +71,10 @@ class ReverseIterator {
 		typedef typename Iter::reference		reference;
 
 		ReverseIterator() : _it() {}
-
 		explicit ReverseIterator(iterator_type x) : _it(x) {}
 
 		template <class U>
-		ReverseIterator(const ReverseIterator<U>& other) {
-			*this = other;
-		}
+		ReverseIterator(const ReverseIterator<U>& other) { *this = other; }
 
 		template<class U>
 		ReverseIterator& operator=(const ReverseIterator<U>& other) {

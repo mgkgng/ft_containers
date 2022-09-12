@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RBTree.hpp"
-#include "ReverseIterator.hpp"
+#include "Iterator.hpp"
 
 
 //TODO should use friend class to get access to the data of tree 
@@ -168,7 +168,7 @@ class map {
 
 		void erase(iterator first, iterator last) {
 			while (*first != *last) {
-				tree.erase(*first++);
+				tree.erase(first++.getNode());
 				tree.size--;
 			}
 		}

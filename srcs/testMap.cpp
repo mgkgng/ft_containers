@@ -47,7 +47,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	real["Rear Window"] = 1954;
 	real["To Catch a Thief"] = 1955;
 	real["The Trouble with Harry"] = 1955;
-	// real["The Man Who Knew Too Much"] = 1956;
+	real["The Man Who Knew Too Much"] = 1956;
 	real["The Wrong Man"] = 1956;
 	real["Vertigo"] = 1958;
 	real["North by Northwest"] = 1959;
@@ -101,7 +101,7 @@ void ft_hitchcock(std::map<string, int> &real, ft::map<string, int> &mine){
 	mine["Rear Window"] = 1954;
 	mine["To Catch a Thief"] = 1955;
 	mine["The Trouble with Harry"] = 1955;
-	// mine["The Man Who Knew Too Much"] = 1956;
+	mine["The Man Who Knew Too Much"] = 1956;
 	mine["The Wrong Man"] = 1956;
 	mine["Vertigo"] = 1958;
 	mine["North by Northwest"] = 1959;
@@ -380,6 +380,7 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
+	while (1);
 	END_TEST(MAP);
 
 }

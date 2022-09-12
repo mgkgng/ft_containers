@@ -124,6 +124,8 @@ class RBtree {
 		///////////////////////////////
 
 		node *add(value_type v) {
+			if (search(v, this->root))
+				return (NULL);
 			node *newNode = addNode(v);
 
 			insert(newNode);
@@ -293,11 +295,11 @@ class RBtree {
 			
 			if (tmp) {
 				transplant(tmp, NULL);
-				//deleteNode(tmp);
+				deleteNode(tmp);
 			}
 
-			//nodeAlloc.destroy(n);
-			//nodeAlloc.deallocate(n, 1);
+			nodeAlloc.destroy(n);
+			nodeAlloc.deallocate(n, 1);
 			return (true);
 		}
 
@@ -461,19 +463,19 @@ class RBtree {
 			nodeAlloc.deallocate(n, 1);
 		}
 
-		// void print(const std::string &prefix, node *node, bool isLeft = 0)
-		// {
-		// 	if (!n)
-		// 		return;
+		void print(const std::string &prefix, node *n, bool isLeft = 0)
+		{
+			if (!n)
+				return;
 
-		// 	std::cout << prefix;
-        // 	std::cout << (isLeft ? "├──" : "└──" );
+			std::cout << prefix;
+        	std::cout << (isLeft ? "├──" : "└──" );
 
-		// 	std::cout << (!n->red ? "\033[1;90m" : "\033[1;31m") << n->val << "\033[0m" << std::endl;
+			std::cout << (!n->red ? "\033[1;90m" : "\033[1;31m") << n->value << "\033[0m" << std::endl;
 
-        // 	print(prefix + (isLeft ? "│   " : "    "), n->left, true);
-        // 	print(prefix + (isLeft ? "│   " : "    "), n->right, false);
-		// }
+        	print(prefix + (isLeft ? "│   " : "    "), n->left, true);
+        	print(prefix + (isLeft ? "│   " : "    "), n->right, false);
+		}
 
 		iterator max()  { return (!this->root) ? end() : iterator(this->root->max()); }
 		iterator min()  { return (!this->root) ? end() : iterator(this->root->min()); }
