@@ -138,11 +138,12 @@ class RBtree {
 		}
 
 		bool erase(node *n) {
+			usleep(10);
 			return ((!n) ? false : remove(n));
 		}
 
 		node *search(const value_type &v, node *n) {
- 			if (!n || comp(n->value, v))
+ 			if (!n || n->value == v)
 				return (n);
 			return (!comp(n->value, v)) ? (this->search(v, n->left)) : (this->search(v, n->right));
 		}
@@ -264,23 +265,29 @@ class RBtree {
 				x = n->left;
 				transplant(n, n->left);
 			} else {
-				y = n->right->min();
+				y = n->prev();
+				x = y->left;
+				if (!x) {
+					tmp = addNode(n->value);
+					tmp->red = false;
+					tmp->parent = y;
+					y->left = tmp;
+					x = tmp;
+				}
 				yRed = y->red;
-
-				x = y->right;
-
-				if (y->parent == n)
-					x->parent = y;
-				else {
-					transplant(y, y->right);
-					y->right = n->right;
-					y->right->parent = y;
+				if (y->parent != n) {
+					transplant(y, x);
+					y->left = n->left;
+					if (y->left)
+						y->left->parent = y;
 				}
 				transplant(n, y);
-				y->left = n->left;
-				y->left->parent = y;
 				y->red = n->red;
+				y->right = n->right;
+				if (y->right)
+					y->right->parent = y;
 			}
+
 			if (!yRed)
 				fix(x);
 			
@@ -331,7 +338,7 @@ class RBtree {
 						rotateR(n->parent);
 						x = n->parent->left;
 					}
-					if (!x->right->red && !x->left->red) {
+					if (x && (!x->right || !x->right->red) && (!x->left || !x->left->red)) {
 						x->red = true;
 						n = n->parent;
 					} else {
@@ -341,9 +348,11 @@ class RBtree {
 							rotateL(x);
 							x = n->parent->left;
 						}
-						x->red = n->parent->red;
+						if (x) {
+							x->red = n->parent->red;
+							x->left->red = false;
+						}
 						n->parent->red = false;
-						x->left->red = false;
 						rotateR(n->parent);
 						n = this->root;
 					}

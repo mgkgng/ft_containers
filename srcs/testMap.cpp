@@ -309,11 +309,9 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 
-
 	ANNOUNCE2("erase2: erase with iteratable");
 	std::map<string, int>::iterator realIt = real.find("Paths of Glory");
 	ft::map<string, int>::iterator myIt = mine.find("Paths of Glory");
-
 	START_CLOCK;
 	real.erase(real.begin(), realIt);
 	END_CLOCK_REAL;

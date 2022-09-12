@@ -137,9 +137,7 @@ class map {
 		// ** Modifier ** //
 		////////////////////
 
-		void clear() {
-			tree.clear();
-		}
+		void clear() { tree.clear(); }
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
 			node *pos = tree.search(value, tree.getRoot());

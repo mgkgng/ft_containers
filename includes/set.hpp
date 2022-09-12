@@ -32,8 +32,7 @@ class set {
 		tree_type		tree;
 
 		set() {}
-		explicit set(const Compare& comp, const Allocator& alloc = Allocator()) { // cppreference(2)
-			// Constructs an empty container
+		explicit set(const Compare& comp, const Allocator& alloc = Allocator()) {
 			this->comp = comp;
 			this->allocator = alloc;
 			this->tree = tree_type();
@@ -41,20 +40,21 @@ class set {
 
 		template<class InputIt>
 		set(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) { // cppreference(4)
-			// Constructs the container with the contents of the range [first, last).
-			// If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
+			this->comp = comp;
+			this->allocator = alloc;
+			this->tree = tree_type();
+			while (first != last)
+				this->tree.add(*first++);
 		}
 
-		set(const set& other) { // cppreference(6)
-			// Copy constructor.
-		}
-
-		~set() {
-
-		}		
+		set(const set& other) { *this = other; }
+		~set() {}		
 
 		set& operator=(const set& other) {
-
+			this->tree = other.tree;
+			this->comp = other.comp;
+			this->allocator = other.allocator;
+			return (*this);
 		}
 
 		allocator_type get_allocator() const {
@@ -65,21 +65,10 @@ class set {
 		// ** Iterators ** //
 		/////////////////////		
 
-		iterator begin() {
-			return (this->tree.begin());
-		}
-
-		const_iterator begin() const {
-			return (this->tree.begin());
-		}
-
-		iterator end() {
-			return (this->tree.end());
-		}
-
-		const_iterator end() const {
-			return (this->tree.end());
-		}
+		iterator begin() { return (this->tree.begin()); }
+		const_iterator begin() const { return (this->tree.begin()); }
+		iterator end() { return (this->tree.end()); }
+		const_iterator end() const { return (this->tree.end()); }
 
 		reverse_iterator rbegin() {
 			// Returns a reverse iterator to the first element of the reversed vector.
@@ -92,9 +81,6 @@ class set {
 		}
 
 		reverse_iterator rend() {
-			// Returns a reverse iterator to the element following the last element of the reversed vector.
-			// It corresponds to the element preceding the first element of the non-reversed vector. 
-			// This element acts as a placeholder, attempting to access it results in undefined behavior.
 		}
 
 		const_reverse_iterator rend() const {
@@ -105,36 +91,23 @@ class set {
 		// ** Capacity ** //
 		////////////////////
 
-		bool empty() const {
-			return ((begin() == end()) ? true : false);
-		}
-
-		size_type size() const {
-			return (this->tree.getSize());
-		}
-
-		size_type max_size() const {
-			return (this->tree.max_size());
-		}
+		bool empty() const { return ((this->tree.getSize()) ? false : true); }
+		size_type size() const { return (this->tree.getSize()); }
+		size_type max_size() const { return (this->tree.max_size()); }
 
 		////////////////////
 		// ** Modifier ** //
 		////////////////////
 
-		void clear() {
-
-		}
+		void clear() { tree.clear(); }
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
-			node *pos = tree.search(value, tree.root);
-			if (pos)
-				return (ft::make_pair<iterator, bool>(iterator(pos), false));
 			node *where = tree.add(value);
-			return (ft::make_pair<iterator, bool>(iterator(where), true));
+			return (where) ? ft::make_pair<iterator, bool>(iterator(where), true) : ft::make_pair<iterator, bool>(iterator(where), false); 			
 		}
 
 		iterator insert(iterator hint, const value_type& value) {
-			node *pos = tree.search(value, hint.getPtr());
+			node *pos = tree.search(value, hint.getNode());
 			if (pos)
 				return (iterator(pos)); //TODO LET'S CHECK IT LATER
 			node *where = tree.add(value);
@@ -148,22 +121,29 @@ class set {
 		}
 
 		void erase(iterator pos) {
-			tree.remove(pos.getPtr());
+			tree.remove(pos.getNode());
 			tree.size--;
 		}
 
 		void erase(iterator first, iterator last) {
 			while (*first != *last) {
-				tree.erase(first++->first);
+				tree.erase(*first++);
 				tree.size--;
 			}
 		}
 
 		size_type erase(const Key& key) {
-			bool res = tree.erase(key);
-			if (res)
-				tree.size--;
-			return (res);
+			node *where = tree.getRoot();
+			while (1) {
+				if (!where)
+					return (0);
+				if (where->value == key) {
+					tree.remove(where);
+					tree.size--;
+					return (1);
+				}
+				where = (!comp(where->value, key)) ? where->left : where->right;
+			}
 		}
 
 		void swap(set &other) {
@@ -182,15 +162,33 @@ class set {
 		//////////////////
 
 		size_type count(const Key& key) const {
-
+			node *where = tree.root;
+			while (1) {
+				if (!where)
+					return (0);
+				if (where->value == key)
+					return (1);
+				where = (!comp(where->value, key)) ? where->left : where->right;
+			}
 		}
 
 		iterator find(const Key& key) {
-
+			node *where = tree.root;
+			while (1) {
+				if (!where || where->value == key) {
+					return (iterator(where));
+				}
+				where = (!comp(where->value, key)) ? where->left : where->right;
+			}
 		}
 
 		const_iterator find(const Key& key) const {
-
+			node *where = tree.root;
+			while (1) {
+				if (!where || where->value == key)
+					return (const_iterator(where));
+				where = (!comp(where->value, key)) ? where->left : where->right;
+			}
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key& key) {

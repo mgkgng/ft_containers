@@ -15,9 +15,7 @@ typedef struct results {
 void printResult(std::string container, bool res) {
 	usleep(SLEEP_DURATION);
 	std::cout << container << ": ";
-	if (res)
-		std::cout << "SUCCESS" << std::endl;
-	std::cout << "FAILURE" << std::endl;
+	std::cout << ((res) ? "SUCCESS" : "FAILURE") << std::endl;
 }
 
 int main() {
@@ -27,15 +25,15 @@ int main() {
 
 	// res.vector = testVector();
 	// res.pair = testPair();
-	res.map = testMap();
+	// res.map = testMap();
 	// res.stack = testStack();
-	// res.set = testSet();
+	res.set = testSet();
 
 	usleep(SLEEP_DURATION);
 	std::cout << "Test Result:" << std::endl;
 	// printResult("Vector", res.vector);
 	// printResult("Pair", res.pair);
-	printResult("Map", res.map);
+	// printResult("Map", res.map);
 	// printResult("Stack", res.stack);
-	// printResult("Set", res.set);
+	printResult("Set", res.set);
 }

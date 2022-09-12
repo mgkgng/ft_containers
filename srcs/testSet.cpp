@@ -5,13 +5,13 @@
 
 using std::string;
 
-void ft_countries(std::set<string> real, ft::set<string> mine){
+void ft_countries(std::set<string> &real, ft::set<string> &mine){
 	real.insert("Afghanistan");
 	real.insert("Albania");
 	real.insert("Algeria");
 	real.insert("Andorra");
 	real.insert("Angola");
-	real.insert("Antigua and Barbuda");
+	real.insert("Antigua et Barbuda");
 	real.insert("Argentina");
 	real.insert("Armenia");
 	real.insert("Austria");
@@ -348,7 +348,7 @@ void ft_countries(std::set<string> real, ft::set<string> mine){
 	mine.insert("Saint Lucia");
 	mine.insert("Saint Vincent et the Grenadines");
 	mine.insert("San Marino");
-	mine.insert("Sao Tome & Principe");
+	mine.insert("Sao Tome et Principe");
 	mine.insert("Saudi Arabia");
 	mine.insert("Senegal");
 	mine.insert("Serbia");
@@ -376,7 +376,7 @@ void ft_countries(std::set<string> real, ft::set<string> mine){
 	mine.insert("The Bahamas");
 	mine.insert("Timor-Leste");
 	mine.insert("Togo");
-	mine.insert("Trinidad and Tobago");
+	mine.insert("Trinidad et Tobago");
 	mine.insert("Tunisia");
 	mine.insert("Turkey");
 	mine.insert("Turkmenistan");
@@ -422,8 +422,8 @@ int testSet() {
 	int		res = 0, count = 0;
 
 	ANNOUNCE1("CONSTRUCTOR TEST");
-	
-	ANNOUNCE2("Map Constructor Type 1: Default Constructor");
+
+	ANNOUNCE2("Set Constructor Type 1: Default Constructor with compare");
 
 	START_CLOCK;
 	std::set<string> real;
@@ -431,8 +431,147 @@ int testSet() {
 	START_CLOCK;
 	ft::set<string> mine;
 	END_CLOCK_MY;
-	CHECK(MAP, ONLY_CLOCK);
+	CHECK(SET, ONLY_CLOCK);
 
-	END_TEST(MAP);
+	ANNOUNCE2("Set Constructor Type 2: Default Constructor with compare");
+	START_CLOCK;
+	real = std::set<string>(std::less<string>());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine = ft::set<string>(std::less<string>());
+	END_CLOCK_MY;
+	CHECK(SET, ONLY_CLOCK);
+
+	ANNOUNCE2("Set Constructor Type 3: Constructor with iterator");
+	std::set<string> realCountries;
+	ft::set<string> myCountries;
+	ft_countries(realCountries, myCountries);
+	START_CLOCK;
+	real = std::set<string>(realCountries.begin(), realCountries.end());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine = ft::set<string>(myCountries.begin(), myCountries.end());
+	END_CLOCK_MY;
+	CHECK(SET, DO_BOTH);
+
+	ANNOUNCE2("Set Constructor Type 4: Copy constructor");
+	START_CLOCK;
+	real = std::set<string>(realCountries);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine = ft::set<string>(myCountries);
+	END_CLOCK_MY;
+	CHECK(SET, DO_BOTH);
+
+	ANNOUNCE2("empty");
+	try {
+		bool realResult = real.empty();
+		bool myResult = mine.empty();
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("size");
+	try {
+		bool realResult = real.size();
+		bool myResult = mine.size();
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	// ANNOUNCE2("clear");
+	// START_CLOCK;
+	// real.clear();
+	// END_CLOCK_REAL;
+	// START_CLOCK;
+	// mine.clear();
+	// END_CLOCK_MY;
+	// CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("insert1: insert a pair");
+	START_CLOCK;
+	real.insert("Gondor");
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.insert("Gondor");
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("insert2: insert a pair with a hint");
+	START_CLOCK;
+	real.insert(real.begin(), "Rohan");
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.insert(mine.begin(), "Rohan");
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("insert3: insert with iterator");
+	std::set<string> testReal;
+	ft::set<string> testMine;
+	testReal.insert("Castle Rock");
+	testReal.insert("Winterfell");
+	testMine.insert("Castle Rock");
+	testMine.insert("Winterfell");
+	START_CLOCK;
+	real.insert(testReal.begin(), testReal.end());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.insert(testMine.begin(), testMine.end());
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("erase1: erase with iterator");
+	START_CLOCK;
+	real.erase(real.begin());
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase(mine.begin());
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("erase2: erase with iteratable");
+	std::set<string>::iterator realIt = real.find("Japan");
+	ft::set<string>::iterator myIt = mine.find("Japan");
+	START_CLOCK;
+	real.erase(real.begin(), realIt);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase(mine.begin(), myIt);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("erase3: erase with a key");
+	START_CLOCK;
+	real.erase("Thailand");
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.erase("Thailand");
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("swap");
+	START_CLOCK;
+	real.swap(testReal);
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.swap(testMine);
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
+
+	ANNOUNCE2("count");
+	try {
+		size_t realResult = real.count("South Africa");
+		size_t myResult = mine.count("South Africa");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("find");
+	try {
+		real.insert("yoyo");
+		mine.insert("yoyo");
+		string realResult = *real.find("yoyo");
+		string myResult = *mine.find("yoyo");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+	END_TEST(SET);
 
 }
