@@ -3,7 +3,9 @@
 #include "lib.hpp"
 #include "pair.hpp"
 #include <unistd.h>
+#include "Iterator.hpp"
 
+namespace ft {
 template<typename Value>
 struct RBnode {
 	RBnode*	parent;
@@ -41,10 +43,8 @@ struct RBnode {
 		RBnode *prev() const {
 			if (this->empty)
 				return (NULL);
-
 			if (this->left)
 				return (this->left->max());
-
 			if (this == this->parent->right)
 				return (parent);
 
@@ -114,6 +114,7 @@ class const_RBiter {
 
 		const_RBiter() : ptr(NULL) {} 
 		explicit const_RBiter(Node *where) { this->ptr = where; }
+    	const_RBiter(RBiter<Node>& it) : ptr(it.ptr) {}
 
 		reference operator*() const { return (ptr->value); }
 		pointer operator->() const { return (&(operator*())); }
@@ -168,6 +169,8 @@ class RBtree {
 		typedef RBnode<value_type>		node;
 		typedef RBiter<node>			iterator;
 		typedef const_RBiter<node>		const_iterator;
+		typedef ft::ReverseIterator<iterator>		reverse_iterator;
+		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 		typedef std::allocator<node>	node_allocator;
 		typedef unsigned int			size_type;
 
@@ -560,8 +563,6 @@ class RBtree {
 		node_allocator	nodeAlloc;
 		Compare			comp;
 
-		friend class map;
-
 };
 
 template <typename Value, typename CompV> 
@@ -581,3 +582,4 @@ inline bool operator>(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV
 
 template <typename Value, typename CompV>
 inline bool operator>=(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return !(lhs < rhs); }
+};
