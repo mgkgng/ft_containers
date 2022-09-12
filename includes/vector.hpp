@@ -10,7 +10,6 @@ template < typename T, typename Allocator = std::allocator<T> >
 class vector {
 	
 	public:
-
 		////////////////////////////
 		// ** type definitions ** //
 		////////////////////////////
@@ -32,8 +31,7 @@ class vector {
 		// ** contstructor ** //
 		////////////////////////
 
-		vector() { // cppreference (1)
-			// Default constructor. Constructs an empty container with a default-constructed allocator.
+		vector() {
 			_alloc = allocator_type();
 			_start = NULL;
 			_end = NULL;
@@ -41,8 +39,7 @@ class vector {
 			_capacity = 0;
 		}
 
-		explicit vector(const Allocator& alloc) { // cppreference (2)
-			// Constructs an empty container with the given allocator alloc.
+		explicit vector(const Allocator& alloc) { 
 			_alloc = alloc;
 			_start = NULL;
 			_end = NULL;
@@ -51,10 +48,9 @@ class vector {
 		}
 
 		explicit vector(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) { // cppreference (3)
-			// Constructs the container with count copies of elements with value value.
 			this->_alloc = alloc;
 			this->_start = _alloc.allocate(count); // allocator allocates automatically n * sizeof(T) bytes of uninitialized storage
-			for (int i = 0; i < count; i++)
+			for (size_type i = 0; i < count; i++)
 				_alloc.construct(_start + i, value);
 			_end = _start + count;
 			_size = count;
@@ -63,12 +59,11 @@ class vector {
 
 		template<class InputIt>
 		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
-			// Constructs the container with the contents of the range [first, last).
 			_alloc = alloc;
-			_size = last - first;
+			_size = ft::distance(first, last);
 			_start = _alloc.allocate(_size);
-			for (int i = 0; i < _size; i++)
-				_alloc.construct(_start + i, *(first + i));
+			for (size_type i = 0; i < _size; i++)
+				_alloc.construct(_start++, *first++);
 			_end = _start;
 			_capacity = _size;
 		}
@@ -84,14 +79,14 @@ class vector {
 
 		~vector() {
 			this->clear();
-			_alloc.deallocate(_start, _capacity);
+			// _alloc.deallocate(_start, _capacity);
 		}
 
 		vector& operator=(const vector& other) {
 			// Copy assignment operator. Replaces the contents with a copy of the contents of other.
 			_alloc = other._alloc;
 			_start = _alloc.allocate(other._capacity);
-			for (int i = 0; i < other._size; i++)
+			for (size_type i = 0; i < other._size; i++)
 				_alloc.construct(_start + i, *(other._start + i));
 			_end = _start + other._size;
 			_size = other._size;
@@ -104,24 +99,24 @@ class vector {
 			this->clear();
 			if (count > _capacity)
 				this->getMoreCapacity(count);
-			for (int i = 0; i < count; i++)
+
+			for (size_type i = 0; i < count; i++)
 				_alloc.construct(_start + i, value);
 		}
 
 		template<class InputIt>
-		void assign(InputIt first, InputIt last) { // cppreference (2)
-			// Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argumnet is an iterator into *this.
+		void assign(InputIt first, InputIt last, 
+			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) {
 			this->clear();
-			difference_type size = last - first;
-			if (size > _capacity)
+			difference_type size = ft::distance(first, last);
+			if ((size_type) size > _capacity)
 				this->getMoreCapacity(size);
-			for (int i = 0; i < size; i++)
-				_alloc.construct(_start + i, *(first + i));
+			while (first != last)
+				_alloc.construct(_start++, *(first++));
+			_end += size;
 		}
 
-		allocator_type get_allocator() const {
-			return (_alloc);
-		}
+		allocator_type get_allocator() const { return (_alloc); }
 
 		//////////////////////////
 		// ** Element access ** //
@@ -147,64 +142,25 @@ class vector {
 
 		const_reference back() const {
 			if (!_size)
-				return ;
+				return (*_end);
 			return (*(_end - 1));
 		}
 
-		T* data() {
-			// Returns a pointer to the underlying array serving as element storage. 
-			return (_start);
-		}
-
-		const T* data() const {
-			return (_start);
-		}
+		T* data() { return (_start); }
+		const T* data() const { return (_start); }
 
 		/////////////////////
 		// ** Iterators ** //
 		/////////////////////
 
-		iterator begin() {
-			// Returns an iterator to the first element of the vector.
-			// If the vector is empty, the returned iterator will be equal to end().
-			return (_start);
-		}
-
-		const_iterator begin() const {
-			return (_start);
-		}
-
-		iterator end() {
-			// Returns an iterator to the element following the last element of the vector.
-			// This element acts as a placeholder; attempting to access it results in undefined behavior.
-			return (_end);
-		}
-
-		const_iterator end() const {
-			return (_end);
-		}
-
-		reverse_iterator rbegin() {
-			// Returns a reverse iterator to the first element of the reversed vector.
-			// It corresponds to the last element of the non-reversed vector.
-			// If the vector is empty, the returned iterator is equal to rend().
-			return (reverse_iterator(this->end()));
-		}
-
-		const_reverse_iterator rbegin() const {
-			return (const_reverse_iterator(this->end()));
-		}
-
-		reverse_iterator rend() {
-			// Returns a reverse iterator to the element following the last element of the reversed vector.
-			// It corresponds to the element preceding the first element of the non-reversed vector. 
-			// This element acts as a placeholder, attempting to access it results in undefined behavior.
-			return (reverse_iterator(this->start()));
-		}
-
-		const_reverse_iterator rend() const {
-			return (const_reverse_iterator(_start - 1));
-		}
+		iterator begin() { return (iterator(_start)); }
+		const_iterator begin() const { return (const_iterator(_start)); }
+		iterator end() { return (iterator(_end)); }
+		const_iterator end() const { return (const_iterator(_end)); }
+		reverse_iterator rbegin() { return (reverse_iterator(this->end())); }
+		const_reverse_iterator rbegin() const { return (const_reverse_iterator(this->end())); }
+		reverse_iterator rend() { return (reverse_iterator(this->start())); }
+		const_reverse_iterator rend() const { return (const_reverse_iterator(this->start())); }
 
 		////////////////////
 		// ** Capacity ** //
@@ -217,15 +173,9 @@ class vector {
 			return (false);
 		}
 
-		size_type size() const {
-			// Returns the number of elements in container, i.e. std::distance(begin(), end()).
-			return (_size);
-		}
+		size_type size() const { return (_size); }
 
-		size_type max_size() const {
-			// Returns the maximum number of elements the container is able to hold due to system or library implementation limitations
-			return (_alloc.max_size());
-		}
+		size_type max_size() const { return (_alloc.max_size()); }
 
 		void reserve(size_type new_cap) {
 			if (new_cap <= _capacity)
@@ -236,27 +186,19 @@ class vector {
 			this->recapacity(new_cap); //TO_DO CHECK IT
 		}
 
-		size_type capacity() const {
-			// Returns the number of elements that the container has currently allocated space for.
-			return (_capacity);
-		}
+		size_type capacity() const { return (_capacity); }
 
 		/////////////////////
 		// ** Modifiers ** //
 		/////////////////////
 
 		void clear() {
-			for (int i = 0; i < _size; i++)
+			for (size_type i = 0; i < _size; i++)
 				_alloc.destroy(_start + i);
 			_size = 0;
 		}
 
-		// <insert>
-		// Causes reallocation if the new size() is greater than the old capacity(). 
-		// If the new size() is greater than capacity(), all iterators and references are invalidated.
-		// Otherwise, only the iterators and references before the insertion point remain valid.
-		// The past-the-end iterator is also invalidated.
-		iterator insert(iterator pos, const T& value) { // cppreference(1)
+		iterator insert(iterator pos, const T& value) {
 			// inserts value before pos
 			difference_type diff = &*pos - &*_start;
 			if (_size == _capacity)
@@ -270,8 +212,7 @@ class vector {
 			return (_start + diff);
 		}
 
-		void insert(iterator pos, size_type count, const T& value) { // cppreference(3)
-			// inserts count copies of the value before pos
+		void insert(iterator pos, size_type count, const T& value) {
 			difference_type diff = &*pos - &*_start;
 			if (_size + count > _capacity)
 				this->getMoreCapacity(_size + count);
@@ -285,11 +226,10 @@ class vector {
 		}
 
 		template<class InputIt>
-		void insert(iterator pos, InputIt first, InputIt last) { // cppreference(4)
-			// inserts elements from range [first, last) before pos
+		void insert(iterator pos, InputIt first, InputIt last) {
 			difference_type diff = &*pos - &*_start;
 			difference_type count = &*last - &*first;
-			if (diff > _size) {
+			if ((size_type) diff > _size) {
 				_size = diff;
 				_end = _start + _size;
 			}
@@ -304,22 +244,16 @@ class vector {
 				*it = *first++;
 		}
 
-		// <erase>
-		// Invalidates iterators and referecens at or after the point of the erase, including the end() iterator.
-		// The iterator pos must be valid and dereferenceable. Thus the end() iterator cannot be used as a value for pos.
-		// The iterator first does not need to be dereferenceable if first==last: erasing an empty range is a no-op.
 		iterator erase(iterator pos) {
-			// Removes the element at pos
 			for (iterator it = pos; it != _end - 1; it++)
 				*it = *(it + 1);
 			_alloc.destroy(_end - 1);
 			_end--;
 			_size--;
-			return (pos); //revoir
+			return (pos);
 		}
 
 		iterator erase(iterator first, iterator last) {
-			// Removes the elements in the range [first, last).
 			difference_type count = &*last - &*first;
 
 			iterator it;
@@ -329,15 +263,12 @@ class vector {
 				_alloc.destroy(&*it++);
 			_end -= count;
 			_size -= count;
-			return (first); // revoir
+			return (first);
 		}
 		
 		void push_back(const T& value) {
-			// Appends the given element value to the end of the container. The new element is initialized as a copy of value.
-			// If the new size() is greater than capacity() then all iterators and referecnes are invalidated.
 			if (_size >= _capacity)
 				this->getMoreCapacity(_size + 1);
-			
 			*(_start + _size++) = value;
 			_end++;
 		}
@@ -393,7 +324,7 @@ class vector {
 			pointer tmp = this->_alloc.allocate(count);
 			if (count == 1)
 				return ;
-			int i = 0;
+			size_type i = 0;
 			for (iterator it = _start; i < count && it != this->_end; it++)
 				_alloc.construct(tmp + i++, *it);
 
@@ -405,6 +336,7 @@ class vector {
 			this->_size = i;
 			this->_end = _start + i;
 		}
+
 	private:
 		allocator_type	_alloc; // allocator to use for all memory allocations of this container
 		pointer			_start; // the starting address of the container

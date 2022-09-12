@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace ft {
 
 template <class T>
@@ -37,15 +39,27 @@ class RandomAccessIterator {
 			return (tmp);
 		}
 
-   		RandomAccessIterator operator+(difference_type n) const { return (RandomAccessIterator(_ptr + n)); }
-        RandomAccessIterator operator-(difference_type n) const { return (RandomAccessIterator(_ptr - n)); }
-	
-	    RandomAccessIterator& operator+=(difference_type n) {
+   		RandomAccessIterator operator+(int n) {
+			RandomAccessIterator res(*this);
+			res += n;
+			return (res); 
+		}
+        RandomAccessIterator operator-(int n) { 
+			RandomAccessIterator res(*this);
+			res -= n;
+			return (res); 
+		}
+
+		difference_type operator-(RandomAccessIterator& it) { 
+			return (this->_ptr - it._ptr);
+		}
+
+	    RandomAccessIterator& operator+=(int n) {
             _ptr += n;
             return (*this);
         }
 		
-        RandomAccessIterator& operator-=(difference_type n) {
+        RandomAccessIterator& operator-=(int n) {
             _ptr -= n;
             return (*this);
         }
@@ -70,24 +84,26 @@ class ReverseIterator {
 		typedef typename Iter::pointer			pointer;
 		typedef typename Iter::reference		reference;
 
-		ReverseIterator() : _it() {}
-		explicit ReverseIterator(iterator_type x) : _it(x) {}
+		ReverseIterator() : it() {}
+		explicit ReverseIterator(iterator_type x) : it(x) {}
 
 		template <class U>
 		ReverseIterator(const ReverseIterator<U>& other) { *this = other; }
-
 		template<class U>
 		ReverseIterator& operator=(const ReverseIterator<U>& other) {
-			_it = other._it;
+			it = other.it;
 			return (*this);
 		}
 
-		iterator_type base() const { return (_it); }
-		reference operator*() const { return (*_it); }
-		pointer operator->() { return (_it); }
+		iterator_type base() const { return (it); }
+		reference operator*() const {
+			Iter tmp = it;
+			return (*--tmp);
+		}
+		pointer operator->() { return &operator*(); }
 
 		ReverseIterator& operator++() {
-			_it--;
+			it--;
 			return (*this);
 		}
 
@@ -98,7 +114,7 @@ class ReverseIterator {
 		}
 
 		ReverseIterator& operator--() {
-			_it++;
+			it++;
 			return (*this);
 		}
 
@@ -108,10 +124,16 @@ class ReverseIterator {
 			return (tmp);
 		}
 
-		friend bool operator==(const ReverseIterator& lhs, const ReverseIterator& rhs) { return (lhs._it == rhs._it); }
-		friend bool operator!=(const ReverseIterator& lhs, const ReverseIterator& rhs) { return (lhs._it != rhs._it); }
+		ReverseIterator operator+(difference_type n) const;
+		ReverseIterator operator-(difference_type n) const;
+		ReverseIterator& operator+=(difference_type n);
+		ReverseIterator& operator-=(difference_type n);
+
+
+		friend bool operator==(const ReverseIterator& lhs, const ReverseIterator& rhs) { return (lhs.it == rhs.it); }
+		friend bool operator!=(const ReverseIterator& lhs, const ReverseIterator& rhs) { return (lhs.it != rhs.it); }
 	
 	private:
-		iterator_type _it;
+		iterator_type it;
 };
 };

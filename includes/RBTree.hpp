@@ -2,6 +2,7 @@
 
 #include "lib.hpp"
 #include "pair.hpp"
+#include <unistd.h>
 
 template<typename Value>
 struct RBnode {
@@ -15,25 +16,29 @@ struct RBnode {
 	public:
 		typedef Value value_type;
 
-		RBnode() : red(false), left(0), right(0), parent(0), value(Value()), empty(true) {}
-		RBnode(Value v) : red(true), left(0), right(0), parent(0), value(v), empty(false) {}
+		RBnode() : parent(0), left(0), right(0), red(false), empty(true) {
+			value = Value();
+		}
+		RBnode(Value v) : parent(0), left(0), right(0), red(true), value(v), empty(false) {}
 
 		RBnode *min() { return ((!this->left) ? this : this->left->min()); }
+		RBnode *min() const { return ((!this->left) ? this : this->left->min()); }
 		RBnode *max() { return ((!this->right) ? this : this->right->max()); }
+		RBnode *max() const { return ((!this->right) ? this : this->right->max()); }
 
-		RBnode *next() {
+		RBnode *next() const {
 			if (this->empty)
 				return (NULL);
 			if (this->right)
 				return (this->right->min());
-			if (this == this->parent->left)
+			if (this->parent && this == this->parent->left)
 				return (this->parent);
-			RBnode *where = this->parent;
+			RBnode *where;
 			for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
 			return ((where) ? where->parent : NULL);
 		}
 
-		RBnode *prev() {
+		RBnode *prev() const {
 			if (this->empty)
 				return (NULL);
 
@@ -52,15 +57,21 @@ struct RBnode {
 template <typename Node>
 class RBiter {
 	public:
-
-		typedef typename Node::value_type& reference;
-		typedef typename Node::value_type* pointer;			
+		typedef typename Node::value_type value_type;
+		typedef value_type& reference;
+		typedef value_type* pointer;
+		typedef ptrdiff_t difference_type;
 
 		explicit RBiter() : ptr(NULL) {} 
 		RBiter(Node *where) : ptr(where) {}
 
-		reference operator*() { return (ptr->value); }
-		pointer operator->() { return (&ptr->value); }
+		reference operator*() const { return (ptr->value); }
+		const pointer operator->() const { return (&(operator*())); }
+
+		RBiter& operator=(RBiter const & other) {
+			ptr = other.ptr;
+			return (*this);
+		}
 
 		RBiter& operator++() {
 			ptr = ptr->next();
@@ -93,6 +104,56 @@ class RBiter {
 		Node	*ptr;
 };
 
+template <typename Node>
+class const_RBiter {
+	public:
+		typedef typename Node::value_type value_type;
+		typedef value_type const & reference;
+		typedef value_type const * pointer;
+		typedef ptrdiff_t difference_type;
+
+		const_RBiter() : ptr(NULL) {} 
+		explicit const_RBiter(Node *where) { this->ptr = where; }
+
+		reference operator*() const { return (ptr->value); }
+		pointer operator->() const { return (&(operator*())); }
+
+		const_RBiter& operator++() {
+			ptr = ptr->next();
+			return (*this);
+		}
+
+		const_RBiter operator++(int) {
+			const_RBiter tmp = *this;
+			ptr = ptr->next();
+			return (tmp);
+		}
+
+		const_RBiter& operator=(const_RBiter const & other) {
+			ptr = other.ptr;
+			return (*this);
+		}
+
+		const_RBiter& operator--() {
+			ptr = ptr->prev();
+			return (*this);
+		}
+
+		const_RBiter operator--(int) {
+			const_RBiter tmp = *this;
+			ptr = ptr->prev();
+			return (tmp);
+		}
+
+		bool operator==(const const_RBiter& s) { return (ptr == s.ptr); }
+		bool operator!=(const const_RBiter& s) { return (ptr != s.ptr); }
+
+		Node *getNode() { return (ptr); }
+	
+	protected:
+		Node	*ptr;
+};
+
 template<
 	class Value,
     class Compare
@@ -100,13 +161,13 @@ template<
 class RBtree {
 
 	public:
-
 		///////////////////////////
 		// ** type definition ** //
 		///////////////////////////
 		typedef Value					value_type;
 		typedef RBnode<value_type>		node;
 		typedef RBiter<node>			iterator;
+		typedef const_RBiter<node>		const_iterator;
 		typedef std::allocator<node>	node_allocator;
 		typedef unsigned int			size_type;
 
@@ -114,9 +175,11 @@ class RBtree {
 		// ** Constructors ** //
 		////////////////////////
 
-		RBtree() : root(NULL), size(0) {
-			nodeAlloc = node_allocator();
-			comp = Compare();
+		RBtree() {
+			this->size = 0;
+			this->root = NULL;
+			this->nodeAlloc = node_allocator();
+			this->comp = Compare();
 		}
 
 		///////////////////////////////
@@ -127,9 +190,7 @@ class RBtree {
 			if (search(v, this->root))
 				return (NULL);
 			node *newNode = addNode(v);
-
 			insert(newNode);
-			adjust(newNode);
 			return (newNode);
 		}
 
@@ -145,7 +206,7 @@ class RBtree {
 		}
 
 		node *search(const value_type &v, node *n) {
- 			if (!n || n->value == v)
+ 			if (!n || (comp(n->value, v) && comp(v, n->value))) /*n->value == v)*/
 				return (n);
 			return (!comp(n->value, v)) ? (this->search(v, n->left)) : (this->search(v, n->right));
 		}
@@ -176,6 +237,7 @@ class RBtree {
 				}
 			}
 			size++;
+			adjust(curr);
 		}
 
 		void adjust(node *newNode) {
@@ -254,6 +316,7 @@ class RBtree {
 
 			y = n;
 			yRed = n->red;
+			tmp = NULL;
 
 			if (!n->left && !n->right) {
 				tmp = addNode(n->value);
@@ -298,8 +361,7 @@ class RBtree {
 				deleteNode(tmp);
 			}
 
-			nodeAlloc.destroy(n);
-			nodeAlloc.deallocate(n, 1);
+			deleteNode(n);
 			return (true);
 		}
 
@@ -386,12 +448,17 @@ class RBtree {
 		}
 
 		void clear() {
-			for (iterator it = begin(); it != end(); it++) {
-				nodeAlloc.destroy(it.getPtr());
-				//nodeAlloc.deallocate(it.getPtr(), 1);
-			}
+			destroy(this->root);
 			this->root = NULL;
 			this->size = 0;
+		}
+
+		void destroy(node *n) {
+			if (!n)
+				return;
+			destroy(n->left);
+			destroy(n->right);
+			deleteNode(n);
 		}
 
 		//////////////////
@@ -477,10 +544,13 @@ class RBtree {
         	print(prefix + (isLeft ? "│   " : "    "), n->right, false);
 		}
 
-		iterator max()  { return (!this->root) ? end() : iterator(this->root->max()); }
-		iterator min()  { return (!this->root) ? end() : iterator(this->root->min()); }
-		iterator begin() { return (this->min()); }
-		iterator end() 	{ return iterator(); }
+		node *max() { return (!this->root) ? NULL : this->root->max(); }
+		node *max() const { return (!this->root) ? NULL : this->root->max(); }
+		node *min() { return (!this->root) ? NULL : this->root->min(); }
+		node *min() const { return (!this->root) ? NULL : this->root->min(); }
+
+		iterator begin() const { return this->min(); }
+		iterator end() const { return iterator(); }
 		size_t max_size() const { return (nodeAlloc.max_size()); }
 
 		size_type		size;
@@ -493,3 +563,21 @@ class RBtree {
 		friend class map;
 
 };
+
+template <typename Value, typename CompV> 
+inline bool operator==(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return lhs.size == rhs.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
+
+template <typename Value, typename CompV>
+inline bool operator!=(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return !(lhs == rhs); }
+
+template <typename Value, typename CompV>
+inline bool operator<(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+
+template <typename Value, typename CompV>
+inline bool operator<=(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return !(rhs < lhs); }
+
+template <typename Value, typename CompV>
+inline bool operator>(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return rhs < lhs; }
+
+template <typename Value, typename CompV>
+inline bool operator>=(const RBtree<Value, CompV>& lhs, const RBtree<Value, CompV>& rhs) { return !(lhs < rhs); }

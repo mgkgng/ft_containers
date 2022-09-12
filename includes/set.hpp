@@ -124,7 +124,7 @@ class set {
 
 		void erase(iterator first, iterator last) {
 			while (*first != *last) {
-				tree.erase(*first++);
+				tree.erase(first++.getNode());
 				tree.size--;
 			}
 		}
@@ -172,9 +172,8 @@ class set {
 		iterator find(const Key& key) {
 			node *where = tree.root;
 			while (1) {
-				if (!where || where->value == key) {
+				if (!where || where->value == key)
 					return (iterator(where));
-				}
 				where = (!comp(where->value, key)) ? where->left : where->right;
 			}
 		}
@@ -229,7 +228,6 @@ class set {
 			if (res.getNode() && key == *res)
 				res++;
 			return (res);
-
 		}
 	
 		const_iterator upper_bound(const Key& key) const {

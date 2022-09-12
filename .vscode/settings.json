@@ -66,6 +66,9 @@
 		"deque": "cpp",
 		"stack": "cpp",
 		"set": "cpp",
-		"__cxx_version": "cpp"
+		"__cxx_version": "cpp",
+		"list": "cpp",
+		"queue": "cpp",
+		"memory_resource": "cpp"
 	}
 }

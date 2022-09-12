@@ -7,16 +7,15 @@ namespace ft {
 template<class T, class Container = ft::vector<T> >
 class stack {
 		
-	typedef Container container_type;
-	typedef typename Container::value_type value_type;
-	typedef typename Container::size_type size_type;
-	typedef typename Container::reference reference;
-	typedef typename Container::const_reference const_reference;
-
-	private:
+	public:
+		typedef Container container_type;
+		typedef typename Container::value_type value_type;
+		typedef typename Container::size_type size_type;
+		typedef typename Container::reference reference;
+		typedef typename Container::const_reference const_reference;
+		
 		Container c;
 
-	public:
 		explicit stack(const Container& cont = Container()) : c(cont) {}
 
 		stack(const stack& other) { *this = other; }
@@ -52,4 +51,17 @@ class stack {
 			c.pop_back();
 		}
 };
+
+template<class T, class Container>
+bool operator==(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c == rhs.c); }
+template<class T, class Container>
+bool operator!=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c != rhs.c); }
+template<class T, class Container>
+bool operator<(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c < rhs.c); }
+template<class T, class Container>
+bool operator<=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c <= rhs.c); }
+template<class T, class Container>
+bool operator>(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c > rhs.c); }
+template<class T, class Container>
+bool operator>=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c >= rhs.c); }
 };

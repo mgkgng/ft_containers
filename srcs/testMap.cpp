@@ -152,7 +152,6 @@ bool compare(ft::map<Key, Value> mine, std::map<Key, Value> real) {
 		std::cout << "MYSIZE: " << mine.size() << " / REALSIZE: " << real.size() << std::endl;
 		return (false);
 	}
-
 	typename ft::map<Key, Value>::iterator	myIt;
 	typename std::map<Key, Value>::iterator	realIt = real.begin();
 	
@@ -264,14 +263,14 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
-	// ANNOUNCE2("clear");
-	// START_CLOCK;
-	// real.clear();
-	// END_CLOCK_REAL;
-	// START_CLOCK;
-	// mine.clear();
-	// END_CLOCK_MY;
-	// CHECK(MAP, DO_BOTH);
+	ANNOUNCE2("clear");
+	START_CLOCK;
+	real.clear();
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.clear();
+	END_CLOCK_MY;
+	CHECK(MAP, DO_BOTH);
 
 	ANNOUNCE2("insert1: insert a pair");
 	START_CLOCK;
@@ -380,8 +379,6 @@ int testMap() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
-	while (1);
 	END_TEST(MAP);
-
 }
 

@@ -33,3 +33,4 @@
 
 containers
 .vscode/*
+containers_test/

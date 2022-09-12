@@ -26,10 +26,10 @@ int main() {
 	std::cout << "Test Starts." << std::endl;
 
 	// res.vector = testVector();
-	// res.pair = testPair();
+	res.pair = testPair();
 	res.map = testMap();
 	// res.stack = testStack();
-	// res.set = testSet();
+	res.set = testSet();
 
 	usleep(SLEEP_DURATION);
 	std::cout << "Test Result:" << std::endl;
