@@ -255,33 +255,36 @@ class map {
 			return (ft::make_pair<iterator, iterator>(first, second)); 
 		}
 
-		iterator lower_bound(const Key& key) { // un truc comme ca
-			iterator res = 0, begin = this->begin();
-			while (compK(begin->key, key))
-				begin++;
-			return (begin);
+		iterator lower_bound(const Key& key) {
+			node *where = this->tree.root;
+			node *res = NULL;
+			while (where) {
+				if (compK(key, where->first))
+					where = where->right;
+				else {
+					res = where;
+					where = where->left;
+				}
+			}
+			return ((res) ? iterator(res) : end());
 		}
 
-		const_iterator lower_bound(const Key& key) const { // un truc comme ca
-			iterator begin = this->begin();
-			while (compK(begin->key, key))
-				begin++;
-			return (begin);
+		const_iterator lower_bound(const Key& key) const {
+			node *where = this->tree.root;
+			node *res = NULL;
+			while (where) {
+				if (compK(key, where->first))
+					where = where->right;
+				else {
+					res = where;
+					where = where->left;
+				}
+			}
+			return ((res) ? const_iterator(res) : end());
 		}
+		iterator upper_bound(const Key& key) { return (this->tree.upper_bound()); }
+		const_iterator upper_bound(const Key& key) const { return (this->tree.upper_bound()); }
 
-		iterator upper_bound(const Key& key) { // un truc comme ca
-			iterator begin = this->begin();
-			while (compK(key, begin->key))
-				begin++;
-			return (begin);
-		}
-
-		const_iterator upper_bound(const Key& key) const { // un truc commme ca
-			iterator begin = this->begin();
-			while (compK(key, begin->key))
-				begin++;
-			return (begin);
-		}		
 
 		/////////////////////
 		// ** Observers ** //

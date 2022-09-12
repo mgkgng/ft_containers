@@ -572,6 +572,39 @@ int testSet() {
 		string myResult = *mine.find("yoyo");
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
+
+	ANNOUNCE2("lower_bound");
+	try {
+		string realResult = *real.lower_bound("yoyo");
+		string myResult = *mine.lower_bound("yoyo");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("upper_bound");
+	try {
+		real.insert("bonbon");
+		mine.insert("bonbon");
+
+		string realResult = *real.upper_bound("bonbon");
+		string myResult = *mine.upper_bound("bonbon");
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("equal_range pair first");
+	try {
+		string realResult = *real.equal_range("bonbon").first;
+		string myResult = *mine.equal_range("bonbon").first;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+	ANNOUNCE2("equal_range pair second");
+	try {
+		string realResult = *real.equal_range("bonbon").second;
+		string myResult = *mine.equal_range("bonbon").second;
+		CHECK_RESULT;
+	} catch (std::exception &e) {}
+
+
 	END_TEST(SET);
 
 }
