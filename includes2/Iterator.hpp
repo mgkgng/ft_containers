@@ -65,7 +65,6 @@ class RandomAccessIterator {
         }
 
 		reference operator[](difference_type n) const { return _ptr[n]; }
-
 		reference operator*() const { return *_ptr; }
 
 		friend bool operator==(const RandomAccessIterator& lhs, const RandomAccessIterator& rhs) { return (lhs._ptr == rhs._ptr); }
