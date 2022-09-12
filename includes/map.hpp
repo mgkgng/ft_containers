@@ -36,6 +36,7 @@ class map {
 				typedef bool		result_type;
 				typedef	value_type	first_argument_type;
 				typedef value_type	second_argument_type;
+				value_compare() { comp = std::less<Key>(); }
 				value_compare(Compare c) : comp(c) {}
 				bool operator()(const value_type& lhs, const value_type& rhs) const { return (comp(lhs.first, rhs.first)); }
 		};
@@ -72,14 +73,10 @@ class map {
 			allocator = alloc;
 			tree = tree_type();
 			while (first != last)
-				this->tree.add(*first++);
+				this->tree.add((first++).getNode()->value);
 		}
 
-		map(const map& other) { // cppreference(6)
-			// Copy constructor.
-			*this = other;
-		}
-
+		map(const map& other) { *this = other; }
 		~map() {}
 
 		map& operator=(const map& other) {
@@ -145,7 +142,7 @@ class map {
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value) {
-			node *pos = tree.search(value.first, tree.getRoot());
+			node *pos = tree.search(value, tree.getRoot());
 			if (pos)
 				return (ft::make_pair<iterator, bool>(iterator(pos), false));
 			node *where = tree.add(value);
@@ -153,7 +150,7 @@ class map {
 		}
 
 		iterator insert(iterator hint, const value_type& value) {
-			node *pos = tree.search(value.first, hint.getPtr());
+			node *pos = tree.search(value, hint.getNode());
 			if (pos)
 				return (iterator(pos)); //TODO LET'S CHECK IT LATER
 			node *where = tree.add(value);
@@ -163,23 +160,29 @@ class map {
 		template<class InputIt>
 		void insert(InputIt first, InputIt last) {
 			while (first != last)
-				tree.add(*first++);
+				tree.add((first++).getNode()->value);
 		}
 
 		void erase(iterator pos) {
-			tree.remove(pos.getPtr());
+			tree.remove(pos.getNode());
 			tree.size--;
 		}
 
 		void erase(iterator first, iterator last) {
-			while (first->first != last->first) {
-				tree.erase(first++->first);
+			while (*first != *last) {
+				tree.erase(*first++);
 				tree.size--;
 			}
 		}
 
 		size_type erase(const Key& key) {
-			bool res = tree.erase(key);
+			node *where = tree.getRoot();
+			while (1) {
+				if (!where || where->value.first == key)
+					break;
+				where = (!compK(where->value.first, key)) ? where->left : where->right;
+			}
+			bool res = tree.erase(where);
 			if (res)
 				tree.size--;
 			return (res);
@@ -204,17 +207,32 @@ class map {
 		//////////////////
 
 		size_type count(const Key& key) {
-			return (tree.search(key, tree.root)) ? 1 : 0;
+			node *where = tree.getRoot();
+			while (1) {
+				if (!where)
+					return (0);
+				if (where->value.first == key)
+					return (1);
+				where = (!compK(where->value.first, key)) ? where->left : where->right;
+			}
 		}
 
 		iterator find(const Key& key) {
-			node *where = tree.search(key, (node *) tree.getRoot());
-			return (!where) ? this->end() : iterator(where);
+			node *where = tree.getRoot();
+			while (1) {
+				if (!where || where->value.first == key)
+					return (iterator(where));
+				where = (!compK(where->value.first, key)) ? where->left : where->right;
+			}
 		}
 
 		const_iterator find(const Key& key) const {
-			node *where = tree.search(key, tree.getRoot());
-			return (!where) ? this->end() : const_iterator(where);
+			node *where = tree.getRoot();
+			while (1) {
+				if (!where || where->value.first == key)
+					return (const_iterator(where));
+				where = (!compK(where->value.first, key)) ? where->left : where->right;
+			}
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key& key) {

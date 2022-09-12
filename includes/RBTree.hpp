@@ -3,7 +3,7 @@
 #include "lib.hpp"
 #include "pair.hpp"
 
-template<class Value>
+template<typename Value>
 struct RBnode {
 	RBnode*	parent;
 	RBnode*	left;
@@ -84,17 +84,10 @@ class RBiter {
 			return (tmp);
 		}
 
-		bool operator==(const RBiter& s) {
-			return (ptr == s.ptr);
-		}
+		bool operator==(const RBiter& s) { return (ptr == s.ptr); }
+		bool operator!=(const RBiter& s) { return (ptr != s.ptr); }
 
-		bool operator!=(const RBiter& s) {
-			return (ptr != s.ptr);
-		}
-
-		Node *getPtr() const {
-			return (ptr);
-		}
+		Node *getNode() const { return (ptr); }
 	
 	protected:
 		Node	*ptr;
@@ -141,10 +134,11 @@ class RBtree {
 		bool erase(value_type v) {
 			node *n = search(v, this->root);
 			usleep(1);
-			if (!n)
-				return (false);
-			remove(n);
-			return (true);
+			return ((!n) ? false : remove(n));
+		}
+
+		bool erase(node *n) {
+			return ((!n) ? false : remove(n));
 		}
 
 		node *search(const value_type &v, node *n) {
@@ -184,34 +178,25 @@ class RBtree {
 		void adjust(node *newNode) {
 			node *p = newNode->parent;
 
-			//Case 1: Root node
 			if (!p) {
-				// std::cout << "111111" << std::endl;
 				newNode->red = false;
 				return ;
 			}
 
-			//Case 2: Parent is BLACK
-			if (!p->red) {
-				// std::cout << "222222" << std::endl;
+			if (!p->red)
 				return;
-			}
 			
 			node *u = getU(newNode);
 			node *gp = getGP(newNode);
 
-			//Case 3: Parent and Uncle are RED
 			if (p->red && (u && u->red)) {
 				p->red = false;
 				u->red = false;
 				gp->red = true;
 				adjust(gp);
-				// std::cout << "3333333" << std::endl;
 				return;
 			}
 
-			//Case 4: Parent is Red and Uncle is Black(Or NULL)
-			//If parent is left son
 			if (p == gp->left) {
 				if (newNode == p->right) {
 					newNode = p;
@@ -222,7 +207,6 @@ class RBtree {
 					gp->red = true;
 					rotateR(gp);
 				}
-				// std::cout << "4444444" << std::endl;
 				return;
 			} else {
 				if (newNode == p->left) {
@@ -234,7 +218,6 @@ class RBtree {
 					gp->red = true;
 					rotateL(gp);
 				}
-				// std::cout << "555555" << std::endl;
 				return;
 			}
 		}
@@ -262,7 +245,7 @@ class RBtree {
 			rc->left = n;
 		}
 
-		void remove(node *n){
+		bool remove(node *n){
 			node *x, *y, *tmp;
 			int yRed;
 
@@ -308,6 +291,7 @@ class RBtree {
 
 			//nodeAlloc.destroy(n);
 			//nodeAlloc.deallocate(n, 1);
+			return (true);
 		}
 
 		void fix(node *n){
@@ -417,9 +401,7 @@ class RBtree {
 			return (n == n->parent->left) ? n->parent->right : n->parent->left;
 		}
 
-		node *getRoot() {
-			return (root);
-		}
+		node *getRoot() { return (root); }
 
 		void transplant(node *n, node *child)
 		{			
@@ -470,13 +452,25 @@ class RBtree {
 			nodeAlloc.deallocate(n, 1);
 		}
 
+		// void print(const std::string &prefix, node *node, bool isLeft = 0)
+		// {
+		// 	if (!n)
+		// 		return;
+
+		// 	std::cout << prefix;
+        // 	std::cout << (isLeft ? "├──" : "└──" );
+
+		// 	std::cout << (!n->red ? "\033[1;90m" : "\033[1;31m") << n->val << "\033[0m" << std::endl;
+
+        // 	print(prefix + (isLeft ? "│   " : "    "), n->left, true);
+        // 	print(prefix + (isLeft ? "│   " : "    "), n->right, false);
+		// }
+
 		iterator max()  { return (!this->root) ? end() : iterator(this->root->max()); }
 		iterator min()  { return (!this->root) ? end() : iterator(this->root->min()); }
 		iterator begin() { return (this->min()); }
 		iterator end() 	{ return iterator(); }
-		size_t max_size() const {
-			return (nodeAlloc.max_size());
-		}
+		size_t max_size() const { return (nodeAlloc.max_size()); }
 
 		size_type		size;
 		node			*root;

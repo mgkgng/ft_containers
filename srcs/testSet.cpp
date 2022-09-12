@@ -416,7 +416,7 @@ bool compare(ft::set<Key, Value> mine, std::set<Key, Value> real) {
 	return (true);
 }
 
-int testMap() {
+int testSet() {
 	clock_t begin, end;
 	float	realRes, myRes;
 	int		res = 0, count = 0;

@@ -11,15 +11,15 @@ class set {
 	public:
 		typedef Key			key_type;
 		typedef Key			value_type;
-		typedef ft::pair<Key, Key> sorry_type;
 		typedef size_t		size_type;
 		typedef Compare		key_compare;
+		typedef Compare		value_compare;
 		typedef Allocator	allocator_type;
 		typedef typename Allocator::pointer					pointer;
 		typedef typename Allocator::const_pointer			const_pointer;
 
-		typedef RBtree<key_type, sorry_type, Compare>	tree_type; // la flemme
-		typedef RBnode<sorry_type>					node;
+		typedef RBtree<key_type, Compare>	tree_type; // la flemme
+		typedef RBnode<key_type>					node;
 		typedef std::allocator<node>			 	node_allocator;
 
 		typedef RBiter<node>			iterator;
@@ -110,11 +110,11 @@ class set {
 		}
 
 		size_type size() const {
-			return (end() - begin());
+			return (this->tree.getSize());
 		}
 
 		size_type max_size() const {
-
+			return (this->tree.max_size());
 		}
 
 		////////////////////
