@@ -21,8 +21,8 @@ class vector {
         typedef typename 	Allocator::pointer			pointer;
         typedef typename 	Allocator::const_pointer 	const_pointer;
 
-        typedef typename ft::RandomAccessIterator<T> iterator;
-        typedef typename ft::RandomAccessIterator<const T> const_iterator;
+        typedef typename ft::RandomAccessIterator<pointer> iterator;
+        typedef typename ft::RandomAccessIterator<const_pointer> const_iterator;
         typedef typename ft::ReverseIterator<iterator> reverse_iterator;
         typedef typename ft::ReverseIterator<const_iterator> const_reverse_iterator;
 
@@ -59,14 +59,15 @@ class vector {
 		}
 
 		template<class InputIt>
-		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
+		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(),
+			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) { // cppreference (5)
 			this->alloc = alloc;
 			size_type itSize = 0;
 			for (InputIt it = first; it != last; it++)
 				itSize++;
 			this->start = this->alloc.allocate(itSize);
 			for (size_type i = 0; i < itSize; i++)
-				this->alloc.construct(start + i, *first++);
+				this->alloc.construct(start + i, *(first + i));
 			this->vectorSize = itSize;
 			this->vectorCapacity = itSize;
 		}
@@ -131,11 +132,17 @@ class vector {
 			this->start[this->vectorSize++] = value;
 		}
 
+		void pop_back() {
+			this->start[this->vectorSize--] = T();
+		}
+
 		iterator insert(iterator pos, const T& value) {
-			if (this->size == this->capacity)
-				resize(this->size + 1);
+			if (this->vectorSize == this->vectorCapacity)
+				resize(this->vectorSize + 1);
 			for (iterator it = this->end(); it != pos + 1; it--)
 				*it = *(it - 1);
+			*(pos + 1) = value;
+			this->vectorSize++;
 			return (pos + 1);
 		}
 

@@ -6,15 +6,19 @@ namespace ft {
 
 template <class T>
 class RandomAccessIterator {
+	private:
+		typedef ft::iterator_traits<T>	traits;
 	public:
-		typedef T			value_type;
-		typedef ptrdiff_t	difference_type;
-		typedef T&			reference;
-		typedef T*			pointer;
+		typedef typename traits::value_type			value_type;
+		typedef typename traits::difference_type	difference_type;
+		typedef typename traits::reference			reference;
+		typedef typename traits::pointer			pointer;
 		
+    	operator RandomAccessIterator<value_type const *>() const { return RandomAccessIterator<value_type const *>(_ptr); }
+
 		RandomAccessIterator() : _ptr(NULL) {}
 		RandomAccessIterator(pointer p) : _ptr(p) {}
-		RandomAccessIterator(const RandomAccessIterator<T> &other) { _ptr = other._ptr; }
+		RandomAccessIterator(const RandomAccessIterator<T> &other) { *this = other; }
 		~RandomAccessIterator() {}
 
 		RandomAccessIterator&  operator++() {
@@ -27,6 +31,7 @@ class RandomAccessIterator {
 			++(*this);
 			return (tmp);
 		}
+
 
 		RandomAccessIterator& operator--() {
 			_ptr--;
