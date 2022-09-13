@@ -65,6 +65,8 @@ class RBiter {
 		explicit RBiter() : ptr(NULL) {} 
 		RBiter(Node *where) : ptr(where) {}
 
+    	operator RBiter<const Node>() const { return (this->ptr); }
+
 		reference operator*() const { return (ptr->value); }
 		const pointer operator->() const { return (&(operator*())); }
 
@@ -104,57 +106,6 @@ class RBiter {
 		Node	*ptr;
 };
 
-template <typename Node>
-class const_RBiter {
-	public:
-		typedef typename Node::value_type value_type;
-		typedef value_type const & reference;
-		typedef value_type const * pointer;
-		typedef ptrdiff_t difference_type;
-
-		const_RBiter() : ptr(NULL) {} 
-		explicit const_RBiter(Node *where) { this->ptr = where; }
-    	const_RBiter(RBiter<Node>& it) : ptr(it.ptr) {}
-
-		reference operator*() const { return (ptr->value); }
-		pointer operator->() const { return (&(operator*())); }
-
-		const_RBiter& operator++() {
-			ptr = ptr->next();
-			return (*this);
-		}
-
-		const_RBiter operator++(int) {
-			const_RBiter tmp = *this;
-			ptr = ptr->next();
-			return (tmp);
-		}
-
-		const_RBiter& operator=(const_RBiter const & other) {
-			ptr = other.ptr;
-			return (*this);
-		}
-
-		const_RBiter& operator--() {
-			ptr = ptr->prev();
-			return (*this);
-		}
-
-		const_RBiter operator--(int) {
-			const_RBiter tmp = *this;
-			ptr = ptr->prev();
-			return (tmp);
-		}
-
-		bool operator==(const const_RBiter& s) { return (ptr == s.ptr); }
-		bool operator!=(const const_RBiter& s) { return (ptr != s.ptr); }
-
-		Node *getNode() { return (ptr); }
-	
-	protected:
-		Node	*ptr;
-};
-
 template<
 	class Value,
     class Compare
@@ -168,9 +119,9 @@ class RBtree {
 		typedef Value					value_type;
 		typedef RBnode<value_type>		node;
 		typedef RBiter<node>			iterator;
-		typedef const_RBiter<node>		const_iterator;
-		typedef ft::ReverseIterator<iterator>		reverse_iterator;
-		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
+		typedef RBiter<const node>		const_iterator;
+		typedef ft::ReverseIter<iterator>		reverse_iterator;
+		typedef ft::ReverseIter<const_iterator>	const_reverse_iterator;
 		typedef std::allocator<node>	node_allocator;
 		typedef unsigned int			size_type;
 

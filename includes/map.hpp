@@ -3,8 +3,6 @@
 #include "RBTree.hpp"
 #include "Iterator.hpp"
 
-
-//TODO should use friend class to get access to the data of tree 
 namespace ft {
 
 template<
