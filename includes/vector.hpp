@@ -10,33 +10,6 @@ template < typename T, typename Allocator = std::allocator<T> >
 class vector {
 	
 	public:
-		////////////////////////////
-		// ** type definitions ** //
-		////////////////////////////
-
-		typedef T 												value_type;
-		typedef Allocator										allocator_type;
-		typedef size_t											size_type;
-		typedef ptrdiff_t										difference_type;
-		typedef value_type&										reference;
-		typedef const value_type&								const_reference;
-		typedef typename Allocator::pointer 					pointer;
-		typedef typename Allocator::const_pointer 				const_pointer;
-		typedef typename ft::RandomAccessIterator<T> 			iterator;
-		typedef typename ft::RandomAccessIterator<const T>		const_iterator;
-		typedef ft::ReverseIterator<iterator> 					reverse_iterator;
-		typedef ft::ReverseIterator<const iterator> 			const_reverse_iterator; 
-
-		////////////////////////
-		// ** contstructor ** //
-		////////////////////////
-
-
-
-		vector(const vector& other) { // cppreference(6)
-			// Copy constructor. Constructs the container with the copy of the contents of other.
-			*this = other;
-		}
 
 		////////////////////////////////////////////////////////
 		// ** destructor, operator=, assign, get_allocator ** //
@@ -45,40 +18,6 @@ class vector {
 		~vector() {
 			this->clear();
 			// _alloc.deallocate(_start, _capacity);
-		}
-
-		vector& operator=(const vector& other) {
-			// Copy assignment operator. Replaces the contents with a copy of the contents of other.
-			_alloc = other._alloc;
-			_start = _alloc.allocate(other._capacity);
-			for (size_type i = 0; i < other._size; i++)
-				_alloc.construct(_start + i, *(other._start + i));
-			_end = _start + other._size;
-			_size = other._size;
-			_capacity = other._capacity;
-			return (*this);
-		}
-
-		void assign(size_type count, const T& value) { // cppreference (1)
-			// Replaces the contents with count copies of value value
-			this->clear();
-			if (count > _capacity)
-				this->getMoreCapacity(count);
-
-			for (size_type i = 0; i < count; i++)
-				_alloc.construct(_start + i, value);
-		}
-
-		template<class InputIt>
-		void assign(InputIt first, InputIt last, 
-			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) {
-			this->clear();
-			difference_type size = ft::distance(first, last);
-			if ((size_type) size > _capacity)
-				this->getMoreCapacity(size);
-			while (first != last)
-				_alloc.construct(_start++, *(first++));
-			_end += size;
 		}
 
 		allocator_type get_allocator() const { return (_alloc); }
@@ -225,120 +164,8 @@ class vector {
 			return (first);
 		}
 		
-		void push_back(const T& value) {
-			if (_size >= _capacity)
-				this->getMoreCapacity(_size + 1);
-			*(_start + _size++) = value;
-			_end++;
-		}
 
-		void pop_back() {
-			_alloc.destroy(_end-- - 1);
-			_size--;
-		}
-
-		void resize(size_type count, T value = T()) {
-			this->recapacity(count);
-			if (_size == count)
-				return ;
-			for (int i = 0; _size + i < count; i++)
-				_alloc.construct(_end + i, value);
-			this->_size = count;
-			this->_end = _start + count;
-		}
-
-		void swap(vector& other) {
-			allocator_type	tmp = _alloc;
-			_alloc = other._alloc;
-			other._alloc = tmp;
-			
-			pointer	tmp2 = _start;
-			_start = other._start;
-			other._start = tmp2;
-
-			pointer tmp3 = _end;
-			_end = other._end;
-			other._end = tmp3;
-
-			size_type tmp4 = _size;
-			_size = other._size;
-			other._size = tmp4;
-
-			size_type tmp5 = _capacity;
-			_capacity = other._capacity;
-			other._capacity = tmp5;
-		}
-
-	protected:
-		void getMoreCapacity(size_type n) {
-			if (!_capacity) {
-				this->recapacity(n);
-				return ;
-			}
-			while (n > _capacity)
-				this->recapacity(_capacity * 2);
-		}
-
-		void recapacity(size_type count) {
-			pointer tmp = this->_alloc.allocate(count);
-			if (count == 1)
-				return ;
-			size_type i = 0;
-			for (iterator it = _start; i < count && it != this->_end; it++)
-				_alloc.construct(tmp + i++, *it);
-
-			this->clear();
-			_alloc.deallocate(_start, _capacity);
-
-			this->_start = tmp;
-			this->_capacity = count;
-			this->_size = i;
-			this->_end = _start + i;
-		}
-
-	private:
-		allocator_type	_alloc; // allocator to use for all memory allocations of this container
-		pointer			_start; // the starting address of the container
-		pointer			_end; // the ending address of the container
-		size_type		_size; // the size of the container
-		size_type		_capacity; // the capacity of the container
-
-	};
-
-	template<class T, class Alloc>
-	bool operator==(const ft::vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		if (lhs._size != rhs._size)
-			return (false);
-		for (int i = 0; i < lhs._size; i++)
-			if (lhs._start + i != rhs._start + i)
-				return (false);
-		return (true);
-	}
 		
-	template<class T, class Alloc>
-	bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (!(lhs == rhs));
-	}
-
-	template<class T, class Alloc>
-	bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (ft::lexicographical_compare(lhs._start, lhs._end, rhs._start, rhs._end));
-	}
-
-	template<class T, class Alloc>
-	bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (ft::lexicographical_compare(rhs._start, rhs._end, lhs._start, lhs._end));
-	}
-
-	template<class T, class Alloc>
-	bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (!(lhs > rhs));
-	}
-
-	template<class T, class Alloc>
-	bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (!(lhs < rhs));
-	}
 
 	template<class T, class Alloc>
 	void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
