@@ -133,7 +133,7 @@ class vector {
 				*it = *(it - 1);
 			*(this->begin() + dist) = value;
 			this->vectorSize++;
-			return (pos);
+			return (this->begin() + dist);
 		}
 
 		iterator insert(iterator pos, size_type count, const T& value) {
@@ -147,7 +147,7 @@ class vector {
 			for (size_type i = 0; i < count; i++)
 				*(this->start + dist + i) = value;
 			this->vectorSize += count;
-			return (pos - count + 1);
+			return (this->begin() + dist - count + 1);
 		}
 
 		template<class InputIt>
@@ -164,7 +164,7 @@ class vector {
 			for (size_type i = 0; i < itSize; i++)
 				*(this->start + dist + i) = *first++;
 			this->vectorSize += itSize;
-			return (pos - itSize + 1);
+			return (this->begin() + dist - itSize + 1);
 		}
 		
 		reference front() { return (*(this->start)); }
