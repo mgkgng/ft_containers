@@ -41,40 +41,42 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
 	return (comp(first1, first2));
 }
 
-// struct true_type {
-// 	typedef true_type	type;
-// 	typedef bool		value_type;
+struct true_type {
+	static const bool value = true;
+	typedef true_type	type;
+	typedef bool		value_type;
 
-// 	operator value_type() const {
-// 		return (true);
-// 	};
-// };
+	operator value_type() const {
+		return (true);
+	};
+};
 
-// struct false_type {
-// 	typedef false_type	type;
-// 	typedef bool		value_type;
+struct false_type {
+	static const bool value = false;
+	typedef false_type	type;
+	typedef bool		value_type;
 
-// 	operator value_type() const {
-// 		return (false);
-// 	};
-// };
+	operator value_type() const {
+		return (false);
+	};
+};
 
-template<class T> struct is_integral : public std::false_type {};
-template<> struct is_integral<char> : public std::true_type {};
-template<> struct is_integral<bool> : public std::true_type {};
-template<> struct is_integral<char16_t> : public std::true_type {};
-template<> struct is_integral<char32_t> : public std::true_type {};
-template<> struct is_integral<wchar_t> : public std::true_type {};
-template<> struct is_integral<signed char> : public std::true_type {};
-template<> struct is_integral<short int> : public std::true_type {};
-template<> struct is_integral<int> : public std::true_type {};
-template<> struct is_integral<long int> : public std::true_type {};
-template<> struct is_integral<long long int> : public std::true_type {};
-template<> struct is_integral<unsigned char> : public std::true_type {};
-template<> struct is_integral<unsigned short int> : public std::true_type {};
-template<> struct is_integral<unsigned int> : public std::true_type {};
-template<> struct is_integral<unsigned long int> : public std::true_type {};
-template<> struct is_integral<unsigned long long int> : public std::true_type {};
+template<class T> struct is_integral : public ft::false_type {};
+template<> struct is_integral<char> : public ft::true_type {};
+template<> struct is_integral<bool> : public ft::true_type {};
+template<> struct is_integral<char16_t> : public ft::true_type {};
+template<> struct is_integral<char32_t> : public ft::true_type {};
+template<> struct is_integral<wchar_t> : public ft::true_type {};
+template<> struct is_integral<signed char> : public ft::true_type {};
+template<> struct is_integral<short int> : public ft::true_type {};
+template<> struct is_integral<int> : public ft::true_type {};
+template<> struct is_integral<long int> : public ft::true_type {};
+template<> struct is_integral<long long int> : public ft::true_type {};
+template<> struct is_integral<unsigned char> : public ft::true_type {};
+template<> struct is_integral<unsigned short int> : public ft::true_type {};
+template<> struct is_integral<unsigned int> : public ft::true_type {};
+template<> struct is_integral<unsigned long int> : public ft::true_type {};
+template<> struct is_integral<unsigned long long int> : public ft::true_type {};
 
 struct bidrectional_iterator_tag {};
 struct random_access_iterator_tag : public bidrectional_iterator_tag {};
@@ -94,7 +96,7 @@ struct iterator_traits<T*> {
 	typedef T								value_type;
 	typedef T*								pointer;
 	typedef T&								reference;
-	typedef ft::random_access_iterator_tag	iterator_category;
+	typedef std::random_access_iterator_tag	iterator_category;
 };
 
 template< class T >
@@ -103,7 +105,7 @@ struct iterator_traits<const T*> {
 	typedef T							value_type;
 	typedef const T*						pointer;
 	typedef const T&						reference;
-	typedef ft::random_access_iterator_tag	iterator_category;
+	typedef std::random_access_iterator_tag	iterator_category;
 };
 
 template< bool B, class T = void >

@@ -12,6 +12,7 @@ class IterVector {
 		typedef typename iterator_traits::difference_type	difference_type;
 		typedef typename iterator_traits::reference			reference;
 		typedef typename iterator_traits::pointer			pointer;
+		typedef std::random_access_iterator_tag				iterator_category;
 		
     	operator IterVector<value_type const *>() const { return IterVector<value_type const *>(ptr); }
 
@@ -30,7 +31,6 @@ class IterVector {
 			++(*this);
 			return (tmp);
 		}
-
 
 		IterVector& operator--() {
 			ptr--;
@@ -119,22 +119,22 @@ class ReverseIter {
 
 	public:
 		typedef Iter										iterator_type;
-		typedef typename Iter::iterator_traits				iterator_traits;
+		typedef ft::iterator_traits<Iter>					iterator_traits;
 		typedef typename iterator_traits::value_type		value_type;
 		typedef typename iterator_traits::difference_type	difference_type;
 		typedef typename iterator_traits::pointer			pointer;
 		typedef typename iterator_traits::reference			reference;
 
-    	// operator Iter<value_type const *>() const { return Iter<value_type const *>(ptr); }
+    	operator ReverseIter<Iter const *>() const { return ReverseIter<Iter const *>(*it); }
 
 		ReverseIter() : it() {}
 		explicit ReverseIter(iterator_type x) : it(x) {}
 
 		template <class U>
-		ReverseIter(const ReverseIter<U>& other) { *this = other; }
-		template<class U>
-		ReverseIter& operator=(const ReverseIter<U>& other) {
-			it = other.base();
+		ReverseIter(const ReverseIter<U>& other) { this->it = other.base(); }
+
+		ReverseIter& operator=(const ReverseIter& other) {
+			this->it = other.base();
 			return (*this);
 		}
 
@@ -174,10 +174,19 @@ class ReverseIter {
 			res -= n;
 			return (res); 
 		}
-        ReverseIter operator-(int n) { 
+       
+		ReverseIter operator-(int n) { 
 			ReverseIter res(*this);
 			res += n;
 			return (res); 
+		}
+
+		friend ReverseIter& operator+(int n, ReverseIter& it) {
+			return (it += n); 
+		}
+
+		friend ReverseIter& operator-(int n, ReverseIter& it) {
+			return (it -= n); 
 		}
 
 		difference_type operator-(ReverseIter& it) { 

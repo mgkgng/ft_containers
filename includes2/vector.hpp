@@ -58,7 +58,7 @@ class vector {
 			size_type itSize = this->getDistance(first, last);
 			this->start = this->alloc.allocate(itSize);
 			for (size_type i = 0; i < itSize; i++)
-				this->alloc.construct(start + i, *(first + i));
+				this->alloc.construct(start + i, *first++);
 			this->vectorSize = itSize;
 			this->vectorCapacity = itSize;
 		}
@@ -113,7 +113,7 @@ class vector {
 			this->vectorSize = 0;
 		}
 
-		bool empty() const { return ((this->vectorSize) ? true : false); }
+		bool empty() const { return ((this->vectorSize) ? false : true); }
 
 		void push_back(const T& value) {
 			if (this->vectorSize == this->vectorCapacity)
@@ -159,7 +159,8 @@ class vector {
 			for (iterator it = this->end() + itSize - 1; it != pos - itSize + 1; it--)
 				*it = *(it - itSize);
 			for (size_type i = 0; i < itSize; i++)
-				*(pos - itSize + 1 + i) = *(first + i);
+				*(pos - itSize + 1 + i) = *first++;
+				// *(pos - itSize + 1 + i) = *(first + i);
 			this->vectorSize += itSize;
 			return (pos - itSize + 1);
 		}
@@ -188,12 +189,12 @@ class vector {
 			pointer tmp = this->alloc.allocate(count);
 			size_type i;
 			for (i = 0; i < count && i < this->vectorSize; i++)
-				this->alloc.construct(tmp + i, *(start + i));
-			this->vectorSize = i;
-			while (i < this->vectorSize)
+				this->alloc.construct(tmp + i, *(this->start + i));
+			while (i < count)
 				this->alloc.construct(tmp + i++, value);
 			this->alloc.deallocate(start, this->vectorCapacity);
 			this->start = tmp;
+			this->vectorSize = count;
 			this->vectorCapacity = count;
 		}
 
