@@ -18,8 +18,8 @@ class vector {
         typedef typename 	Allocator::pointer			pointer;
         typedef typename 	Allocator::const_pointer 	const_pointer;
 
-        typedef typename ft::IterVector<pointer> iterator;
-        typedef typename ft::IterVector<const_pointer> const_iterator;
+        typedef typename ft::IterVector<T> iterator;
+        typedef typename ft::IterVector<const T> const_iterator;
         typedef typename ft::ReverseIter<iterator> reverse_iterator;
         typedef typename ft::ReverseIter<const_iterator> const_reverse_iterator;
 
@@ -297,7 +297,7 @@ bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
 
 template<class T, class Alloc>
 bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+	return (rhs < lhs);
 }
 
 template<class T, class Alloc>
