@@ -126,11 +126,12 @@ class vector {
 		}
 
 		iterator insert(iterator pos, const T& value) {
+			size_type dist = this->getDistance(this->begin(), pos);
 			if (this->vectorSize == this->vectorCapacity)
 				reserve(this->vectorSize + 1);
-			for (iterator it = this->end(); it != pos; it--)
+			for (iterator it = this->end(); it != this->begin() + dist; it--)
 				*it = *(it - 1);
-			*pos = value;
+			*(this->begin() + dist) = value;
 			this->vectorSize++;
 			return (pos);
 		}
@@ -138,12 +139,13 @@ class vector {
 		iterator insert(iterator pos, size_type count, const T& value) {
 			if (!count)
 				return (pos);
+			size_type dist = this->getDistance(this->begin(), pos);
 			if (this->vectorSize + count > this->vectorCapacity)
 				reserve(this->vectorSize + count);
-			for (iterator it = this->end() + count - 1; it != pos - count + 1; it--)
+			for (iterator it = this->end() + count; it != this->begin() + dist + count - 1; it--)
 				*it = *(it - count);
 			for (size_type i = 0; i < count; i++)
-				*(pos - count + 1 + i) = value;
+				*(this->start + dist + i) = value;
 			this->vectorSize += count;
 			return (pos - count + 1);
 		}
@@ -153,14 +155,14 @@ class vector {
 			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) {
 			if (first == last)
 				return (pos);
+			size_type dist = this->getDistance(this->begin(), pos);
 			size_type itSize = this->getDistance(first, last);
 			if (this->vectorSize + itSize > this->vectorCapacity)
 				reserve(this->vectorSize + itSize);
-			for (iterator it = this->end() + itSize - 1; it != pos - itSize + 1; it--)
+			for (iterator it = this->end() + itSize; it != this->begin() + dist + itSize - 1; it--)
 				*it = *(it - itSize);
 			for (size_type i = 0; i < itSize; i++)
-				*(pos - itSize + 1 + i) = *first++;
-				// *(pos - itSize + 1 + i) = *(first + i);
+				*(this->start + dist + i) = *first++;
 			this->vectorSize += itSize;
 			return (pos - itSize + 1);
 		}

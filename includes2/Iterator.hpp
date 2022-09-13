@@ -54,21 +54,14 @@ class IterVector {
 			return (res); 
 		}
 
-		friend IterVector& operator+(int n, IterVector& it) {
-			return (it += n); 
-		}
+		friend IterVector& operator+(int n, IterVector& it) { return (it += n); }
 
-		difference_type operator-(IterVector& it) { 
-			return (this->ptr - it.base());
-		}
-
-		difference_type operator-(IterVector<value_type const *> it) { 
-			return (this->ptr - it.base());
-		}
+		difference_type operator-(IterVector& it) { return (this->ptr - it.base()); }
+		difference_type operator-(IterVector<value_type const *> it) { return (this->ptr - it.base()); }
 		
 	    IterVector& operator+=(int n) {
-            ptr += n;
-            return (*this);
+			ptr += n;
+			return (*this);
         }
 		
         IterVector& operator-=(int n) {
@@ -112,7 +105,6 @@ template<typename Iter1, typename Iter2>
 bool operator<=(const IterVector<Iter1>& lhs, const IterVector<Iter2>& rhs) {
 	return (!(lhs.base() > rhs.base()));
 }
-
 
 template<typename Iter>
 class ReverseIter {
