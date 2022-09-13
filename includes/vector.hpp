@@ -31,42 +31,7 @@ class vector {
 		// ** contstructor ** //
 		////////////////////////
 
-		vector() {
-			_alloc = allocator_type();
-			_start = NULL;
-			_end = NULL;
-			_size = 0;
-			_capacity = 0;
-		}
 
-		explicit vector(const Allocator& alloc) { 
-			_alloc = alloc;
-			_start = NULL;
-			_end = NULL;
-			_size = 0;
-			_capacity = 0;
-		}
-
-		explicit vector(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) { // cppreference (3)
-			this->_alloc = alloc;
-			this->_start = _alloc.allocate(count); // allocator allocates automatically n * sizeof(T) bytes of uninitialized storage
-			for (size_type i = 0; i < count; i++)
-				_alloc.construct(_start + i, value);
-			_end = _start + count;
-			_size = count;
-			_capacity = count;
-		}
-
-		template<class InputIt>
-		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
-			_alloc = alloc;
-			_size = ft::distance(first, last);
-			_start = _alloc.allocate(_size);
-			for (size_type i = 0; i < _size; i++)
-				_alloc.construct(_start++, *first++);
-			_end = _start;
-			_capacity = _size;
-		}
 
 		vector(const vector& other) { // cppreference(6)
 			// Copy constructor. Constructs the container with the copy of the contents of other.
@@ -199,12 +164,6 @@ class vector {
 		}
 
 		iterator insert(iterator pos, const T& value) {
-			// inserts value before pos
-			difference_type diff = &*pos - &*_start;
-			if (_size == _capacity)
-				this->getMoreCapacity(_size + 1);
-			_end++;
-			_size++;
 		
 			for (iterator it = _end; it != _start + diff; it--)
 			 	*it = *(it - 1);

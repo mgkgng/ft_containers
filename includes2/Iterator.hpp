@@ -53,7 +53,7 @@ class RandomAccessIterator {
 		difference_type operator-(RandomAccessIterator& it) { 
 			return (this->_ptr - it._ptr);
 		}
-
+		
 	    RandomAccessIterator& operator+=(int n) {
             _ptr += n;
             return (*this);

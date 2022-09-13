@@ -58,7 +58,35 @@ class vector {
 			this->vectorCapacity = count;
 		}
 
+		template<class InputIt>
+		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) { // cppreference (5)
+			this->alloc = alloc;
+			size_type itSize = 0;
+			for (InputIt it = first; it != last; it++)
+				itSize++;
+			this->start = this->alloc.allocate(itSize);
+			for (size_type i = 0; i < itSize; i++)
+				this->alloc.construct(start + i, *first++);
+			this->vectorSize = itSize;
+			this->vectorCapacity = itSize;
+		}
 
+		vector(vector const & other, const Allocator& alloc = Allocator()) {
+			this->alloc = alloc;
+			this->start = this->alloc.allocate(other.vectorSize);
+			for (size_type i = 0; i < other.vectorSize; i++)
+				this->alloc.construct(start + i, other[i]);
+			this->vectorSize = other.vectorSize;
+			this->vectorCapacity = other.vectorCapacity;
+		}
+
+		vector& operator=(vector const & other) {
+			this->alloc = other.alloc;
+			this->start = other.start;
+			this->vectorSize = other.vectorSize;
+			this->vectorCapacity = other.vectorCapacity;
+			return (*this);
+		}
 		void assign(size_type count, const T& value) { // cppreference (1)
 			this->resize(count);
 			for (size_type i = 0; i < count; i++)
@@ -78,8 +106,43 @@ class vector {
 			this->start = tmp;
 			this->vectorSize = itSize;
 			this->vectorCapacity = itSize;
-
 		}
+
+		reference at(size_type pos) {
+			if (pos > this->vectorCapacity)
+				throw std::out_of_range("exception!");
+			return (this->start[pos]);
+		}
+		const_reference at( size_type pos ) const {
+			if (pos > this->vectorCapacity)
+				throw std::out_of_range("exception!");
+			return (this->start[pos]);
+		}
+
+		void clear() {
+			for (size_type i = 0; i < this->vectorSize; i++)
+				this->alloc.destroy(this->start + i);
+			this->vectorSize = 0;
+		}
+
+		void push_back(const T& value) {
+			if (this->vectorSize == this->vectorCapacity)
+				resize(this->vectorCapacity + 1);
+			this->start[this->vectorSize++] = value;
+		}
+
+		iterator insert(iterator pos, const T& value) {
+			if (this->size == this->capacity)
+				resize(this->size + 1);
+			for (iterator it = this->end(); it != pos + 1; it--)
+				*it = *(it - 1);
+			return (pos + 1);
+		}
+
+		reference front() { return (*(this->start)); }
+		const_reference front() const { return (*(this->start)); }
+		reference back() { return (this->start[this->vectorSize - 1]); }
+		const_reference back() const { return (this->start[this->vectorSize - 1]); }
 
 		void resize(size_type n) {
 			pointer tmp = this->alloc.allocate(n);
@@ -87,7 +150,6 @@ class vector {
 				this->alloc.construct(tmp + i, *(start + i));
 			this->alloc.deallocate(start, this->vectorSize);
 			this->start = tmp;
-			this->vectorSize = n;
 			this->vectorCapacity = n;
 		}
 
@@ -99,8 +161,6 @@ class vector {
 		const_iterator begin() const { return (const_iterator(this->start)); }
 		iterator end() { return (iterator(this->start + this->vectorSize)); }
 		const_iterator end() const { return (const_iterator(this->start + this->vectorSize));}
-
-
 
 		reference operator[](size_type pos) { return (*(this->start + pos)); }
 		const_reference operator[]( size_type pos ) const { return (*(this->start + pos)); }
