@@ -201,24 +201,30 @@ class vector {
 		}
 
 		iterator erase(iterator pos) {
-			for (iterator it = pos; it != this->end() - 1; it++)
+			size_type dist = this->getDistance(this->begin(), pos);
+			if (dist == this->vectorSize) {
+				this->vectorSize--;
+				return (this->end());
+			}
+			for (iterator it = this->begin() + dist; it != this->end() - 1; it++)
 				*it = *(it + 1);
 			this->vectorSize--;
-			return (pos);
+			return (this->begin() + dist);
 		}
 
 		iterator erase(iterator first, iterator last) {
 			if (first == last)
 				return (last);
 			iterator tmpEnd = this->end();
+			size_type dist = this->getDistance(this->begin(), first);
 			size_type itSize = this->getDistance(first, last);
 			iterator it;
-			for (it = first; it != last; it++)
-					*it = *(it + itSize);
+			for (iterator it = this->begin() + dist; it != this->end() - itSize + 1; it++)
+				*it = *(it + itSize);
 			this->vectorSize -= itSize;
-			if (it == tmpEnd)
+			if (this->begin() + dist + itSize == tmpEnd)
 				return (this->end());
-			return (it);
+			return (this->begin() + dist);
 		}
 
 		size_type size() const { return (this->vectorSize); }
