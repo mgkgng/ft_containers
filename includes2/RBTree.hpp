@@ -503,12 +503,12 @@ class RBtree {
 		node *min() { return (!this->root) ? NULL : this->root->min(); }
 		node *min() const { return (!this->root) ? NULL : this->root->min(); }
 
-		iterator begin() const { return this->min(); }
-		iterator end() const { return iterator(); }
+
 		size_t max_size() const { return (nodeAlloc.max_size()); }
 
 		size_type		size;
 		node			*root;
+
 
 	protected:
 		node_allocator	nodeAlloc;

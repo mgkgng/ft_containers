@@ -80,8 +80,8 @@ template<> struct is_integral<unsigned int> : public ft::true_type {};
 template<> struct is_integral<unsigned long int> : public ft::true_type {};
 template<> struct is_integral<unsigned long long int> : public ft::true_type {};
 
-struct bidrectional_iterator_tag {};
-struct random_access_iterator_tag : public bidrectional_iterator_tag {};
+// struct bidrectional_iterator_tag {};
+// struct random_access_iterator_tag : public bidrectional_iterator_tag {};
 
 template<class Iter>
 struct iterator_traits {
@@ -98,7 +98,7 @@ struct iterator_traits<T*> {
 	typedef T								value_type;
 	typedef T*								pointer;
 	typedef T&								reference;
-	typedef typename ft::random_access_iterator_tag	iterator_category;
+	typedef typename std::random_access_iterator_tag	iterator_category;
 };
 
 template< class T >
@@ -107,7 +107,7 @@ struct iterator_traits<const T*> {
 	typedef T							value_type;
 	typedef const T*						pointer;
 	typedef const T&						reference;
-	typedef typename ft::random_access_iterator_tag	iterator_category;
+	typedef typename std::random_access_iterator_tag	iterator_category;
 };
 
 template< bool B, class T = void >
