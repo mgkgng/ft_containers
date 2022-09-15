@@ -38,7 +38,7 @@ class map {
 		typedef ft::treeNode<value_type>			node_type;
 		typedef ft::treeNode<const value_type> 		const_node_type;
 
-		typedef ft::IterTree<value_type>			iterator;
+		typedef ft::IterTree<value_type>		iterator;
 		typedef ft::IterTree<const value_type>	const_iterator;
 		typedef ft::ReverseIter<iterator> 		reverse_iterator;
 		typedef ft::ReverseIter<const_iterator> const_reverse_iterator;
@@ -65,20 +65,105 @@ class map {
 				this->tree.add(*first++);
 		}
 
-		map(map const & other) {
+		map(map const & other) { *this = other; }
+
+		map& operator=(const map & other) {
 			this->tree = other.tree;
 			this->compK = other.compK;
 			this->compV = other.compV;
+			return (*this);
 		}
+
+		iterator erase(iterator pos) {
+			this->tree.erase(pos.getNode());
+			return (iterator());
+		}
+
+		iterator erase(iterator first, iterator last) {
+			while (first != last)
+				this->tree.erase((first++).getNode());
+			return (iterator());
+		}
+
+		size_type erase(const Key& key) {
+			node_type *n = this->tree.root;
+			while (1) {
+				if (!n || (this->compK(n->value.first, key) && this->compK(key, n->value.first)))
+					break;
+				n = (!this->compK(n->value.first, key)) ? n->left : n->right;
+			}
+			if (n)
+				this->tree.erase(n);
+			return ((!n) ? 0 : 1);
+		}
+
+		T& operator[](const Key& key) {
+			node_type *n = this->tree.root;
+			while (1) {
+				if (!n || (this->compK(n->value.first, key) && this->compK(key, n->value.first)))
+					break;
+				n = (!this->compK(n->value.first, key)) ? n->left : n->right;
+			}
+			if (!n) 
+				n = this->tree.add(ft::make_pair(key, mapped_type()));
+			return (n->value.second);
+		}
+
+		bool empty() const { return ((this->tree.size) ? false : true); }
 
 		size_type size() const { return (this->tree.size); }
 		size_type max_size() const { return (this->tree.nodeAlloc.max_size()); }
-		iterator		begin() { return (iterator(this->tree.min())); }
-		const_iterator	begin() const { return (const_iterator(this->tree.min())); }
-		iterator		end() { return (iterator()); }
-		const_iterator	end() const { return (const_iterator()); }
+		iterator		begin() { return (iterator(this->tree.min(), this->tree.max())); }
+		const_iterator	begin() const { return (const_iterator(this->tree.min(), this->tree.max())); }
+		iterator		end() { return (iterator(NULL, this->tree.max())); }
+		const_iterator	end() const { return (const_iterator(NULL, this->tree.max())); }
 
 		void clear() { this->tree.clearTree(); }
+
+		ft::pair<iterator, iterator> equal_range(const Key& key) { return (ft::make_pair(this->lower_bound(key), this->upper_bound(key))); }
+		ft::pair<const_iterator, const_iterator> equal_range(const Key& key) const { return (ft::make_pair(this->lower_bound(key), this->upper_bound(key))); }
+
+		iterator lower_bound(const Key& key) {
+			node_type *where = this->tree.root;
+			node_type *res = NULL;
+			while (where) {
+				if (compK(key, where->value.first))
+					where = where->left;
+				else {
+					res = where;
+					where = where->right;
+				}
+			}
+			return ((res) ? iterator(res, this->tree.max()) : this->end());
+		}
+
+		const_iterator lower_bound(const Key& key) const {
+			node_type *where = this->tree.root;
+			node_type *res = NULL;
+			while (where) {
+				if (compK(key, where->value.first))
+					where = where->right;
+				else {
+					res = where;
+					where = where->left;
+				}
+			}
+			return ((res) ? const_iterator(res, this->tree.max()) : this->end());
+		}		
+		
+		iterator upper_bound(const Key& key) {
+			iterator res = this->lower_bound(key);
+			if (res.getNode() && key == res->first)
+				res++;
+			return (res);
+		}
+	
+		const_iterator upper_bound(const Key& key) const {
+			const_iterator res = this->lower_bound(key);
+			if (res.getNode() && key == res->first)
+				res++;
+			return (res);
+		}
 };
 
 };

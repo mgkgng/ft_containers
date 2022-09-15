@@ -20,8 +20,6 @@ struct treeNode {
 	treeNode *max() { return ((!this->right) ? this : this->right->max()); }
 
 	treeNode *next() {
-		// if (this->empty)
-		// 	return (NULL);
 		if (this->right)
 			return (this->right->min());
 		if (this->parent && this == this->parent->left)
@@ -32,8 +30,6 @@ struct treeNode {
 	}
 
 	treeNode *prev() {
-		// if (this->empty)
-		// 	return (NULL);
 		if (this->left)
 			return (this->left->max());
 		if (this == this->parent->right)
@@ -56,9 +52,12 @@ class IterTree {
 		typedef ft::treeNode<const T>	const_node_type;
 
 		node_type	*nodePtr;
+		node_type	*maxPtr;
 
-		IterTree(): nodePtr(NULL) {}
-		IterTree(node_type *where): nodePtr(where) {}
+		IterTree(): nodePtr(NULL), maxPtr(NULL) {}
+		explicit IterTree(node_type *where, node_type *max): nodePtr(where), maxPtr(max) {}
+		// IterTree(const_node_type *where, node_type *max): nodePtr(where), maxPtr(max) {}
+		
 		reference operator*() const { return (nodePtr->value); }
 		pointer operator->() const { return (&(operator*())); }
 
@@ -81,7 +80,7 @@ class IterTree {
 		}
 
 		IterTree& operator--() {
-			nodePtr = nodePtr->prev();
+			nodePtr = ((!nodePtr) ? this->maxPtr : nodePtr->prev());
 			return (*this);
 		}
 
@@ -109,8 +108,8 @@ class tree {
 		typedef treeNode<const value_type>	const_node_type;
 		typedef std::allocator<node_type>	allocator_type;
 
-		typedef IterTree<node_type>			iterator;
-		typedef IterTree<const_node_type>	const_iterator;
+		typedef IterTree<value_type>		iterator;
+		typedef IterTree<const value_type>	const_iterator;
 		typedef ReverseIter<iterator> 		reverse_iterator;
 		typedef ReverseIter<const_iterator> const_reverse_iterator;
 
@@ -131,6 +130,19 @@ class tree {
 			this->size = other.size;
 			this->nodeAlloc = other.nodeAlloc;
 			this->comp = other.comp;
+		}
+
+		tree& operator=(const tree & other) {
+			if (this->root)
+				this->clearTree();
+			this->nodeAlloc = other.nodeAlloc;
+			this->comp = other.comp;
+			this->root = NULL;
+			if (!other.root)
+				return (*this);
+			for (iterator it = iterator((node_type *) other.min(), (node_type *) other.max()); it != iterator(NULL, (node_type *) other.max()); it++)
+				this->add(*it);
+			return (*this);
 		}
 
 		node_type *createNode(value_type v) {
@@ -201,9 +213,10 @@ class tree {
         	printTree(((left) ? "│   " : "    "), n->right, false);
 		}
 
-		node_type *max() { return (!this->root) ? NULL : this->root->max(); }
-		node_type *min() const { return (!this->root) ? NULL : this->root->min(); }
-
+		node_type *max() { return ((!this->root) ? NULL : this->root->max()); }
+		const_node_type *max() const { return ((!this->root) ? NULL : (const_node_type *) this->root->max()); }		
+		node_type *min() { return ((!this->root) ? NULL : this->root->min()); }
+		const_node_type *min() const { return ((!this->root) ? NULL : (const_node_type *) this->root->min()); }
 
 		/* detailed implementation */
 		void insert(node_type* n) {
@@ -253,9 +266,11 @@ class tree {
 				adjustInsert(gp);
 				return;
 			}
-			if (p == gp->left) {
+
+			if (gp && p == gp->left) {
 				if (n == p->right) {
 					n = p;
+
 					rotateL(p);
 				}
 				p->red = false;
@@ -449,26 +464,21 @@ class tree {
 
 		void destroyTree(node_type *n) {
 			if (!n)
-				return;
+				return ;
 			destroyTree(n->left);
 			destroyTree(n->right);
 			deleteNode(n);
 		}
 
-		node_type *getGP(node_type *n) {
-			return (n && n->parent) ? n->parent->parent : 0;
-		}
-
+		node_type *getGP(node_type *n) { return (n && n->parent) ? n->parent->parent : 0; }
+		node_type *getS(node_type *n) { return (n == n->parent->left) ? n->parent->right : n->parent->left; }
 		node_type *getU(node_type *n) {
 			node_type *gp = getGP(n);
 			if (!gp)
-				return (0);
+				return (NULL);
 			return (n->parent == gp->left) ? gp->right : gp->left;
 		}
 
-		node_type *getS(node_type *n) {
-			return (n == n->parent->left) ? n->parent->right : n->parent->left;
-		}
 };
 
 // template <typename Value, typename Comp> 

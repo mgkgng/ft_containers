@@ -193,56 +193,7 @@ class map {
 			}
 		}
 
-		ft::pair<iterator, iterator> equal_range(const Key& key) {
-			return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
-		}
-
-		ft::pair<const_iterator, const_iterator> equal_range(const Key& key) const {
-			return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
-		}
-
-		iterator lower_bound(const Key& key) {
-			node *where = this->tree.root;
-			node *res = NULL;
-			while (where) {
-				if (compK(key, where->value.first))
-					where = where->left;
-				else {
-					res = where;
-					where = where->right;
-				}
-			}
-			return ((res) ? iterator(res) : end());
-		}
-
-		const_iterator lower_bound(const Key& key) const {
-			node *where = this->tree.root;
-			node *res = NULL;
-			while (where) {
-				if (compK(key, where->value.first))
-					where = where->right;
-				else {
-					res = where;
-					where = where->left;
-				}
-			}
-			return ((res) ? const_iterator(res) : end());
-		}		
 		
-		iterator upper_bound(const Key& key) {
-			iterator res = lower_bound(key);
-			if (res.getNode() && key == res->first)
-				res++;
-			return (res);
-
-		}
-	
-		const_iterator upper_bound(const Key& key) const {
-			const_iterator res = lower_bound(key);
-			if (res.getNode() && key == res->first)
-				res++;
-			return (res);
-		}
 
 		/////////////////////
 		// ** Observers ** //
