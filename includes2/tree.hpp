@@ -95,6 +95,41 @@ class tree {
 			return ((!this->comp(where->value, v)) ? this->search(v, where->left) : this->search(v, where->right));
 		}
 
+		void clearTree() {
+			destroyTree(this->root);
+			this->root = NULL;
+			this->size = 0;
+		}
+
+		void swapTree(tree &other) {
+			node_type *tmpRoot = root;
+			root = other.root;
+			other.root = tmpRoot;
+
+			size_type tmpSize = size;
+			tmpSize = other.size;
+			other.size = tmpSize;
+
+			allocator_type tmpAlloc = nodeAlloc;
+			nodeAlloc = other.nodeAlloc;
+			other.nodeAlloc = tmpAlloc;
+
+			value_compare tmpComp = comp;
+			comp = other.comp;
+			other.comp = tmpComp;
+		}
+
+		void printTree(node_type *n, bool left = false) {
+			if (!n)
+				return;
+
+        	std::cout << ((left) ? "├──" : "└──" );
+			std::cout << (!n->red ? "\033[1;90m" : "\033[1;31m") << n->value << "\033[0m" << std::endl;
+
+        	printTree(((left) ? "│   " : "    "), n->left, true);
+        	printTree(((left) ? "│   " : "    "), n->right, false);
+		}
+
 		/* detailed implementation */
 		void insert(node_type* n) {
 			if (!this->root) {
@@ -257,7 +292,7 @@ class tree {
 			}
 
 			if (!yRed)
-				fix(x);
+				adjustRemove(x);
 			
 			if (tmp) {
 				transplant(tmp, NULL);
@@ -265,7 +300,7 @@ class tree {
 			}
 		}
 
-		void fix(node *n){
+		void adjustRemove(node_type *n){
 			while (n != this->root && !n->red) {
 				if (n == n->parent->left) {
 					node *x = n->parent->right;
@@ -325,5 +360,39 @@ class tree {
 			n->red = false;
 		}
 
+		void transplant(node_type *n, node_type *child)
+		{			
+			if (!n->parent)
+				this->root = child;
+			else if (n == n->parent->left)
+				n->parent->left = child;
+			else
+				n->parent->right = child;
+			if (child)
+				child->parent = n->parent;
+		}
+
+		void destroyTree(node_type *n) {
+			if (!n)
+				return;
+			destroyTree(n->left);
+			destroyTree(n->right);
+			deleteNode(n);
+		}
+
+		node_type *getGP(node_type *n) {
+			return (n && n->parent) ? n->parent->parent : 0;
+		}
+
+		node_type *getU(node_type *n) {
+			node *gp = getGP(n);
+			if (!gp)
+				return (0);
+			return (n->parent == gp->left) ? gp->right : gp->left;
+		}
+
+		node_type *getS(node_type *n) {
+			return (n == n->parent->left) ? n->parent->right : n->parent->left;
+		}
 };
 };
