@@ -1,54 +1,118 @@
+#pragma once
+
 #include <memory>
+
+#include "Iterator.hpp"
 
 namespace ft {
 
 template<typename T>
 struct treeNode {
-	typedef T value_type;
+	treeNode	*parent;
+	treeNode	*left;
+	treeNode	*right;
+	bool 		red;
+	T			value;
 
-	node *parent;
-	node *left;
-	node *right
-	bool red;
-	T	value;
+	treeNode(T val = T(), bool col = true) : parent(NULL), left(NULL), right(NULL), red(col), value(val) {};
 
-	node(T val = T(), bool col = true) : parent(NULL), left(NULL), right(NULL), red(col), value(val) {};
+	treeNode *min() { return ((!this->left) ? this : this->left->min()); }
+	treeNode *max() { return ((!this->right) ? this : this->right->max()); }
+
+	treeNode *next() {
+		// if (this->empty)
+		// 	return (NULL);
+		if (this->right)
+			return (this->right->min());
+		if (this->parent && this == this->parent->left)
+			return (this->parent);
+		treeNode *where;
+		for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
+		return ((where) ? where->parent : NULL);
+	}
+
+	treeNode *prev() {
+		// if (this->empty)
+		// 	return (NULL);
+		if (this->left)
+			return (this->left->max());
+		if (this == this->parent->right)
+			return (parent);
+
+		treeNode *where;
+		for (where = this->parent; where && where == where->parent->left; where = where->parent);
+		return ((where) ? where->parent : NULL);
+	}
 };
 
-template <typename Node>
+template <typename T>
 class IterTree {
 	public:
-		typedef Node node_type;
-		typedef typename Node::value_type value_type;
-		typedef value_type& reference;
-		typedef value_type*	pointer;
+		typedef T	value_type;
+		typedef T&	reference;
+		typedef T*	pointer;
 
-		
-		
-		IterTree(): ptr(NULL) {}
-		IterTree(Node *where): ptr(where) {}
+		typedef ft::treeNode<T> 		node_type;
+		typedef ft::treeNode<const T>	const_node_type;
 
-		operator IterTree<Node<const value_type> >() const { return (this->ptr); }
+		node_type	*nodePtr;
 
-		reference operator*() const { return (ptr->value); }
+		IterTree(): nodePtr(NULL) {}
+		IterTree(node_type *where): nodePtr(where) {}
+		reference operator*() const { return (nodePtr->value); }
+		pointer operator->() const { return (&(operator*())); }
+
+    	operator IterTree<const_node_type>() const { return (this->nodePtr); }
+
+		IterTree& operator=(IterTree const & other) {
+			nodePtr = other.nodePtr;
+			return (*this);
+		}
+
+		IterTree& operator++() {
+			nodePtr = nodePtr->next();
+			return (*this);
+		}
+
+		IterTree operator++(int) {
+			IterTree tmp = *this;
+			nodePtr = nodePtr->next();
+			return (tmp);
+		}
+
+		IterTree& operator--() {
+			nodePtr = nodePtr->prev();
+			return (*this);
+		}
+
+		IterTree operator--(int) {
+			IterTree tmp = *this;
+			nodePtr = nodePtr->prev();
+			return (tmp);
+		}
+
+		bool operator==(const IterTree& s) { return (nodePtr == s.nodePtr); }
+		bool operator!=(const IterTree& s) { return (nodePtr != s.nodePtr); }
+
+		node_type *getNode() { return (nodePtr); }
 };
 
 template<typename Value, typename Compare>
 class tree {
 	public:
-		typedef Value	value_type;
-		typedef treeNode<value_type>	node_type;
-		typedef treeNode<const value_type> const_node_type;
-		typedef std::allocator<node_type> allocator_type;
-		typedef Compare	value_compare;
+		typedef Value			value_type;
+		typedef Compare			value_compare;
 		typedef ptrdiff_t 		difference_type;
 		typedef unsigned long	size_type;
-		typedef NULL			nil;
+
+		typedef treeNode<value_type>		node_type;
+		typedef treeNode<const value_type>	const_node_type;
+		typedef std::allocator<node_type>	allocator_type;
 
 		typedef IterTree<node_type>			iterator;
 		typedef IterTree<const_node_type>	const_iterator;
-		typedef ReverseIter<iterator> 				reverse_iterator;
-		typedef ReverseIter<const_iterator> 		const_reverse_iterator;
+		typedef ReverseIter<iterator> 		reverse_iterator;
+		typedef ReverseIter<const_iterator> const_reverse_iterator;
 
 		node_type		*root;
 		size_type		size;
@@ -62,13 +126,20 @@ class tree {
 			this->comp = Compare();
 		}
 
+		tree(tree const & other) {
+			this->root = other.root;
+			this->size = other.size;
+			this->nodeAlloc = other.nodeAlloc;
+			this->comp = other.comp;
+		}
+
 		node_type *createNode(value_type v) {
 			node_type *n = nodeAlloc.allocate(1);
 			nodeAlloc.construct(n, v);
 			return (n);
 		}
 
-		node_type *deleteNode(node *n) {
+		void deleteNode(node_type *n) {
 			nodeAlloc.deallocate(n, 1);
 		}
 
@@ -78,7 +149,7 @@ class tree {
 
 		node_type *add(value_type v) {
 			if (this->search(v, this->root))
-				return (nil);
+				return (NULL);
 			node_type *n = createNode(v);
 			insert(n);
 			return (n);
@@ -130,6 +201,10 @@ class tree {
         	printTree(((left) ? "│   " : "    "), n->right, false);
 		}
 
+		node_type *max() { return (!this->root) ? NULL : this->root->max(); }
+		node_type *min() const { return (!this->root) ? NULL : this->root->min(); }
+
+
 		/* detailed implementation */
 		void insert(node_type* n) {
 			if (!this->root) {
@@ -161,7 +236,7 @@ class tree {
 		}
 
 		void adjustInsert(node_type *n) {
-			node *p = n->parent;
+			node_type *p = n->parent;
 			if (!p) {
 				n->red = false;
 				return ;
@@ -169,8 +244,8 @@ class tree {
 			if (!p->red)
 				return;
 		
-			node *u = getU(newNode);
-			node *gp = getGP(newNode);
+			node_type *u = getU(n);
+			node_type *gp = getGP(n);
 			if (p->red && (u && u->red)) {
 				p->red = false;
 				u->red = false;
@@ -230,7 +305,7 @@ class tree {
 		{
 			if (!n || !n->left)
 				return;
-			node *lc = n->left ;
+			node_type *lc = n->left ;
 			n->left = lc->right;
 
 			if (n->left)
@@ -249,7 +324,7 @@ class tree {
 		}
 
 		void remove(node_type *n){
-			node *x, *y, *tmp;
+			node_type *x, *y, *tmp;
 			int yRed;
 
 			y = n;
@@ -303,7 +378,7 @@ class tree {
 		void adjustRemove(node_type *n){
 			while (n != this->root && !n->red) {
 				if (n == n->parent->left) {
-					node *x = n->parent->right;
+					node_type *x = n->parent->right;
 					if (x && x->red) {
 						x->red = false;
 						n->parent->red = true;
@@ -330,7 +405,7 @@ class tree {
 						n = root;
 					}
 				} else {
-					node *x = n->parent->left;
+					node_type *x = n->parent->left;
 					if (x && x->red) {
 						x->red = false;
 						n->parent->red = true;
@@ -385,7 +460,7 @@ class tree {
 		}
 
 		node_type *getU(node_type *n) {
-			node *gp = getGP(n);
+			node_type *gp = getGP(n);
 			if (!gp)
 				return (0);
 			return (n->parent == gp->left) ? gp->right : gp->left;
@@ -395,4 +470,23 @@ class tree {
 			return (n == n->parent->left) ? n->parent->right : n->parent->left;
 		}
 };
+
+// template <typename Value, typename Comp> 
+// inline bool operator==(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return lhs.size == rhs.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
+
+// template <typename Value, typename Comp>
+// inline bool operator!=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(lhs == rhs); }
+
+// template <typename Value, typename Comp>
+// inline bool operator<(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+
+// template <typename Value, typename Comp>
+// inline bool operator<=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(rhs < lhs); }
+
+// template <typename Value, typename Comp>
+// inline bool operator>(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return rhs < lhs; }
+
+// template <typename Value, typename Comp>
+// inline bool operator>=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(lhs < rhs); }
+
 };

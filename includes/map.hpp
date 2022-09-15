@@ -13,41 +13,7 @@ template<
 >
 class map {
 
-	public:
-		typedef Key						key_type;
-		typedef T						mapped_type;
-		typedef ft::pair<const Key, T> 	value_type;
-		typedef size_t					size_type;
-		typedef ptrdiff_t				difference_type;
-		typedef Compare					key_compare;
-		typedef Allocator				allocator_type;
-		typedef typename Allocator::pointer		pointer;
-		typedef typename Allocator::const_pointer	const_pointer;
-		typedef typename Allocator::reference	reference;
-		typedef typename Allocator::const_reference const_reference;
 
-		class value_compare {
-			friend class map;
-			protected:
-				Compare comp;
-			public:
-				typedef bool		result_type;
-				typedef	value_type	first_argument_type;
-				typedef value_type	second_argument_type;
-				value_compare() { comp = std::less<Key>(); }
-				value_compare(Compare c) : comp(c) {}
-				bool operator()(const value_type& lhs, const value_type& rhs) const { return (comp(lhs.first, rhs.first)); }
-		};
-
-		typedef RBtree<value_type, value_compare>	tree_type;
-
-		typedef RBnode<value_type>				node;
-		typedef std::allocator<node>			node_allocator;
-
-		typedef RBiter<node>				iterator;
-		typedef const_RBiter<const node>	const_iterator;
-		typedef ft::ReverseIterator<iterator>	reverse_iterator;
-		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 
 		map() {
 			compK = Compare();
@@ -322,11 +288,6 @@ class map {
 			lhs.swap(rhs);
 		}
 
-		tree_type &getTree() { return (this->tree); }
-		tree_type		tree;
-		key_compare		compK;
-		value_compare	compV;
-		allocator_type	allocator;
 
 };
 
