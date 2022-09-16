@@ -182,28 +182,11 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, ONLY_CLOCK);
 
-	// ft::map<string, int>::iterator myIt = mine.begin();
-	// std::map<string, int>::iterator realIt = real.begin();
-	// std::cout << "pardon?" << std::endl;
-	// std::cout << "my type: " << typeid(myIt).name() << std::endl;
-	// std::cout << "real type: " << typeid(realIt).name() << std::endl;
-
-	ANNOUNCE2("Map Constructor Type 2: Default Constructor with compare and allocator");
-
-	START_CLOCK;
-	real = std::map<string, int>(std::less<string>());
-	END_CLOCK_REAL;
-	START_CLOCK;
-	mine = ft::map<string, int>(std::less<string>());
-	END_CLOCK_MY;
-	CHECK(MAP, ONLY_CLOCK);
-
-	ANNOUNCE2("Map Constructor Type 3: Constructor with iterator");
+	ANNOUNCE2("Map Constructor Type 2: Constructor with iterator");
 	std::map<string, int>	realHitchcock;
 	ft::map<string, int>	myHitchcock;
 
 	ft_hitchcock(realHitchcock, myHitchcock);
-	// TO_DO SAME KEY DOESNT REPLACE YET
 	
 	START_CLOCK;
 	real = std::map<string, int>(realHitchcock.begin(), realHitchcock.end());
@@ -213,12 +196,11 @@ int testMap() {
 	END_CLOCK_MY;
 	CHECK(MAP, DO_BOTH);
 
-	ANNOUNCE2("Map Constructor Type 4: Copy Constructor");
+	ANNOUNCE2("Map Constructor Type 3: Copy Constructor");
 	std::map<string, int>	realKubrick;
 	ft::map<string, int>	myKubrick;
 
 	ft_kubrick(realKubrick, myKubrick);
-	// TO_DO SAME KEY DOESNT REPLACE YET
 	
 	START_CLOCK;
 	real = std::map<string, int>(realKubrick);

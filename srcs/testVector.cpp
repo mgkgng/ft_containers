@@ -55,16 +55,7 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, ONLY_CLOCK);
 
-	ANNOUNCE2("Vector Constructor Type 2: Constructor with allocator");
-	START_CLOCK;
-	real = std::vector<int>(std::allocator<int>());
-	END_CLOCK_REAL;
-	START_CLOCK;
-	mine = ft::vector<int>(std::allocator<int>());
-	END_CLOCK_MY;
-	CHECK(VECTOR, ONLY_CLOCK);
-
-	ANNOUNCE2("Vector Constructor Type 3-1: Constructor with count copies of elements with value (small size value)");
+	ANNOUNCE2("Vector Constructor Type 2-1: Constructor with count copies of elements with value (small size value)");
 	size_t n = 10;
 	START_CLOCK;
 	real = std::vector<int>(n, 15, std::allocator<int>());
@@ -74,7 +65,7 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 
-	ANNOUNCE2("Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)");
+	ANNOUNCE2("Vector Constructor Type 2-2: Constructor with count copies of elements with value (big size value)");
 	n = 1000;
 	START_CLOCK;
 	real = std::vector<int>(n, 125, std::allocator<int>());
@@ -84,7 +75,7 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 
-	ANNOUNCE2("Vector Constructor Type 4-1: Constructor with count copies of elements with value (small size value)");
+	ANNOUNCE2("Vector Constructor Type 3-1: Constructor with count copies of elements with value (small size value)");
 	n = 10;
 	std::vector<int> testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	START_CLOCK;
@@ -95,7 +86,7 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 
-	ANNOUNCE2("Vector Constructor Type 4-2: Constructor with count copies of elements with value (big size value)");
+	ANNOUNCE2("Vector Constructor Type 3-2: Constructor with count copies of elements with value (big size value)");
 	n = 1500;
 	testVec = std::vector<int>(n, 3000, std::allocator<int>());
 	START_CLOCK;
@@ -106,7 +97,7 @@ int testVector() {
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 
-	ANNOUNCE2("Vector Constructor Type 5: Copy Constructor");
+	ANNOUNCE2("Vector Constructor Type 4: Copy Constructor");
 	ft::vector<int> testMyVec = ft::vector<int>(n, 3000, std::allocator<int>());
 	START_CLOCK;
 	real = std::vector<int>(testVec);
@@ -165,10 +156,10 @@ int testVector() {
 	testVec = std::vector<int>(n, 777, std::allocator<int>());
 	testMyVec = ft::vector<int>(n, 777, std::allocator<int>());
 	START_CLOCK;
-	real.insert(real.begin() + 26, testVec.begin(), testVec.end());
+	real.insert(real.begin() + 5, testVec.begin(), testVec.end());
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine.insert(mine.begin() + 26, testMyVec.begin(), testMyVec.end());
+	mine.insert(mine.begin() + 5, testMyVec.begin(), testMyVec.end());
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 

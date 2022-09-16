@@ -2,8 +2,8 @@
 
 #include <memory>
 #include "unistd.h"
-#include "./lib.hpp"
-#include "./Iterator.hpp"
+#include "lib.hpp"
+#include "Iterator.hpp"
 
 namespace ft {
 

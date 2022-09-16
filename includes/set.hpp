@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./lib.hpp"
-#include "./tree.hpp"
-#include "./Iterator.hpp"
-#include "./pair.hpp"
+#include "lib.hpp"
+#include "tree.hpp"
+#include "Iterator.hpp"
+#include "pair.hpp"
 
 namespace ft {
 

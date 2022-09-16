@@ -1,8 +1,8 @@
 #pragma once
 
-#include "./lib.hpp"
-#include "./pair.hpp"
-#include "./tree.hpp"
+#include "lib.hpp"
+#include "pair.hpp"
+#include "tree.hpp"
 
 namespace ft {
 
@@ -124,6 +124,9 @@ class map {
 				this->tree.erase(n);
 			return ((!n) ? 0 : 1);
 		}
+
+		T& at(const Key& key) { return ((this->find(key))->second); }
+		const T& at(const Key& key) const { return ((this->find(key))->second); }
 
 		T& operator[](const Key& key) {
 			node_type *n = this->tree.root;
