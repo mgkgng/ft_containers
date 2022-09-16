@@ -19,6 +19,37 @@ struct treeNode {
 	treeNode *min() { return ((!this->left) ? this : this->left->min()); }
 	treeNode *max() { return ((!this->right) ? this : this->right->max()); }
 
+	treeNode *next() {
+		// if (!this)
+		// 	return (NULL);
+
+		if (this->right)
+			return (this->right->min());
+
+		if (this->parent && this == this->parent->left)
+			return (this->parent);
+		
+		treeNode *next = this;
+		while (next && next->parent && next == next->parent->right)
+			next = next->parent;
+		return ((next) ? next->parent : NULL);
+	}
+
+	treeNode *prev() {
+		// if (!this)
+		// 	return (NULL);
+
+		if(this->left)
+			return (this->left->max());
+
+		if(this->parent && this == this->parent->right)
+			return (this->parent);
+
+		treeNode *prev= this;
+		while (prev && prev->parent && prev == prev->parent->left)
+			prev = prev->parent;
+		return ((prev) ? prev->parent : NULL);
+	}
 };
 
 template <typename T>
@@ -35,15 +66,16 @@ class IterTree {
 		typedef std::bidirectional_iterator_tag	iterator_category;
 
 		node_type	*nodePtr;
+		node_type	*minPtr;
 		node_type	*maxPtr;
 
-		IterTree(): nodePtr(NULL), maxPtr(NULL) {}
-		explicit IterTree(node_type *where, node_type *max): nodePtr(where), maxPtr(max) {}
+		IterTree(): nodePtr(NULL), minPtr(NULL), maxPtr(NULL) {}
+		explicit IterTree(node_type *where, node_type *min, node_type *max): nodePtr(where), minPtr(min), maxPtr(max) {}
 
 		reference operator*() const { return (nodePtr->value); }
 		pointer operator->() const { return (&(operator*())); }
 
-    	operator IterTree<const value_type>() const { return (IterTree<const value_type>((const_node_type *) this->nodePtr, (const_node_type *) this->maxPtr)); }
+    	operator IterTree<const value_type>() const { return (IterTree<const value_type>((const_node_type *) this->nodePtr, (const_node_type *) this->minPtr, (const_node_type *) this->maxPtr)); }
 
 		IterTree& operator=(IterTree const & other) {
 			nodePtr = other.nodePtr;
@@ -51,26 +83,25 @@ class IterTree {
 		}
 
 		IterTree& operator++() {
-			nodePtr = ft::tree::getNextNode(nodePtr);
+			nodePtr = ((!nodePtr) ? this->minPtr : this->nodePtr->next());
 			return (*this);
 		}
 
 		IterTree operator++(int) {
-
 			IterTree tmp = *this;
-			nodePtr = ft::tree::getNextNode(nodePtr);
+			nodePtr =((!nodePtr) ? this->minPtr : this->nodePtr->next());
 			return (tmp);
 		}
 
 		IterTree& operator--() {
-			std::cout << "coucou" << std::endl;
-			nodePtr = ((!nodePtr) ? this->maxPtr : ft::tree::getPrevNode(nodePtr));
+			// std::cout << "nono" << std::endl;
+			nodePtr = ((!nodePtr) ? this->maxPtr : this->nodePtr->prev());
 			return (*this);
 		}
 
 		IterTree operator--(int) {
 			IterTree tmp = *this;
-			nodePtr = ft::tree::getPrevNode(nodePtrå);
+			nodePtr = ((!nodePtr) ? this->maxPtr : this->nodePtr->prev());
 			return (tmp);
 		}
 
@@ -124,7 +155,7 @@ class tree {
 			this->root = NULL;
 			if (!other.root)
 				return (*this);
-			for (iterator it = iterator((node_type *) other.min(), (node_type *) other.max()); it != iterator(NULL, (node_type *) other.max()); it++)
+			for (iterator it = iterator((node_type *) other.min(), (node_type *) other.min(), (node_type *) other.max()); it != iterator(NULL, (node_type *) other.min(), (node_type *) other.max()); it++)
 				this->add(*it);
 			return (*this);
 		}
@@ -154,6 +185,7 @@ class tree {
 		void erase(node_type *n) {
 			remove(n);
 			deleteNode(n);
+			this->size--;
 		}
 
 		node_type *search(value_type v, node_type *where) {
@@ -161,7 +193,7 @@ class tree {
 				return (where);
 			return ((!this->comp(where->value, v)) ? this->search(v, where->left) : this->search(v, where->right));
 		}
-
+ 
 		void clearTree() {
 			destroyTree(this->root);
 			this->root = NULL;
@@ -170,19 +202,19 @@ class tree {
 
 		void swapTree(tree &other) {
 			node_type *tmpRoot = root;
-			root = other.root;
+			this->root = other.root;
 			other.root = tmpRoot;
 
 			size_type tmpSize = size;
-			tmpSize = other.size;
+			this->size = other.size;
 			other.size = tmpSize;
 
 			allocator_type tmpAlloc = nodeAlloc;
-			nodeAlloc = other.nodeAlloc;
+			this->nodeAlloc = other.nodeAlloc;
 			other.nodeAlloc = tmpAlloc;
 
 			value_compare tmpComp = comp;
-			comp = other.comp;
+			this->comp = other.comp;
 			other.comp = tmpComp;
 		}
 
@@ -461,38 +493,6 @@ class tree {
 			if (!gp)
 				return (NULL);
 			return (n->parent == gp->left) ? gp->right : gp->left;
-		}
-
-		static node_type* getNextNode(node_type* n) {
-			if (!n)
-				return (NULL);
-
-			if (n->right)
-				return (n->right->min());
-
-			if (n->parent && n == n->parent->left)
-				return (n->parent);
-			
-			node_type *next = n;
-			while (next && next == next->parent->right)
-				next = next->parent;
-			return ((next) ? next->parent : NULL);
-		}
-
-		static node_type * getPrevNode(node_type* n) {
-			if (!n)
-				return (NULL);
-
-			if(n->left)
-				return n->left->max();
-
-			if(n->parent && n == n->parent->right)
-				return (n->parent);
-
-			node_type *prev= n;
-			while (prev && prev == prev->parent->left)
-				prev = prev->parent;
-			return ((prev) ? prev->parent : NULL);
 		}
 };
 };
