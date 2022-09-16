@@ -286,7 +286,6 @@ class tree {
 			if (gp && p == gp->left) {
 				if (n == p->right) {
 					n = p;
-
 					rotateL(p);
 				}
 				p->red = false;
@@ -351,10 +350,8 @@ class tree {
 				if (y->right)
 					y->right->parent = y;
 			}
-
 			if (!yRed)
 				this->adjustRemove(x);
-			
 			if (tmp) {
 				this->transplant(tmp, NULL);
 				this->deleteNode(tmp);
@@ -363,7 +360,7 @@ class tree {
 
 		void adjustRemove(node_type *n){
 			while (n != this->root && !n->red) {
-				if (n == n->parent->left) {
+				if (n->parent && n == n->parent->left) {
 					node_type *x = n->parent->right;
 					if (x && x->red) {
 						x->red = false;
@@ -402,7 +399,7 @@ class tree {
 						x->red = true;
 						n = n->parent;
 					} else {
-						if (!x->left->red) {
+						if (x && !x->left->red) {
 							x->right->red = false;
 							x->red = true;
 							this->rotateL(x);

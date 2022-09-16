@@ -22,7 +22,7 @@ class set {
 		typedef ft::treeNode<value_type>			node_type;
 		typedef ft::treeNode<const value_type> 		const_node_type;
 
-		typedef ft::IterTree<value_type>		iterator;
+		typedef ft::IterTree<const value_type>		iterator;
 		typedef ft::IterTree<const value_type>	const_iterator;
 		typedef ft::ReverseIter<iterator> 		reverse_iterator;
 		typedef ft::ReverseIter<const_iterator> const_reverse_iterator;
@@ -65,9 +65,9 @@ class set {
 
 		allocator_type get_allocator() const { return (this->_alloc); }
 
-		iterator		begin() { return (iterator(this->tree.min(), this->tree.min(), this->tree.max())); }
+		iterator		begin() { return (iterator((const_node_type *) this->tree.min(), (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max())); }
 		const_iterator	begin() const { return (const_iterator(this->tree.min(), this->tree.min(), this->tree.max())); }
-		iterator		end() { return (iterator(NULL, this->tree.min(), this->tree.max())); }
+		iterator		end() { return (iterator(NULL, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max())); }
 		const_iterator	end() const { return (const_iterator(NULL, this->tree.min(), this->tree.max())); }
 
 		reverse_iterator		rbegin() { return (reverse_iterator(this->end())); }
@@ -89,22 +89,22 @@ class set {
 				pos = (!this->comp(pos->value, value)) ? pos->left : pos->right;
 			}
 			if (pos)
-				return (ft::make_pair<iterator, bool>(iterator(pos, this->tree.min(), this->tree.max()), false));
+				return (ft::make_pair<iterator, bool>(iterator((const_node_type *) pos, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()), false));
 			node_type *where = tree.add(value);
-			return (ft::make_pair<iterator, bool>(iterator(where, this->tree.min(), this->tree.max()), true));
+			return (ft::make_pair<iterator, bool>(iterator((const_node_type *) where, (const_node_type *)this->tree.min(), (const_node_type *) this->tree.max()), true));
 		}
 
 		iterator insert(iterator hint, const value_type& value) {
-			node_type *pos = hint.getNode();
+			node_type *pos = (node_type *) hint.getNode();
 			while (1) {
 				if (!pos || pos->value == value)
 					break;
 				pos = (!this->comp(pos->value, value)) ? pos->left : pos->right;
 			}
 			if (pos)
-				return (iterator(pos, this->tree.min(), this->tree.max()));
+				return (iterator((const_node_type *) pos, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()));
 			node_type *where = this->tree.add(value);
-			return (iterator(where, this->tree.min(), this->tree.max()));
+			return (iterator((const_node_type *) where, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()));
 		}
 
 		template<class InputIt>
@@ -114,13 +114,13 @@ class set {
 		}
 
 		iterator erase(iterator pos) {
-			this->tree.erase(pos.getNode());
+			this->tree.erase((node_type *) pos.getNode());
 			return (iterator());
 		}
 
 		iterator erase(iterator first, iterator last) {
 			while (first != last)
-				this->tree.erase((first++).getNode());
+				this->tree.erase((node_type *) (first++).getNode());
 			return (iterator());
 		}
 
@@ -147,9 +147,9 @@ class set {
 		size_type count( const Key& key ) const {
 			node_type *pos = this->tree.root;
 			while (1) {
-				if (!pos || pos->value.first == key)
+				if (!pos || pos->value == key)
 					break;
-				pos = (!this->compK(pos->value.first, key)) ? pos->left : pos->right;
+				pos = (!this->comp(pos->value, key)) ? pos->left : pos->right;
 			}
 			return (pos) ? 1 : 0;
 		}
@@ -159,9 +159,9 @@ class set {
 			while (1) {
 				if (!pos || pos->value == key)
 					break;
-				pos = (!this->compK(pos->value, key)) ? pos->left : pos->right;
+				pos = (!this->comp(pos->value, key)) ? pos->left : pos->right;
 			}
-			return (iterator((pos) ? pos : NULL, this->tree.min(), this->tree.max()));
+			return (iterator((pos) ? (const_node_type *) pos : NULL, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()));
 		}
 
 		const_iterator find( const Key& key ) const {
@@ -169,7 +169,7 @@ class set {
 			while (1) {
 				if (!pos || pos->value == key)
 					break;
-				pos = (!this->compK(pos->value, key)) ? pos->left : pos->right;
+				pos = (!this->comp(pos->value, key)) ? pos->left : pos->right;
 			}
 			return (const_iterator((pos) ? (const_node_type *) pos : NULL, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()));
 		}
@@ -184,7 +184,7 @@ class set {
 					break;
 				where = where->next();
 			}
-			return ((where) ? iterator(where, this->tree.min(), this->tree.max()) : this->end());
+			return ((where) ? iterator((const_node_type *) where, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()) : this->end());
 		}
 
 		const_iterator lower_bound(const Key& key) const {
@@ -214,4 +214,34 @@ class set {
 		key_compare key_comp() const { return (this->comp); }
 		value_compare value_comp() const { return (this->comp); }
 	};
+
+template<class Key, class Compare, class Allocator>
+bool operator==(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template<class Key, class Compare, class Allocator>
+bool operator!=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (!(lhs == rhs));
+}
+
+template<class Key, class Compare, class Allocator>
+bool operator<(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
+
+template<class Key, class Compare, class Allocator>
+bool operator>=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (!(lhs < rhs));
+}
+
+template<class Key, class Compare, class Allocator>
+bool operator>(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
+
+template<class Key, class Compare, class Allocator>
+bool operator<=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
+	return (!(lhs > rhs));
+}
 };
