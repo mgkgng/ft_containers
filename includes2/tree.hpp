@@ -19,49 +19,31 @@ struct treeNode {
 	treeNode *min() { return ((!this->left) ? this : this->left->min()); }
 	treeNode *max() { return ((!this->right) ? this : this->right->max()); }
 
-	treeNode *next() {
-		if (this->right)
-			return (this->right->min());
-		if (this->parent && this == this->parent->left)
-			return (this->parent);
-		treeNode *where;
-		for (where = this->parent; where && where->parent && where == where->parent->right; where = where->parent);
-		return ((where) ? where->parent : NULL);
-	}
-
-	treeNode *prev() {
-		if (this->left)
-			return (this->left->max());
-		if (this == this->parent->right)
-			return (parent);
-
-		treeNode *where;
-		for (where = this->parent; where && where == where->parent->left; where = where->parent);
-		return ((where) ? where->parent : NULL);
-	}
 };
 
 template <typename T>
 class IterTree {
 	public:
-		typedef T	value_type;
-		typedef T&	reference;
-		typedef T*	pointer;
+		typedef T			value_type;
+		typedef value_type&	reference;
+		typedef value_type*	pointer;
+		typedef ptrdiff_t	difference_type;
 
 		typedef ft::treeNode<T> 		node_type;
 		typedef ft::treeNode<const T>	const_node_type;
+
+		typedef std::bidirectional_iterator_tag	iterator_category;
 
 		node_type	*nodePtr;
 		node_type	*maxPtr;
 
 		IterTree(): nodePtr(NULL), maxPtr(NULL) {}
 		explicit IterTree(node_type *where, node_type *max): nodePtr(where), maxPtr(max) {}
-		// IterTree(const_node_type *where, node_type *max): nodePtr(where), maxPtr(max) {}
-		
+
 		reference operator*() const { return (nodePtr->value); }
 		pointer operator->() const { return (&(operator*())); }
 
-    	operator IterTree<const_node_type>() const { return (this->nodePtr); }
+    	operator IterTree<const value_type>() const { return (IterTree<const value_type>((const_node_type *) this->nodePtr, (const_node_type *) this->maxPtr)); }
 
 		IterTree& operator=(IterTree const & other) {
 			nodePtr = other.nodePtr;
@@ -69,24 +51,26 @@ class IterTree {
 		}
 
 		IterTree& operator++() {
-			nodePtr = nodePtr->next();
+			nodePtr = ft::tree::getNextNode(nodePtr);
 			return (*this);
 		}
 
 		IterTree operator++(int) {
+
 			IterTree tmp = *this;
-			nodePtr = nodePtr->next();
+			nodePtr = ft::tree::getNextNode(nodePtr);
 			return (tmp);
 		}
 
 		IterTree& operator--() {
-			nodePtr = ((!nodePtr) ? this->maxPtr : nodePtr->prev());
+			std::cout << "coucou" << std::endl;
+			nodePtr = ((!nodePtr) ? this->maxPtr : ft::tree::getPrevNode(nodePtr));
 			return (*this);
 		}
 
 		IterTree operator--(int) {
 			IterTree tmp = *this;
-			nodePtr = nodePtr->prev();
+			nodePtr = ft::tree::getPrevNode(nodePtrå);
 			return (tmp);
 		}
 
@@ -293,6 +277,118 @@ class tree {
 			}
 		}
 
+		void remove(node_type *n){
+			node_type *x, *y, *tmp;
+			int yRed;
+
+			y = n;
+			yRed = n->red;
+			tmp = NULL;
+
+			if (!n->left && !n->right) {
+				tmp = this->createNode(n->value);
+				tmp->red = false;
+				this->transplant(n, tmp);
+				x = tmp;
+			} else if (!n->left) {
+				x = n->right;
+				this->transplant(n, n->right);
+			} else if (!n->right){
+				x = n->left;
+				this->transplant(n, n->left);
+			} else {
+				y = n->prev();
+				x = y->left;
+				if (!x) {
+					tmp = this->createNode(n->value);
+					tmp->red = false;
+					tmp->parent = y;
+					y->left = tmp;
+					x = tmp;
+				}
+				yRed = y->red;
+				if (y->parent != n) {
+					this->transplant(y, x);
+					y->left = n->left;
+					if (y->left)
+						y->left->parent = y;
+				}
+				this->transplant(n, y);
+				y->red = n->red;
+				y->right = n->right;
+				if (y->right)
+					y->right->parent = y;
+			}
+
+			if (!yRed)
+				this->adjustRemove(x);
+			
+			if (tmp) {
+				this->transplant(tmp, NULL);
+				this->deleteNode(tmp);
+			}
+		}
+
+		void adjustRemove(node_type *n){
+			while (n != this->root && !n->red) {
+				if (n == n->parent->left) {
+					node_type *x = n->parent->right;
+					if (x && x->red) {
+						x->red = false;
+						n->parent->red = true;
+						this->rotateL(n->parent);
+						x = n->parent->right;
+					}
+					if (x && (!x->left || !x->left->red) && (!x->right || !x->right->red)) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if (x && (!x->right || !x->right->red)) {
+							if (x->left)
+								x->left->red = false;
+							x->red = true;
+							this->rotateR(x);
+							x = n->parent->right;
+						}
+						if (x) {
+							x->red = n->parent->red;
+							x->right->red = false;
+						}
+						n->parent->red = false;
+						this->rotateL(n->parent);
+						n = root;
+					}
+				} else {
+					node_type *x = n->parent->left;
+					if (x && x->red) {
+						x->red = false;
+						n->parent->red = true;
+						this->rotateR(n->parent);
+						x = n->parent->left;
+					}
+					if (x && (!x->right || !x->right->red) && (!x->left || !x->left->red)) {
+						x->red = true;
+						n = n->parent;
+					} else {
+						if (!x->left->red) {
+							x->right->red = false;
+							x->red = true;
+							this->rotateL(x);
+							x = n->parent->left;
+						}
+						if (x) {
+							x->red = n->parent->red;
+							x->left->red = false;
+						}
+						n->parent->red = false;
+						this->rotateR(n->parent);
+						n = this->root;
+					}
+				}
+			}
+			n->red = false;
+		}
+
 		void rotateL(node_type *n)
 		{
 			if (!n || !n->right)
@@ -336,120 +432,8 @@ class tree {
 			lc->parent = n->parent ;
 			n->parent = lc;
 			lc->right = n;
-		}
-
-		void remove(node_type *n){
-			node_type *x, *y, *tmp;
-			int yRed;
-
-			y = n;
-			yRed = n->red;
-			tmp = NULL;
-
-			if (!n->left && !n->right) {
-				tmp = createNode(n->value);
-				tmp->red = false;
-				transplant(n, tmp);
-				x = tmp;
-			} else if (!n->left) {
-				x = n->right;
-				transplant(n, n->right);
-			} else if (!n->right){
-				x = n->left;
-				transplant(n, n->left);
-			} else {
-				y = n->prev();
-				x = y->left;
-				if (!x) {
-					tmp = createNode(n->value);
-					tmp->red = false;
-					tmp->parent = y;
-					y->left = tmp;
-					x = tmp;
-				}
-				yRed = y->red;
-				if (y->parent != n) {
-					transplant(y, x);
-					y->left = n->left;
-					if (y->left)
-						y->left->parent = y;
-				}
-				transplant(n, y);
-				y->red = n->red;
-				y->right = n->right;
-				if (y->right)
-					y->right->parent = y;
-			}
-
-			if (!yRed)
-				adjustRemove(x);
-			
-			if (tmp) {
-				transplant(tmp, NULL);
-				deleteNode(tmp);
-			}
-		}
-
-		void adjustRemove(node_type *n){
-			while (n != this->root && !n->red) {
-				if (n == n->parent->left) {
-					node_type *x = n->parent->right;
-					if (x && x->red) {
-						x->red = false;
-						n->parent->red = true;
-						rotateL(n->parent);
-						x = n->parent->right;
-					}
-					if (x && (!x->left || !x->left->red) && (!x->right || !x->right->red)) {
-						x->red = true;
-						n = n->parent;
-					} else {
-						if (x && (!x->right || !x->right->red)) {
-							if (x->left)
-								x->left->red = false;
-							x->red = true;
-							rotateR(x);
-							x = n->parent->right;
-						}
-						if (x) {
-							x->red = n->parent->red;
-							x->right->red = false;
-						}
-						n->parent->red = false;
-						rotateL(n->parent);
-						n = root;
-					}
-				} else {
-					node_type *x = n->parent->left;
-					if (x && x->red) {
-						x->red = false;
-						n->parent->red = true;
-						rotateR(n->parent);
-						x = n->parent->left;
-					}
-					if (x && (!x->right || !x->right->red) && (!x->left || !x->left->red)) {
-						x->red = true;
-						n = n->parent;
-					} else {
-						if (!x->left->red) {
-							x->right->red = false;
-							x->red = true;
-							rotateL(x);
-							x = n->parent->left;
-						}
-						if (x) {
-							x->red = n->parent->red;
-							x->left->red = false;
-						}
-						n->parent->red = false;
-						rotateR(n->parent);
-						n = this->root;
-					}
-				}
-			}
-			n->red = false;
-		}
-
+		}	
+		
 		void transplant(node_type *n, node_type *child)
 		{			
 			if (!n->parent)
@@ -465,9 +449,9 @@ class tree {
 		void destroyTree(node_type *n) {
 			if (!n)
 				return ;
-			destroyTree(n->left);
-			destroyTree(n->right);
-			deleteNode(n);
+			this->destroyTree(n->left);
+			this->destroyTree(n->right);
+			this->deleteNode(n);
 		}
 
 		node_type *getGP(node_type *n) { return (n && n->parent) ? n->parent->parent : 0; }
@@ -479,24 +463,36 @@ class tree {
 			return (n->parent == gp->left) ? gp->right : gp->left;
 		}
 
+		static node_type* getNextNode(node_type* n) {
+			if (!n)
+				return (NULL);
+
+			if (n->right)
+				return (n->right->min());
+
+			if (n->parent && n == n->parent->left)
+				return (n->parent);
+			
+			node_type *next = n;
+			while (next && next == next->parent->right)
+				next = next->parent;
+			return ((next) ? next->parent : NULL);
+		}
+
+		static node_type * getPrevNode(node_type* n) {
+			if (!n)
+				return (NULL);
+
+			if(n->left)
+				return n->left->max();
+
+			if(n->parent && n == n->parent->right)
+				return (n->parent);
+
+			node_type *prev= n;
+			while (prev && prev == prev->parent->left)
+				prev = prev->parent;
+			return ((prev) ? prev->parent : NULL);
+		}
 };
-
-// template <typename Value, typename Comp> 
-// inline bool operator==(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return lhs.size == rhs.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
-
-// template <typename Value, typename Comp>
-// inline bool operator!=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(lhs == rhs); }
-
-// template <typename Value, typename Comp>
-// inline bool operator<(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
-
-// template <typename Value, typename Comp>
-// inline bool operator<=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(rhs < lhs); }
-
-// template <typename Value, typename Comp>
-// inline bool operator>(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return rhs < lhs; }
-
-// template <typename Value, typename Comp>
-// inline bool operator>=(const tree<Value, Comp>& lhs, const tree<Value, Comp>& rhs) { return !(lhs < rhs); }
-
 };

@@ -100,11 +100,11 @@ class map {
 		T& operator[](const Key& key) {
 			node_type *n = this->tree.root;
 			while (1) {
-				if (!n || (this->compK(n->value.first, key) && this->compK(key, n->value.first)))
+				if (!n || n->value.first == key)
 					break;
 				n = (!this->compK(n->value.first, key)) ? n->left : n->right;
 			}
-			if (!n) 
+			if (!n)
 				n = this->tree.add(ft::make_pair(key, mapped_type()));
 			return (n->value.second);
 		}
@@ -113,10 +113,19 @@ class map {
 
 		size_type size() const { return (this->tree.size); }
 		size_type max_size() const { return (this->tree.nodeAlloc.max_size()); }
+		key_compare key_comp() const { return (this->compK); }
+		value_compare value_comp() const { return (this->compV); }
+
+
 		iterator		begin() { return (iterator(this->tree.min(), this->tree.max())); }
 		const_iterator	begin() const { return (const_iterator(this->tree.min(), this->tree.max())); }
 		iterator		end() { return (iterator(NULL, this->tree.max())); }
 		const_iterator	end() const { return (const_iterator(NULL, this->tree.max())); }
+
+		reverse_iterator		rbegin() { return (reverse_iterator(this->end())); }
+		const_reverse_iterator	rbegin() const { return (reverse_iterator(this->end())); }
+		reverse_iterator		rend () { return (reverse_iterator(this->begin())); }
+		const_reverse_iterator	rend() const { return (reverse_iterator(this->begin())); }
 
 		void clear() { this->tree.clearTree(); }
 
@@ -124,31 +133,23 @@ class map {
 		ft::pair<const_iterator, const_iterator> equal_range(const Key& key) const { return (ft::make_pair(this->lower_bound(key), this->upper_bound(key))); }
 
 		iterator lower_bound(const Key& key) {
-			node_type *where = this->tree.root;
-			node_type *res = NULL;
-			while (where) {
-				if (compK(key, where->value.first))
-					where = where->left;
-				else {
-					res = where;
-					where = where->right;
-				}
+			node_type *where = this->tree.min();
+			while (1) {
+				if (!where || key <= where->value.first)
+					break;
+				where = where->next();
 			}
-			return ((res) ? iterator(res, this->tree.max()) : this->end());
+			return ((where) ? iterator(where, this->tree.max()) : this->end());
 		}
 
 		const_iterator lower_bound(const Key& key) const {
-			node_type *where = this->tree.root;
-			node_type *res = NULL;
-			while (where) {
-				if (compK(key, where->value.first))
-					where = where->right;
-				else {
-					res = where;
-					where = where->left;
-				}
+			const_node_type *where = this->tree.min();
+			while (1) {
+				if (!where || key <= where->value.first)
+					break;
+				where = where->next();
 			}
-			return ((res) ? const_iterator(res, this->tree.max()) : this->end());
+			return ((where) ? const_iterator(where, this->tree.max()) : this->end());
 		}		
 		
 		iterator upper_bound(const Key& key) {
@@ -165,5 +166,35 @@ class map {
 			return (res);
 		}
 };
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator==(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator!=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (!(lhs == rhs));
+}
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator<(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator>=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (!(lhs < rhs));
+}
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator>(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
+
+template< class Key, class T, class Compare, class Allocator>
+bool operator<=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
+	return (!(lhs > rhs));
+}
 
 };
