@@ -62,6 +62,8 @@ class vector {
 
 		vector(vector const & other) { *this = other; }
 
+		~vector() { this->clear(); }
+
 		vector& operator=(vector const & other) {
 			if (this == &other)
 				return (*this);

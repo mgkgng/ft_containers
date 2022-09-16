@@ -66,12 +66,5 @@ bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
 	return (!(lhs < rhs));
 }
 
-template <typename T1, typename T2>
-std::ostream &operator<<(std::ostream &os, const ft::pair<T1, T2> &p)
-{
-	os << "First: " << p.first << " Second: " << p.second << std::endl;
-	return os;
-}
-
 };
 	

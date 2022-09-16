@@ -56,7 +56,7 @@ class IterVector {
 		friend IterVector& operator+(int n, IterVector& it) { return (it += n); }
 
 		difference_type operator-(IterVector& it) { return (this->ptr - it.base()); }
-		difference_type operator-(IterVector<const value_type> it) { return (this->ptr - it.base()); }
+		difference_type operator-(IterVector<const value_type> it) const { return (this->ptr - it.base()); }
 		
 	    IterVector& operator+=(int n) {
 			ptr += n;

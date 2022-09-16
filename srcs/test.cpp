@@ -40,4 +40,8 @@ int main() {
 	final += printResult("Set", res.set);
 	std::cout << "FINAL RESULT: ";
 	std::cout << ((final == 5) ? "SUCCESS" : "FAILURE") << std::endl;
+
+	while (1);
+	
+	return (0);
 }

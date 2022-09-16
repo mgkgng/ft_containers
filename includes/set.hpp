@@ -52,7 +52,7 @@ class set {
 
 		set(const set& other) { *this = other; }
 
-		~set() {}		
+		~set() { this->tree.clearTree(); }		
 
 		set& operator=(const set& other) {
 			this->tree = other.tree;

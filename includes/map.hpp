@@ -63,6 +63,8 @@ class map {
 
 		map(map const & other) { *this = other; }
 
+		~map() { this->tree.clearTree(); }
+
 		map& operator=(const map & other) {
 			this->tree = other.tree;
 			this->compK = other.compK;
