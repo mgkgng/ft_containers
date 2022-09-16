@@ -25,11 +25,6 @@ class vector {
         typedef typename ft::ReverseIter<iterator> reverse_iterator;
         typedef typename ft::ReverseIter<const_iterator> const_reverse_iterator;
 
-		pointer			start;
-		allocator_type	alloc;
-		size_type		vectorSize;
-		size_type		vectorCapacity;
-
 		vector() {
 			this->alloc = allocator_type();
 			this->start = this->alloc.allocate(1);
@@ -68,6 +63,8 @@ class vector {
 		vector(vector const & other) { *this = other; }
 
 		vector& operator=(vector const & other) {
+			if (this == &other)
+				return (*this);
 			this->alloc = alloc;
 			this->start = this->alloc.allocate(other.vectorSize);
 			for (size_type i = 0; i < other.vectorSize; i++)
@@ -118,13 +115,23 @@ class vector {
 		bool empty() const { return ((this->vectorSize) ? false : true); }
 
 		void push_back(const T& value) {
-			if (this->vectorSize == this->vectorCapacity)
-				reserve(this->vectorCapacity + 1);
-			this->start[this->vectorSize++] = value;
+			if (this->vectorSize == this->vectorCapacity) {
+				pointer tmp = this->start;
+				this->start = this->alloc.allocate(this->vectorCapacity ? this->vectorCapacity *= 2 : this->vectorCapacity = 1);
+				for (size_type i = 0 ; i < this->vectorSize; i++) {
+					this->alloc.construct(this->start + i, tmp[i]);
+					this->alloc.destroy(tmp + i);
+				}
+				if (this->vectorSize)
+					this->alloc.deallocate(tmp, this->vectorSize);
+			}
+			this->alloc.construct(this->start + this->vectorSize++, value);
 		}
 
 		void pop_back() {
-			this->start[this->vectorSize--] = T();
+			if (!this->vectorSize)
+				return ;
+			this->alloc.destroy(this->start + this->vectorSize-- - 1);
 		}
 
 		iterator insert(iterator pos, const T& value) {
@@ -181,8 +188,10 @@ class vector {
 				throw std::length_error("exception!");
 			pointer tmp = this->alloc.allocate(new_cap);
 			size_type i;
-			for (i = 0; i < new_cap && i < this->vectorSize; i++)
-				this->alloc.construct(tmp + i, *(start + i));
+			for (i = 0; i < new_cap && i < this->vectorSize; i++) {
+				this->alloc.construct(tmp + i, *(this->start + i));
+				this->alloc.destroy(this->start + i);
+			}
 			this->alloc.deallocate(this->start, this->vectorCapacity);
 			this->vectorSize = i;
 			this->start = tmp;
@@ -192,8 +201,10 @@ class vector {
 		void resize(size_type count, T value = T()) {
 			pointer tmp = this->alloc.allocate(count);
 			size_type i;
-			for (i = 0; i < count && i < this->vectorSize; i++)
+			for (i = 0; i < count && i < this->vectorSize; i++) {
 				this->alloc.construct(tmp + i, *(this->start + i));
+				this->alloc.destroy(this->start + i);
+			}
 			while (i < count)
 				this->alloc.construct(tmp + i++, value);
 			this->alloc.deallocate(start, this->vectorCapacity);
@@ -242,7 +253,6 @@ class vector {
 		reverse_iterator rend() { return (reverse_iterator(this->begin())); }
 		const_reverse_iterator rend() const { return (const_reverse_iterator(this->begin())); }
 
-
 		reference operator[](size_type pos) { return (*(this->start + pos)); }
 		const_reference operator[]( size_type pos ) const { return (*(this->start + pos)); }
 
@@ -271,41 +281,27 @@ class vector {
 				res++;
 			return (res);
 		}
+
+		friend bool operator==(vector const & lhs, vector const & rhs) {
+			if (lhs.size() != rhs.size())
+				return (false);
+			for (size_t i = 0; i < lhs.size(); i++)
+				if (lhs.start[i] != rhs.start[i])
+					return (false);
+			return (true);
+		}
+		friend bool operator!=(vector const & lhs, vector const & rhs) { return (!(lhs == rhs)); }
+		friend bool operator<(vector const & lhs, vector const & rhs) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+		friend bool operator>=(vector const & lhs, vector const & rhs) { return (!(lhs < rhs)); }	
+		friend bool operator>(vector const & lhs, vector const & rhs) { return (rhs < lhs); }
+		friend bool operator<=(vector const & lhs, vector const & rhs) { return (!(lhs > rhs)); }	
+	
+	protected:
+		pointer			start;
+		allocator_type	alloc;
+		size_type		vectorSize;
+		size_type		vectorCapacity;
 };
-template<class T, class Alloc>
-bool operator==(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) {
-	if (lhs.size() != rhs.size())
-		return (false);
-	for (size_t i = 0; i < lhs.size(); i++)
-		if (lhs.start[i] != rhs.start[i])
-			return (false);
-	return (true);
-}
-
-template<class T, class Alloc>
-bool operator!=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) {
-	return (!(lhs == rhs));
-}
-
-template<class T, class Alloc>
-bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-
-template<class T, class Alloc>
-bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	return (!(lhs < rhs));
-}
-
-template<class T, class Alloc>
-bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	return (rhs < lhs);
-}
-
-template<class T, class Alloc>
-bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	return (!(lhs > rhs));
-}
 
 template<class T, class Alloc>
 void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { lhs.swap(rhs); }

@@ -6,7 +6,7 @@ namespace ft {
 
 template<class T, class Container = ft::vector<T> >
 class stack {
-		
+
 	public:
 		typedef Container container_type;
 		typedef typename Container::value_type value_type;
@@ -16,40 +16,28 @@ class stack {
 		
 		Container c;
 
-		explicit stack(const Container& cont = Container()) : c(cont) {}
+		stack() {}
 
-		stack(const stack& other) { *this = other; }
+		explicit stack(const Container& cont) : c(cont) {}
 
-		~stack() {}
+		stack(stack const & other) { *this = other; }
 
-		stack& operator=(const stack& other) {
+		stack& operator=(stack const & other) {
+			if (*this == other)
+				return (*this);
 			this->c = other.c;
 			return (*this);
 		}
+	
+		~stack() {}
 
-		reference top() {
-			return (c.back());
-		}
+		reference top() { return (c.back()); }
+		const_reference top() const { return (c.back()); }
+		bool empty() const { return (c.empty()); }
+		size_type size() const { return (c.size()); }
 
-		const_reference top() const {
-			return (c.back());
-		}
-
-		bool empty() const {
-			return (c.empty());
-		}
-		
-		size_type size() const {
-			return (c.size());
-		}
-
-		void push(const value_type& value) {
-			c.push_back(value);
-		}
-
-		void pop() {
-			c.pop_back();
-		}
+		void push(const value_type& value) { c.push_back(value); }
+		void pop() { c.pop_back(); }
 };
 
 template<class T, class Container>

@@ -113,6 +113,7 @@ class IterTree {
 
 template<typename Value, typename Compare>
 class tree {
+
 	public:
 		typedef Value			value_type;
 		typedef Compare			value_compare;
@@ -132,7 +133,7 @@ class tree {
 		size_type		size;
 		allocator_type	nodeAlloc;
 		value_compare	comp;
-
+		
 		explicit tree() {
 			this->root = NULL;
 			this->size = 0;

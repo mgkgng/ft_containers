@@ -49,10 +49,6 @@ class map {
 		typedef typename allocator_type::reference			reference;
 		typedef typename allocator_type::const_reference	const_reference;
 
-		tree_type		tree;
-		key_compare		compK;
-		value_compare	compV;
-
 		map() {}
 
 		template<class InputIt>
@@ -238,37 +234,19 @@ class map {
 				res++;
 			return (res);
 		}
+
+		friend bool operator==(map const & lhs, map const & rhs) { return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin())); }
+		friend bool operator!=(map const & lhs, map const & rhs) { return (!(lhs == rhs)); }
+		friend bool operator<(map const & lhs, map const & rhs) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+		friend bool operator>=(map const & lhs, map const & rhs) { return (!(lhs < rhs)); }
+		friend bool operator>(map const & lhs, map const & rhs) { return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end())); }
+		friend bool operator<=(map const & lhs, map const & rhs) { return (!(lhs > rhs)); }
+
+	private:
+		tree_type		tree;
+		key_compare		compK;
+		value_compare	compV;
 };
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator==(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-}
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator!=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (!(lhs == rhs));
-}
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator<(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator>=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (!(lhs < rhs));
-}
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator>(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-}
-
-template< class Key, class T, class Compare, class Allocator>
-bool operator<=(const ft::map<Key, T, Compare, Allocator>& lhs, const ft::map<Key, T, Compare, Allocator>& rhs) {
-	return (!(lhs > rhs));
-}
 
 template< class Key, class T, class Compare, class Allocator>
 void swap(ft::map<Key, T, Compare, Allocator>& lhs, ft::map<Key, T, Compare, Allocator>& rhs) { lhs.swap(rhs); }

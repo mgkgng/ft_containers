@@ -17,7 +17,7 @@ class IterVector {
 
 		IterVector() : ptr(NULL) {}
 		IterVector(pointer p) : ptr(p) {}
-		IterVector(const IterVector<T> &other) { *this = other; }
+		IterVector(IterVector const &other) { *this = other; }
 		~IterVector() {}
 
 		IterVector&  operator++() {

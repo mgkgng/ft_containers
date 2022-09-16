@@ -33,9 +33,6 @@ class set {
 		typedef typename allocator_type::reference			reference;
 		typedef typename allocator_type::const_reference	const_reference;
 	
-		tree_type		tree;
-		key_compare		comp;
-
 		set() {}
 
 		explicit set(const Compare& comp, const Allocator& alloc = Allocator()) {
@@ -213,35 +210,17 @@ class set {
 
 		key_compare key_comp() const { return (this->comp); }
 		value_compare value_comp() const { return (this->comp); }
-	};
 
-template<class Key, class Compare, class Allocator>
-bool operator==(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-}
+		friend bool operator==(set const & lhs, set const & rhs) { return (lhs.tree.size == rhs.tree.size && ft::equal(lhs.begin(), lhs.end(), rhs.begin())); }
+		friend bool operator!=(set const & lhs, set const & rhs) { return (!(lhs == rhs)); }
+		friend bool operator<(set const & lhs, set const & rhs) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+		friend bool operator>=(set const & lhs, set const & rhs) { return (!(lhs < rhs)); }
+		friend bool operator>(set const & lhs, set const & rhs) { return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end())); }
+		friend bool operator<=(set const & lhs, set const & rhs) { return (!(lhs > rhs)); }
+	
+	private:
+		tree_type		tree;
+		key_compare		comp;
+};
 
-template<class Key, class Compare, class Allocator>
-bool operator!=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (!(lhs == rhs));
-}
-
-template<class Key, class Compare, class Allocator>
-bool operator<(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-
-template<class Key, class Compare, class Allocator>
-bool operator>=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (!(lhs < rhs));
-}
-
-template<class Key, class Compare, class Allocator>
-bool operator>(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-}
-
-template<class Key, class Compare, class Allocator>
-bool operator<=(const ft::set<Key, Compare, Allocator>& lhs, const ft::set<Key, Compare, Allocator>& rhs) {
-	return (!(lhs > rhs));
-}
 };
