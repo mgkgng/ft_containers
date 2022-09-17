@@ -29,14 +29,14 @@ class vector {
 			this->alloc = allocator_type();
 			this->start = NULL;
 			this->vectorSize = 0;
-			this->vectorCapacity = 1;
+			this->vectorCapacity = 0;
 		}
 
 		explicit vector(const Allocator& alloc) { 
 			this->alloc = alloc();
 			this->start = NULL;
 			this->vectorSize = 0;
-			this->vectorCapacity = 1;
+			this->vectorCapacity = 0;
 		}
 
 		explicit vector(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) {
@@ -154,9 +154,10 @@ class vector {
 			size_type dist = this->getDistance(this->begin(), pos);
 			if (this->vectorSize == this->vectorCapacity)
 				reserve(this->vectorSize + 1);
-			for (iterator it = this->end(); it != this->begin() + dist; it--)
-				*it = *(it - 1);
-			*(this->begin() + dist) = value;
+			pointer p = this->start + this->vectorSize;
+			for (; p && p != this->start + dist; p--)
+				*p = *(p - 1);
+			*(this->start + dist) = value;
 			this->vectorSize++;
 			return (this->begin() + dist);
 		}
@@ -165,12 +166,11 @@ class vector {
 			if (!count)
 				return (pos);
 			size_type dist = this->getDistance(this->begin(), pos);
-			std::cout << dist << std::endl;
 			if (this->vectorSize + count > this->vectorCapacity)
 				reserve(this->vectorSize + count);
-			pointer last = this->start + this->vectorSize + count - 1;
-			for (; last != this->start + dist + count - 1; last--)
-				*last = *(last - count);
+			pointer p = this->start + this->vectorSize + count - 1;
+			for (; p != this->start + dist + count - 1; p--)
+				*p = *(p - count);
 			for (size_type i = 0; i < count; i++)
 				*(this->start + dist + i) = value;
 			this->vectorSize += count;
@@ -186,8 +186,9 @@ class vector {
 			size_type itSize = this->getDistance(first, last);
 			if (this->vectorSize + itSize > this->vectorCapacity)
 				reserve(this->vectorSize + itSize);
-			for (iterator it = this->end() + itSize; it != this->begin() + dist + itSize - 1; it--)
-				*it = *(it - itSize);
+			pointer p = this->start + this->vectorSize + itSize - 1;
+			for (; p != this->start + dist + itSize - 1; p--)
+				*p = *(p - itSize);
 			for (size_type i = 0; i < itSize; i++)
 				*(this->start + dist + i) = *first++;
 			this->vectorSize += itSize;
