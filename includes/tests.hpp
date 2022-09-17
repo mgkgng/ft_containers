@@ -11,7 +11,7 @@
 #define STACK "Stack"
 #define SET "Set"
 
-#define SLEEP_DURATION 50000
+#define SLEEP_DURATION 750000
 
 /***** ANNOUNCE ******/
 #define ANNOUNCE1(s) do {\
