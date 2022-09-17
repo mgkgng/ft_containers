@@ -70,17 +70,13 @@ class vector {
 		}
 
 		~vector() {
-			std::cout << "pardon?" << std::endl;
 			if (this->vectorSize)
 				this->clear();
-			std::cout << "foound" << std::endl;
 			if (this->start)
 				this->alloc.deallocate(this->start, this->vectorCapacity);
-			std::cout << "chelou" << std::endl;
 		}
 
 		vector& operator=(vector const & other) {
-			std::cout << "bjr" << std::endl;
 			if (this->vectorSize)
 				this->clear();
 			if (this->start)
@@ -137,15 +133,15 @@ class vector {
 		bool empty() const { return ((this->vectorSize) ? false : true); }
 
 		void push_back(const T& value) {
-			if (this->vectorSize == this->vectorCapacity) {
-				pointer tmp = this->start;
-				this->start = this->alloc.allocate(this->vectorCapacity ? this->vectorCapacity *= 2 : this->vectorCapacity = 1);
+			if (!this->vectorCapacity || this->vectorSize == this->vectorCapacity) {
+				pointer tmp = this->alloc.allocate(++this->vectorCapacity);
 				for (size_type i = 0 ; i < this->vectorSize; i++) {
-					this->alloc.construct(this->start + i, tmp[i]);
-					this->alloc.destroy(tmp + i);
+					this->alloc.construct(tmp + i, *(this->start + i));
+					this->alloc.destroy(this->start + i);
 				}
-				if (this->vectorSize)
-					this->alloc.deallocate(tmp, this->vectorSize);
+				if (this->start)
+					this->alloc.deallocate(this->start, this->vectorCapacity);
+				this->start = tmp;
 			}
 			this->alloc.construct(this->start + this->vectorSize++, value);
 		}

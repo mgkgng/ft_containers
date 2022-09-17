@@ -19,9 +19,9 @@ class stack {
 
 		stack() { this->c = Container(); }
 
-		explicit stack(const Container& cont) : c(cont) {}
+		explicit stack(Container const & cont) { this->c = cont; }
 
-		stack(stack const & other) : c(other.c) {}
+		stack(stack const & other) { this->c = other.c; }
 
 		stack& operator=(stack const & other) {
 			if (*this == other)
@@ -30,19 +30,14 @@ class stack {
 			return (*this);
 		}
 	
-		~stack() {
-			std::cout << "ok" << std::endl;
-		}
+		~stack() {}
 
 		reference top() { return (c.back()); }
 		const_reference top() const { return (c.back()); }
 		bool empty() const { return (c.empty()); }
 		size_type size() const { return (c.size()); }
 
-		void push(const value_type& value) {
-			c.push_back(value); 
-			std::cout << "oui" << std::endl;
-		}
+		void push(const value_type& value) { c.push_back(value); }
 		void pop() { c.pop_back(); }
 };
 
