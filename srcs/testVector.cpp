@@ -28,8 +28,6 @@ bool compare(ft::vector<T> mine, std::vector<T> real) {
 	for (int i = 0; i < mine.size(); i++) {
 		if (mine[i] != real[i]) {
 			PRINT_KO;
-			printMine(mine);
-			printReal(real);
 			return (false);
 		}
 	}
@@ -58,20 +56,20 @@ int testVector() {
 	ANNOUNCE2("Vector Constructor Type 2-1: Constructor with count copies of elements with value (small size value)");
 	size_t n = 10;
 	START_CLOCK;
-	real = std::vector<int>(n, 15, std::allocator<int>());
+	real = std::vector<int>(n, 15);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine = ft::vector<int>(n, 15, std::allocator<int>());
+	mine = ft::vector<int>(n, 15);
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 
 	ANNOUNCE2("Vector Constructor Type 2-2: Constructor with count copies of elements with value (big size value)");
 	n = 1000;
 	START_CLOCK;
-	real = std::vector<int>(n, 125, std::allocator<int>());
+	real = std::vector<int>(n, 125);
 	END_CLOCK_REAL;
 	START_CLOCK;
-	mine = ft::vector<int>(n, 125, std::allocator<int>());
+	mine = ft::vector<int>(n, 125);
 	END_CLOCK_MY;
 	CHECK(VECTOR, DO_BOTH);
 

@@ -61,7 +61,11 @@ class map {
 				this->insert(*first++);
 		}
 
-		map(map const & other) { *this = other; }
+		map(map const & other) {
+			if (this->tree.size)
+				this->tree.clearTree();
+			*this = other; 
+		}
 
 		~map() { this->tree.clearTree(); }
 

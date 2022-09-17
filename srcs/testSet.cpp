@@ -477,14 +477,14 @@ int testSet() {
 		CHECK_RESULT;
 	} catch (std::exception &e) {}
 
-	// ANNOUNCE2("clear");
-	// START_CLOCK;
-	// real.clear();
-	// END_CLOCK_REAL;
-	// START_CLOCK;
-	// mine.clear();
-	// END_CLOCK_MY;
-	// CHECK(SET, DO_BOTH);
+	ANNOUNCE2("clear");
+	START_CLOCK;
+	real.clear();
+	END_CLOCK_REAL;
+	START_CLOCK;
+	mine.clear();
+	END_CLOCK_MY;
+	CHECK(SET, DO_BOTH);
 
 	ANNOUNCE2("insert1: insert a pair");
 	START_CLOCK;

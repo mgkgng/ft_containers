@@ -168,6 +168,7 @@ class tree {
 		}
 
 		void deleteNode(node_type *n) {
+			nodeAlloc.destroy(n);
 			nodeAlloc.deallocate(n, 1);
 		}
 

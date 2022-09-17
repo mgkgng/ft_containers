@@ -55,12 +55,15 @@ class set {
 		~set() { this->tree.clearTree(); }		
 
 		set& operator=(const set& other) {
+			this->tree.clearTree();
+			if (*this == other)
+				return (*this);
 			this->tree = other.tree;
 			this->comp = other.comp;
 			return (*this);
 		}
 
-		allocator_type get_allocator() const { return (this->_alloc); }
+		allocator_type get_allocator() const { return (this->tree.nodeAlloc); }
 
 		iterator		begin() { return (iterator((const_node_type *) this->tree.min(), (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max())); }
 		const_iterator	begin() const { return (const_iterator(this->tree.min(), this->tree.min(), this->tree.max())); }

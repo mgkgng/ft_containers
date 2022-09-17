@@ -69,48 +69,48 @@ int testStack() {
 	END_CLOCK_MY;
 	CHECK(STACK, ONLY_CLOCK);
 
-	ANNOUNCE2("top");
-	try {
-		int myResult = mine.top();
-		int realResult = real.top();
-		CHECK_RESULT;
-	} catch (std::exception &e) {}
+	// ANNOUNCE2("top");
+	// try {
+	// 	int myResult = mine.top();
+	// 	int realResult = real.top();
+	// 	CHECK_RESULT;
+	// } catch (std::exception &e) {}
 
-	ANNOUNCE2("empty");
-	try {
-		bool myResult = mine.empty();
-		bool realResult = real.empty();
-		CHECK_RESULT;
-	} catch (std::exception &e) {}
+	// ANNOUNCE2("empty");
+	// try {
+	// 	bool myResult = mine.empty();
+	// 	bool realResult = real.empty();
+	// 	CHECK_RESULT;
+	// } catch (std::exception &e) {}
 
-	ANNOUNCE2("size");
-	try {
-		size_t myResult = mine.size();
-		size_t realResult = real.size();
-		CHECK_RESULT;
-	} catch (std::exception &e) {}
+	// ANNOUNCE2("size");
+	// try {
+	// 	size_t myResult = mine.size();
+	// 	size_t realResult = real.size();
+	// 	CHECK_RESULT;
+	// } catch (std::exception &e) {}
 
-	ANNOUNCE2("push");
-	START_CLOCK;
-	real.push(9473);
-	END_CLOCK_REAL;
-	START_CLOCK;
-	mine.push(9473);
-	END_CLOCK_MY;
-	CHECK(STACK, DO_BOTH);
+	// ANNOUNCE2("push");
+	// START_CLOCK;
+	// real.push(9473);
+	// END_CLOCK_REAL;
+	// START_CLOCK;
+	// mine.push(9473);
+	// END_CLOCK_MY;
+	// CHECK(STACK, DO_BOTH);
 
-	ANNOUNCE2("pop");
-	real.push(335);
-	real.push(194);
-	mine.push(335);
-	mine.push(194);
-	START_CLOCK;
-	real.pop();
-	END_CLOCK_REAL;
-	START_CLOCK;
-	mine.pop();
-	END_CLOCK_MY;
-	CHECK(STACK, DO_BOTH);
+	// ANNOUNCE2("pop");
+	// real.push(335);
+	// real.push(194);
+	// mine.push(335);
+	// mine.push(194);
+	// START_CLOCK;
+	// real.pop();
+	// END_CLOCK_REAL;
+	// START_CLOCK;
+	// mine.pop();
+	// END_CLOCK_MY;
+	// CHECK(STACK, DO_BOTH);
 
 	END_TEST(STACK);
 }

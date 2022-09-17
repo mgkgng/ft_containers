@@ -27,14 +27,14 @@ class vector {
 
 		vector() {
 			this->alloc = allocator_type();
-			this->start = this->alloc.allocate(1);
+			this->start = NULL;
 			this->vectorSize = 0;
 			this->vectorCapacity = 1;
 		}
 
 		explicit vector(const Allocator& alloc) { 
 			this->alloc = alloc();
-			this->start = this->alloc.allocate(1);
+			this->start = NULL;
 			this->vectorSize = 0;
 			this->vectorCapacity = 1;
 		}
@@ -60,11 +60,25 @@ class vector {
 			this->vectorCapacity = itSize;
 		}
 
-		vector(vector const & other) { *this = other; }
+		vector(vector const & other) {
+			this->alloc = alloc;
+			this->start = this->alloc.allocate(other.vectorSize);
+			for (size_type i = 0; i < other.vectorSize; i++)
+				this->alloc.construct(start + i, other[i]);
+			this->vectorSize = other.vectorSize;
+			this->vectorCapacity = other.vectorCapacity;
+		}
 
-		~vector() { this->clear(); }
+		~vector() { 
+			this->clear();
+			this->alloc.deallocate(this->start, this->vectorCapacity);
+		}
 
 		vector& operator=(vector const & other) {
+			if (this->vectorSize)
+				this->clear();
+			if (this->start)
+				this->alloc.deallocate(this->start, this->vectorCapacity);
 			if (this == &other)
 				return (*this);
 			this->alloc = alloc;
@@ -151,10 +165,12 @@ class vector {
 			if (!count)
 				return (pos);
 			size_type dist = this->getDistance(this->begin(), pos);
+			std::cout << dist << std::endl;
 			if (this->vectorSize + count > this->vectorCapacity)
 				reserve(this->vectorSize + count);
-			for (iterator it = this->end() + count; it != this->begin() + dist + count - 1; it--)
-				*it = *(it - count);
+			pointer last = this->start + this->vectorSize + count - 1;
+			for (; last != this->start + dist + count - 1; last--)
+				*last = *(last - count);
 			for (size_type i = 0; i < count; i++)
 				*(this->start + dist + i) = value;
 			this->vectorSize += count;
@@ -245,6 +261,7 @@ class vector {
 		size_type size() const { return (this->vectorSize); }
 		size_type capacity() const { return (this->vectorCapacity); }
 		size_type max_size() const { return (this->alloc.max_size()); }
+		allocator_type get_allocator() const { return (this->alloc); }
 
 		iterator begin() { return (iterator(this->start)); }
 		const_iterator begin() const { return (const_iterator(this->start)); }

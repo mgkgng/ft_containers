@@ -9,18 +9,19 @@ class stack {
 
 	public:
 		typedef Container container_type;
-		typedef typename Container::value_type value_type;
-		typedef typename Container::size_type size_type;
-		typedef typename Container::reference reference;
+		typedef typename Container::value_type 		value_type;
+		typedef typename Container::size_type 		size_type;
+		typedef typename Container::reference 		reference;
 		typedef typename Container::const_reference const_reference;
+		typedef typename Container::allocator_type 	allocator_type;
 		
 		Container c;
 
-		stack() {}
+		stack() { this->c = Container(); }
 
 		explicit stack(const Container& cont) : c(cont) {}
 
-		stack(stack const & other) { *this = other; }
+		stack(stack const & other) : c(other.c) {}
 
 		stack& operator=(stack const & other) {
 			if (*this == other)
