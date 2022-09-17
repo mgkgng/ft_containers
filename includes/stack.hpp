@@ -30,14 +30,19 @@ class stack {
 			return (*this);
 		}
 	
-		~stack() {}
+		~stack() {
+			std::cout << "ok" << std::endl;
+		}
 
 		reference top() { return (c.back()); }
 		const_reference top() const { return (c.back()); }
 		bool empty() const { return (c.empty()); }
 		size_type size() const { return (c.size()); }
 
-		void push(const value_type& value) { c.push_back(value); }
+		void push(const value_type& value) {
+			c.push_back(value); 
+			std::cout << "oui" << std::endl;
+		}
 		void pop() { c.pop_back(); }
 };
 

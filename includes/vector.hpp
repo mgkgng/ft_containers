@@ -61,20 +61,26 @@ class vector {
 		}
 
 		vector(vector const & other) {
-			this->alloc = alloc;
+			this->alloc = other.alloc;
 			this->start = this->alloc.allocate(other.vectorSize);
 			for (size_type i = 0; i < other.vectorSize; i++)
-				this->alloc.construct(start + i, other[i]);
+				this->alloc.construct(start + i, *(other.start + i));
 			this->vectorSize = other.vectorSize;
 			this->vectorCapacity = other.vectorCapacity;
 		}
 
-		~vector() { 
-			this->clear();
-			this->alloc.deallocate(this->start, this->vectorCapacity);
+		~vector() {
+			std::cout << "pardon?" << std::endl;
+			if (this->vectorSize)
+				this->clear();
+			std::cout << "foound" << std::endl;
+			if (this->start)
+				this->alloc.deallocate(this->start, this->vectorCapacity);
+			std::cout << "chelou" << std::endl;
 		}
 
 		vector& operator=(vector const & other) {
+			std::cout << "bjr" << std::endl;
 			if (this->vectorSize)
 				this->clear();
 			if (this->start)
