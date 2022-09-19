@@ -156,7 +156,7 @@ class map {
 			return (iterator((pos) ? pos : NULL, this->tree.min(), this->tree.max()));
 		}
 
-		const_iterator find( const Key& key ) const {
+		const_iterator find(const Key& key) const {
 			node_type *pos = this->tree.root;
 			while (1) {
 				if (!pos || pos->value.first == key)
@@ -166,7 +166,7 @@ class map {
 			return (const_iterator((pos) ? (const_node_type *) pos : NULL, (const_node_type *) this->tree.min(), (const_node_type *) this->tree.max()));
 		}
 
-		size_type count( const Key& key ) const {
+		size_type count(const Key& key) const {
 			node_type *pos = this->tree.root;
 			while (1) {
 				if (!pos || pos->value.first == key)

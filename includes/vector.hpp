@@ -197,6 +197,8 @@ class vector {
 			return (this->begin() + dist - itSize + 1);
 		}
 		
+		T* data() { return (this->start); }
+		const T* data() const { return (this->start); }
 		reference front() { return (*(this->start)); }
 		const_reference front() const { return (*(this->start)); }
 		reference back() { return (this->start[this->vectorSize - 1]); }
