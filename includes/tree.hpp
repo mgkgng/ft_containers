@@ -20,9 +20,6 @@ struct treeNode {
 	treeNode *max() { return ((!this->right) ? this : this->right->max()); }
 
 	treeNode *next() {
-		// if (!this)
-		// 	return (NULL);
-
 		if (this->right)
 			return (this->right->min());
 
@@ -36,10 +33,7 @@ struct treeNode {
 	}
 
 	treeNode *prev() {
-		// if (!this)
-		// 	return (NULL);
-
-		if(this->left)
+		if (this->left)
 			return (this->left->max());
 
 		if(this->parent && this == this->parent->right)
@@ -94,7 +88,6 @@ class IterTree {
 		}
 
 		IterTree& operator--() {
-			// std::cout << "nono" << std::endl;
 			nodePtr = ((!nodePtr) ? this->maxPtr : this->nodePtr->prev());
 			return (*this);
 		}

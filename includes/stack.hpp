@@ -15,8 +15,6 @@ class stack {
 		typedef typename Container::const_reference const_reference;
 		typedef typename Container::allocator_type 	allocator_type;
 		
-		Container c;
-
 		stack() { this->c = Container(); }
 
 		explicit stack(Container const & cont) { this->c = cont; }
@@ -39,18 +37,16 @@ class stack {
 
 		void push(const value_type& value) { c.push_back(value); }
 		void pop() { c.pop_back(); }
+
+		friend bool operator==(stack const & lhs, stack const & rhs) { return (lhs.c == rhs.c); }
+		friend bool operator!=(stack const & lhs, stack const & rhs) { return (lhs.c != rhs.c); }
+		friend bool operator<(stack const & lhs, stack const & rhs) { return (lhs.c < rhs.c); }
+		friend bool operator>(stack const & lhs, stack const & rhs) { return (lhs.c > rhs.c); }
+		friend bool operator<=(stack const & lhs, stack const & rhs) { return (lhs.c <= rhs.c); }
+		friend bool operator>=(stack const & lhs, stack const & rhs) { return (lhs.c >= rhs.c); }
+
+		protected:
+			Container c;
 };
 
-template<class T, class Container>
-bool operator==(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c == rhs.c); }
-template<class T, class Container>
-bool operator!=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c != rhs.c); }
-template<class T, class Container>
-bool operator<(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c < rhs.c); }
-template<class T, class Container>
-bool operator<=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c <= rhs.c); }
-template<class T, class Container>
-bool operator>(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c > rhs.c); }
-template<class T, class Container>
-bool operator>=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs) { return (lhs.c >= rhs.c); }
 };

@@ -118,11 +118,11 @@ struct enable_if<true, T> {
 	typedef T type;
 };
 
-template<class Iterable>
-int distance(Iterable first, Iterable last) {
-	int res = 0;
-	while (first++ != last)
-		res++;
+template <typename Iter>
+size_t distance(Iter first, Iter last) {
+	size_t res = 0;
+	for (Iter it = first; it != last; it++)
+	res++;
 	return (res);
 }
 

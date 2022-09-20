@@ -52,7 +52,7 @@ class vector {
 		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(),
 			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) { // cppreference (5)
 			this->alloc = alloc;
-			size_type itSize = this->getDistance(first, last);
+			size_type itSize = ft::distance(first, last);
 			this->start = this->alloc.allocate(itSize);
 			for (size_type i = 0; i < itSize; i++)
 				this->alloc.construct(start + i, *first++);
@@ -102,7 +102,7 @@ class vector {
 		template<class InputIt>
 		void assign(InputIt first, InputIt last, 
 			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) {
-			size_type itSize = this->getDistance(first, last);
+			size_type itSize = ft::distance(first, last);
 			pointer tmp = this->alloc.allocate(itSize);
 			for (size_type i = 0; i < itSize; i++)
 				this->alloc.construct(tmp + i, *first++);
@@ -118,7 +118,7 @@ class vector {
 			return (this->start[pos]);
 		}
 
-		const_reference at( size_type pos ) const {
+		const_reference at(size_type pos) const {
 			if (pos > this->vectorCapacity)
 				throw std::out_of_range("exception!");
 			return (this->start[pos]);
@@ -153,7 +153,7 @@ class vector {
 		}
 
 		iterator insert(iterator pos, const T& value) {
-			size_type dist = this->getDistance(this->begin(), pos);
+			size_type dist = ft::distance(this->begin(), pos);
 			if (this->vectorSize == this->vectorCapacity)
 				reserve(this->vectorSize + 1);
 			pointer p = this->start + this->vectorSize;
@@ -167,7 +167,7 @@ class vector {
 		iterator insert(iterator pos, size_type count, const T& value) {
 			if (!count)
 				return (pos);
-			size_type dist = this->getDistance(this->begin(), pos);
+			size_type dist = ft::distance(this->begin(), pos);
 			if (this->vectorSize + count > this->vectorCapacity)
 				reserve(this->vectorSize + count);
 			pointer p = this->start + this->vectorSize + count - 1;
@@ -184,8 +184,8 @@ class vector {
 			typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = false) {
 			if (first == last)
 				return (pos);
-			size_type dist = this->getDistance(this->begin(), pos);
-			size_type itSize = this->getDistance(first, last);
+			size_type dist = ft::distance(this->begin(), pos);
+			size_type itSize = ft::distance(first, last);
 			if (this->vectorSize + itSize > this->vectorCapacity)
 				reserve(this->vectorSize + itSize);
 			pointer p = this->start + this->vectorSize + itSize - 1;
@@ -237,7 +237,7 @@ class vector {
 		}
 
 		iterator erase(iterator pos) {
-			size_type dist = this->getDistance(this->begin(), pos);
+			size_type dist = ft::distance(this->begin(), pos);
 			if (dist == this->vectorSize) {
 				this->vectorSize--;
 				return (this->end());
@@ -252,8 +252,8 @@ class vector {
 			if (first == last)
 				return (last);
 			iterator tmpEnd = this->end();
-			size_type dist = this->getDistance(this->begin(), first);
-			size_type itSize = this->getDistance(first, last);
+			size_type dist = ft::distance(this->begin(), first);
+			size_type itSize = ft::distance(first, last);
 			iterator it;
 			for (iterator it = this->begin() + dist; it != this->end() - itSize + 1; it++)
 				*it = *(it + itSize);
@@ -278,7 +278,7 @@ class vector {
 		const_reverse_iterator rend() const { return (const_reverse_iterator(this->begin())); }
 
 		reference operator[](size_type pos) { return (*(this->start + pos)); }
-		const_reference operator[]( size_type pos ) const { return (*(this->start + pos)); }
+		const_reference operator[](size_type pos) const { return (*(this->start + pos)); }
 
 		void swap(vector& other) {
 			allocator_type	tmpAlloc = this->alloc;
@@ -296,14 +296,6 @@ class vector {
 			size_type tmpCapacity = this->vectorCapacity;
 			this->vectorCapacity = other.vectorCapacity;
 			other.vectorCapacity = tmpCapacity;
-		}
-
-		template <typename Iter>
-		size_type getDistance(Iter first, Iter last) {
-			size_type res = 0;
-			for (Iter it = first; it != last; it++)
-				res++;
-			return (res);
 		}
 
 		friend bool operator==(vector const & lhs, vector const & rhs) {
